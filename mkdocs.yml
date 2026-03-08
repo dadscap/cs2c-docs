@@ -1,0 +1,14 @@
+site_name: CS2C-API
+site_url: https://docs.cs2c.app
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Authentication: authentication.md
+  - API Reference: api-reference.md
+  - Billing: billing.md
+  - Core Concepts: core-concepts.md
+  - Pagination: pagination.md
+  - Changelog: changelog.md
