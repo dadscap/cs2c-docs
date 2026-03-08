@@ -1442,9 +1442,9 @@ def batch_requests(item_ids: list[int], batch_size: int = 10):
 
 Essential guides for working with CS2C-API:
 
-- **[Quick Start](QUICK_START.md)** — Fast path to first successful API request
-- **[Pagination Guide](PAGINATION.md)** — Offset vs cursor pagination patterns and iteration examples
-- **[Core Concepts](CORE_CONCEPTS.md)** — Canonical domain definitions and endpoint-to-concept mapping
+- **[Quick Start](getting-started.md)** — Fast path to first successful API request
+- **[Pagination Guide](pagination.md)** — Offset vs cursor pagination patterns and iteration examples
+- **[Core Concepts](core-concepts.md)** — Canonical domain definitions and endpoint-to-concept mapping
 
 ---
 

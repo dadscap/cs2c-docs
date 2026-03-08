@@ -1,0 +1,3918 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://docs.cs2c.app/api-reference/">
+      
+      
+        <link rel="prev" href="../authentication/">
+      
+      
+        <link rel="next" href="../core-concepts/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.4">
+    
+    
+      
+        <title>API Reference - CS2C-API</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#api-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="CS2C-API" class="md-header__button md-logo" aria-label="CS2C-API" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CS2C-API
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="CS2C-API" class="md-nav__button md-logo" aria-label="CS2C-API" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CS2C-API
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#base-url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base URL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-an-api-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting an API Key
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#response-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response Format
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-status-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP Status Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Items
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Items">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/items
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1itemsmarket-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/items/market-ids
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Providers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Providers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/providers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1prices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/prices
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1priceshistory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/prices/history
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1pricescandles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/prices/candles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1fx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/fx
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#buy-orders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Buy Orders
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Buy Orders">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1bids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/bids
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recent-sales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recent Sales
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recent Sales">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1sales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/sales
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#market-intelligence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Market Intelligence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Market Intelligence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1marketmovers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/market/movers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1marketrankingsmetric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/market/rankings/{metric}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1marketarbitrage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/market/arbitrage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1marketitemsitem_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/market/items/{item_id}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1marketindicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/market/indicators
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schemas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schemas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#item-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Item Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#marketitem-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MarketItem Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#salerecord-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SaleRecord Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saleshistoryresponse-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SalesHistoryResponse Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#liquidityscore-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LiquidityScore Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Code Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Python">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-price-lookup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Price Lookup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-batch-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async Batch Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#javascripttypescript" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JavaScript/TypeScript
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="JavaScript/TypeScript">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage-with-fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage with Fetch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limit-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limit Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#curl-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cURL Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="cURL Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-prices-with-providers-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get Prices with Providers Filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-recent-sales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get Recent Sales
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-respect-rate-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Respect Rate Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-batch-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Batch Requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Support
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../core-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pagination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pagination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#base-url" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base URL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-an-api-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting an API Key
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#response-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response Format
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-status-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP Status Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Items
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Items">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/items
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1itemsmarket-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/items/market-ids
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Providers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Providers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/providers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1prices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/prices
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1priceshistory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/prices/history
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1pricescandles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/prices/candles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1fx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/fx
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#buy-orders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Buy Orders
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Buy Orders">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1bids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/bids
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recent-sales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recent Sales
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recent Sales">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1sales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/sales
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#market-intelligence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Market Intelligence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Market Intelligence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1marketmovers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/market/movers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1marketrankingsmetric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/market/rankings/{metric}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1marketarbitrage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/market/arbitrage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1marketitemsitem_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/market/items/{item_id}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1marketindicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/market/indicators
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schemas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schemas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#item-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Item Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#marketitem-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MarketItem Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#salerecord-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SaleRecord Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saleshistoryresponse-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SalesHistoryResponse Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#liquidityscore-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LiquidityScore Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Code Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Python">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-price-lookup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Price Lookup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-batch-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async Batch Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#javascripttypescript" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JavaScript/TypeScript
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="JavaScript/TypeScript">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage-with-fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage with Fetch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limit-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limit Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#curl-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cURL Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="cURL Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-prices-with-providers-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get Prices with Providers Filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-recent-sales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get Recent Sales
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-respect-rate-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Respect Rate Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-batch-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Batch Requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Support
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="api-reference">API Reference</h1>
+<p>Complete API documentation for the CS2C-API service.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#base-url">Base URL</a></li>
+<li><a href="#authentication">Authentication</a></li>
+<li><a href="#getting-an-api-key">Getting an API Key</a></li>
+<li><a href="#rate-limiting">Rate Limiting</a></li>
+<li><a href="#response-format">Response Format</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#endpoints">Endpoints</a></li>
+<li><a href="#items">Items</a></li>
+<li><a href="#providers">Providers</a></li>
+<li><a href="#prices">Prices</a></li>
+<li><a href="#market-intelligence">Market Intelligence</a></li>
+<li><a href="#buy-orders">Buy Orders</a></li>
+<li><a href="#recent-sales">Recent Sales</a></li>
+<li><a href="#schemas">Schemas</a></li>
+<li><a href="#code-examples">Code Examples</a></li>
+<li><a href="#related-documentation">Related Documentation</a></li>
+</ul>
+<h2 id="base-url">Base URL</h2>
+<pre><code class="language-text">https://api.cs2c.app
+</code></pre>
+<h2 id="authentication">Authentication</h2>
+<p>Endpoints require authentication using an API key via the <code>Authorization</code> header:</p>
+<pre><code class="language-http">Authorization: Bearer your_api_key_here
+</code></pre>
+<h2 id="getting-an-api-key">Getting an API Key</h2>
+<ol>
+<li>Sign up with OAuth.</li>
+<li>Set and verify an email address associated with the account.</li>
+<li>Save the initial, or reissue a new, API key through the account flow.</li>
+<li>Use the key with <code>Authorization: Bearer {api_key}</code> when sending requests.</li>
+</ol>
+<p>Max 1 API key per account.
+Keys on the free-tier are bound to a single IP source bind.</p>
+<h2 id="rate-limiting">Rate Limiting</h2>
+<p>Rate limits are enforced per API key based on the user's tier:</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Requests/Minute</th>
+<th>Requests/Month</th>
+<th>Max <code>limit</code> Param</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>free</code></td>
+<td>20</td>
+<td>1,000</td>
+<td>100</td>
+</tr>
+<tr>
+<td><code>pro</code></td>
+<td>100</td>
+<td>50,000</td>
+<td>1,000</td>
+</tr>
+<tr>
+<td><code>quant</code></td>
+<td>300</td>
+<td>200,000</td>
+<td>1,000</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Rate Limit Headers:</strong></p>
+<pre><code class="language-http">X-RateLimit-Tier: pro
+</code></pre>
+<p>Quota-exceeded (<code>429</code>) responses include additional headers:</p>
+<pre><code class="language-http">Retry-After: 12345
+X-RateLimit-Limit: 50000
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 12345
+</code></pre>
+<p><strong>Rate Limit Exceeded Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;code&quot;: &quot;RATE_LIMIT_EXCEEDED&quot;,
+  &quot;detail&quot;: &quot;Too Many Requests&quot;
+}
+</code></pre>
+<p>Monthly quota violations use:</p>
+<pre><code class="language-json">{
+  &quot;code&quot;: &quot;RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED&quot;,
+  &quot;detail&quot;: &quot;Monthly quota exceeded (50000/50000 requests).&quot;
+}
+</code></pre>
+<h2 id="response-format">Response Format</h2>
+<p>All responses follow a consistent JSON structure:</p>
+<p><strong>Success Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;items&quot;: [...],
+  &quot;count&quot;: 100,
+  &quot;limit&quot;: 50,
+  &quot;offset&quot;: 0
+}
+</code></pre>
+<p><strong>Error Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;code&quot;: &quot;AUTH_INVALID_API_KEY&quot;,
+  &quot;detail&quot;: &quot;Invalid API key&quot;
+}
+</code></pre>
+<h2 id="error-handling">Error Handling</h2>
+<h3 id="http-status-codes">HTTP Status Codes</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>OK</td>
+<td>Request successful</td>
+</tr>
+<tr>
+<td>201</td>
+<td>Created</td>
+<td>Resource created</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Bad Request</td>
+<td>Invalid request parameters</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Unauthorized</td>
+<td>Missing or invalid API key</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Forbidden</td>
+<td>Valid key but insufficient permissions</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Not Found</td>
+<td>Resource not found</td>
+</tr>
+<tr>
+<td>422</td>
+<td>Unprocessable Entity</td>
+<td>Validation error</td>
+</tr>
+<tr>
+<td>429</td>
+<td>Too Many Requests</td>
+<td>Rate limit exceeded</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Internal Server Error</td>
+<td>Server error</td>
+</tr>
+<tr>
+<td>503</td>
+<td>Service Unavailable</td>
+<td>Service temporarily unavailable</td>
+</tr>
+</tbody>
+</table>
+<h3 id="error-codes">Error Codes</h3>
+<p>Error responses include a stable machine-readable <code>code</code> plus a human-readable <code>detail</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AUTH_INVALID_API_KEY</code></td>
+<td>API key is invalid</td>
+<td>Check your API key</td>
+</tr>
+<tr>
+<td><code>AUTH_API_KEY_REVOKED</code></td>
+<td>API key was revoked</td>
+<td>Create a new key via account endpoints</td>
+</tr>
+<tr>
+<td><code>AUTH_ACCOUNT_DISABLED</code></td>
+<td>Account is disabled</td>
+<td>Contact support/admin</td>
+</tr>
+<tr>
+<td><code>AUTH_FREE_TIER_IP_RESTRICTED</code></td>
+<td>Free-tier key used from a different IP</td>
+<td>Use the original IP or upgrade tier</td>
+</tr>
+<tr>
+<td><code>RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED</code></td>
+<td>Monthly quota exceeded</td>
+<td>Wait for reset or upgrade tier</td>
+</tr>
+<tr>
+<td><code>PRICES_INDEX_UNAVAILABLE</code></td>
+<td>Indexed prices data unavailable</td>
+<td>Retry shortly</td>
+</tr>
+<tr>
+<td><code>BIDS_INDEX_UNAVAILABLE</code></td>
+<td>Indexed bids data unavailable</td>
+<td>Retry shortly</td>
+</tr>
+<tr>
+<td><code>VALIDATION_ERROR</code></td>
+<td>Request validation failed</td>
+<td>Check request parameters</td>
+</tr>
+</tbody>
+</table>
+<h2 id="endpoints">Endpoints</h2>
+<p><strong>Provider Parameter Naming Convention:</strong></p>
+<ul>
+<li><code>providers</code> / <code>providers_buy</code> / <code>providers_sell</code> (plural): repeatable query params with provider-key enum values (for example <code>&amp;providers=steam&amp;providers=skinport</code>).</li>
+<li><code>provider</code> (singular): one provider key as a single string (for example <code>&amp;provider=steam</code>).</li>
+</ul>
+<hr />
+<h3 id="items">Items</h3>
+<h4 id="get-v1items">GET /v1/items</h4>
+<p>Available to: <code>free</code>/<code>pro</code>/<code>quant</code></p>
+<p>Search and retrieve items from the catalog.</p>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>q</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Search by market hash name substring (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>item_id</code></td>
+<td>integer</td>
+<td>No</td>
+<td>-</td>
+<td>Exact item ID match</td>
+</tr>
+<tr>
+<td><code>market_hash_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact market hash name match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>item_type</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact item type match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>item_subtype</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact item subtype match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>weapon_type</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact weapon type match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>base_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact base name match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>skin_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact skin name match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>wear_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact wear name match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>phase</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact phase match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>collection</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact collection match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>crates</code></td>
+<td>array[string]</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by crate names (matches any value)</td>
+</tr>
+<tr>
+<td><code>rarity_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact rarity name match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>rarity_color</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact rarity color match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>style_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact style name match (case-insensitive)</td>
+</tr>
+<tr>
+<td><code>is_stattrak</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by StatTrak items</td>
+</tr>
+<tr>
+<td><code>is_souvenir</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by Souvenir items</td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>integer</td>
+<td>No</td>
+<td>100/1000</td>
+<td>Results per page (tier-capped: <code>free</code> = 100, <code>pro</code>/<code>quant</code> = 1000</td>
+</tr>
+<tr>
+<td><code>offset</code></td>
+<td>integer</td>
+<td>No</td>
+<td>0</td>
+<td>Pagination offset</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/items?item_type=Agent&amp;collection=Operation%20Riptide%20Agents&amp;limit=10&quot;
+</code></pre>
+<p><strong>Example Response:</strong></p>
+<pre><code class="language-json">{
+    &quot;items&quot;: [
+        {
+            &quot;item_id&quot;: 1,
+            &quot;market_hash_name&quot;: &quot;Bloody Darryl The Strapped | The Professionals&quot;,
+            &quot;phase&quot;: null,
+            &quot;item_type&quot;: &quot;Agent&quot;,
+            &quot;item_subtype&quot;: &quot;Terrorist&quot;,
+            &quot;weapon_type&quot;: null,
+            &quot;base_name&quot;: &quot;Bloody Darryl The Strapped&quot;,
+            &quot;skin_name&quot;: &quot;The Professionals&quot;,
+            &quot;wear_name&quot;: null,
+            &quot;def_index&quot;: &quot;4613&quot;,
+            &quot;paint_index&quot;: null,
+            &quot;collection&quot;: &quot;Operation Riptide Agents&quot;,
+            &quot;crates&quot;: [
+                &quot;&quot;
+            ],
+            &quot;rarity_name&quot;: &quot;Superior&quot;,
+            &quot;rarity_color&quot;: &quot;d32ce6&quot;,
+            &quot;style_name&quot;: null,
+            &quot;is_stattrak&quot;: false,
+            &quot;is_souvenir&quot;: false,
+            &quot;min_float&quot;: null,
+            &quot;max_float&quot;: null,
+            &quot;image_url&quot;: &quot;https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3WWlKAhtLhqHXDilxgm4z7dztesJH2SbgApCMchFrQNsRSxw4XhYeK0swbYlcsbmucxTysR&quot;,
+            &quot;supply&quot;: null
+        }
+  ...
+    ],
+    &quot;pagination&quot;: {
+        &quot;limit&quot;: 1000,
+        &quot;offset&quot;: 0,
+        &quot;total&quot;: 37340,
+        &quot;has_next&quot;: true,
+        &quot;has_prev&quot;: false,
+        &quot;next_cursor&quot;: null
+    }
+}
+</code></pre>
+<hr />
+<h4 id="get-v1itemsmarket-ids">GET /v1/items/market-ids</h4>
+<p>Available to: <code>free</code>/<code>pro</code>/<code>quant</code></p>
+<p>Return a mapping of every <code>market_hash_name</code> to its provider-specific IDs (e.g. <code>buff163_goods_id</code>, <code>csfloat_id</code>, <code>steam_nameid</code>). Useful for translating catalog items to marketplace-native identifiers without doing the lookup yourself.</p>
+<p>No query parameters.</p>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/items/market-ids&quot;
+</code></pre>
+<p><strong>Example Response:</strong></p>
+<pre><code class="language-json">{
+    &quot;items&quot;: {
+        &quot;Bloody Darryl The Strapped | The Professionals&quot;: {
+            &quot;c5game_id&quot;: 914665027831566336,
+            &quot;youpin_id&quot;: 101006,
+            &quot;buff163_goods_id&quot;: 871457,
+            &quot;haloskins_id&quot;: 914665027831566336,
+            &quot;steam_nameid&quot;: 176262928,
+            &quot;csfloat_id&quot;: 4613,
+            &quot;marketcsgo_id&quot;: 45234,
+            &quot;bitskins_id&quot;: 4138,
+            &quot;buffmarket_goods_id&quot;: 20030,
+            &quot;ecosteam_classid&quot;: 4738189084,
+            &quot;pirateswap_mhnc&quot;: -1747201319,
+            &quot;csmoney_nameid&quot;: 1087079,
+            &quot;shadowpay_item_id&quot;: 40283
+        }
+        ...
+    }
+}
+</code></pre>
+<hr />
+<h3 id="providers">Providers</h3>
+<h4 id="get-v1providers">GET /v1/providers</h4>
+<p>Available to: <code>free</code>/<code>pro</code>/<code>quant</code></p>
+<p>List all providers with health status, fees, and market coverage.</p>
+<p><code>health.total_value</code> is the estimated aggregate listing value in each provider's native currency
+(<code>default_currency</code>), while <code>health.total_value_usd</code> is the same value normalized to USD using current FX rates.</p>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>provider</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Filter to a single provider key (e.g., <code>skinport</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/providers&quot;
+</code></pre>
+<p><strong>Example Response:</strong></p>
+<pre><code class="language-json">{
+    &quot;Youpin898&quot;: {
+        &quot;key&quot;: &quot;youpin&quot;,
+        &quot;code&quot;: &quot;YOUP&quot;,
+        &quot;market_type&quot;: &quot;P2P&quot;,
+        &quot;default_currency&quot;: &quot;CNY&quot;,
+        &quot;fees&quot;: {
+            &quot;sell_fee&quot;: 0.01,
+            &quot;insta_sell_fee&quot;: null,
+            &quot;trading_spread_fee&quot;: null
+        },
+        &quot;features&quot;: {
+            &quot;has_buy_orders&quot;: false,
+            &quot;has_recent_sales&quot;: true
+        },
+        &quot;health&quot;: {
+            &quot;status&quot;: &quot;up&quot;,
+            &quot;last_checked_at&quot;: &quot;2026-03-08T21:16:03.377733+00:00&quot;,
+            &quot;total_offers&quot;: 3081980,
+            &quot;unique_items&quot;: 25863,
+            &quot;market_coverage&quot;: 69.26,
+            &quot;total_value&quot;: 132256661633,
+            &quot;total_value_usd&quot;: 19116472009
+        }
+    }
+}
+</code></pre>
+<p><strong>Error Codes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>404</td>
+<td>Provider key not found (when <code>provider</code> filter is specified)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="prices">Prices</h3>
+<h4 id="get-v1prices">GET /v1/prices</h4>
+<p>Available to: <code>free</code>/<code>pro</code>/<code>quant</code></p>
+<p>Retrieve current lowest-ask listings across providers.</p>
+<p><code>lowest_ask</code> is returned as minor units of the response currency (for example USD cents when <code>currency=USD</code>).</p>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>item_id</code></td>
+<td>integer</td>
+<td>No</td>
+<td>-</td>
+<td>Exact item ID lookup (fast path)</td>
+</tr>
+<tr>
+<td><code>market_hash_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Exact item name lookup</td>
+</tr>
+<tr>
+<td><code>phase</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Doppler phase filter (empty strings treated as unset)</td>
+</tr>
+<tr>
+<td><code>providers</code></td>
+<td>array[enum[string]]</td>
+<td>No</td>
+<td>-</td>
+<td>Provider-key enum values to include (repeat <code>providers</code> for multiple providers)</td>
+</tr>
+<tr>
+<td><code>currency</code></td>
+<td>string</td>
+<td>No</td>
+<td>USD</td>
+<td>Any ISO 4217 code supported by <code>/v1/fx</code> (see <code>/v1/fx</code> for the full list of available currencies). Invalid codes return <code>422</code></td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>integer</td>
+<td>No</td>
+<td>100/1000</td>
+<td>Results per page (tier-capped: <code>free</code> = 100, <code>pro</code>/<code>quant</code> = 1000</td>
+</tr>
+<tr>
+<td><code>offset</code></td>
+<td>integer</td>
+<td>No</td>
+<td>0</td>
+<td>Pagination offset</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Link Fields (<code>/v1/prices</code> response):</strong></p>
+<ul>
+<li><code>link</code>: Branded redirect URL through this API domain (<code>/r/{provider}/{item_id}</code>), intended for tracked marketplace navigation and affiliate/referral attribution.</li>
+<li><code>url</code>: Raw direct marketplace listing URL (no API redirect). Returned only for paid tiers (<code>pro</code>, <code>quant</code>).</li>
+</ul>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/prices?providers=avanmarket&amp;currency=USD&amp;limit=1&quot;
+</code></pre>
+<p><strong>Example Response:</strong></p>
+<pre><code class="language-json">{
+    &quot;meta&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;filters&quot;: {
+            &quot;market_hash_name&quot;: null,
+            &quot;phase&quot;: null,
+            &quot;requested_providers&quot;: null
+        },
+        &quot;returned_providers&quot;: [
+            &quot;avanmarket&quot;,
+            &quot;bitskins&quot;,
+            &quot;buff163&quot;,
+            &quot;buffmarket&quot;,
+            &quot;c5&quot;,
+            &quot;csdeals&quot;,
+            &quot;csfloat&quot;,
+            &quot;csgo500&quot;,
+            &quot;csgoempire&quot;,
+            &quot;csmoney_m&quot;,
+            &quot;csmoney_t&quot;,
+            &quot;cstrade&quot;,
+            &quot;dmarket&quot;,
+            &quot;ecosteam&quot;,
+            &quot;gamerpay&quot;,
+            &quot;haloskins&quot;,
+            &quot;itradegg&quot;,
+            &quot;lisskins&quot;,
+            &quot;lootfarm&quot;,
+            &quot;mannco&quot;,
+            &quot;marketcsgo&quot;,
+            &quot;pirateswap&quot;,
+            &quot;rapidskins&quot;,
+            &quot;shadowpay&quot;,
+            &quot;skinbaron&quot;,
+            &quot;skinflow&quot;,
+            &quot;skinout&quot;,
+            &quot;skinplace&quot;,
+            &quot;skinport&quot;,
+            &quot;skinscom&quot;,
+            &quot;skinsmonkey&quot;,
+            &quot;skinswap&quot;,
+            &quot;skinvault&quot;,
+            &quot;steam&quot;,
+            &quot;swapgg&quot;,
+            &quot;tradeit&quot;,
+            &quot;waxpeer&quot;,
+            &quot;whitemarket&quot;,
+            &quot;youpin&quot;
+        ]
+    },
+    &quot;items&quot;: [
+        {
+            &quot;provider&quot;: &quot;avanmarket&quot;,
+            &quot;item_id&quot;: 2,
+            &quot;market_hash_name&quot;: &quot;'Blueberries' Buckshot | NSWC SEAL&quot;,
+            &quot;phase&quot;: null,
+            &quot;lowest_ask&quot;: 2327,
+            &quot;quantity&quot;: 6,
+            &quot;link&quot;: &quot;https://cs2c.app/r/avanmarket/2&quot;,
+            &quot;url&quot;: &quot;https://avan.market/en/market/cs/blueberries-buckshot-nswc-seal&quot;,
+            &quot;timestamp&quot;: &quot;2026-03-07T23:26:20.956949Z&quot;,
+            &quot;last_updated&quot;: &quot;2026-03-08T21:41:03.792573Z&quot;
+        }
+        ...
+    ],
+    &quot;pagination&quot;: {
+        &quot;limit&quot;: 1000,
+        &quot;offset&quot;: 0,
+        &quot;total&quot;: 592203,
+        &quot;has_next&quot;: true,
+        &quot;has_prev&quot;: false
+    }
+}
+</code></pre>
+<hr />
+<h4 id="get-v1priceshistory">GET /v1/prices/history</h4>
+<p>Available to: <code>pro</code>/<code>quant</code></p>
+<p>Historical price snapshots from <code>price_history</code> (cursor-based pagination).</p>
+<p><code>price</code> is returned as minor units of the response currency (for example USD cents when <code>currency=USD</code>).</p>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>item_id</code></td>
+<td>integer</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by item ID</td>
+</tr>
+<tr>
+<td><code>market_hash_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by item name</td>
+</tr>
+<tr>
+<td><code>phase</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by phase (empty strings treated as unset)</td>
+</tr>
+<tr>
+<td><code>provider</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Single provider key string (<code>provider=...</code>, one provider only)</td>
+</tr>
+<tr>
+<td><code>start</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>ISO 8601 start timestamp</td>
+</tr>
+<tr>
+<td><code>end</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>ISO 8601 end timestamp</td>
+</tr>
+<tr>
+<td><code>currency</code></td>
+<td>string</td>
+<td>No</td>
+<td>USD</td>
+<td>Any ISO 4217 code supported by <code>/v1/fx</code> (see <code>/v1/fx</code> for the full list of available currencies). Invalid codes return <code>422</code></td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>integer</td>
+<td>No</td>
+<td>100/1000</td>
+<td>Results per page (tier-capped: <code>free</code> = 100, <code>pro</code>/<code>quant</code> = 1000</td>
+</tr>
+<tr>
+<td><code>cursor</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Opaque cursor from <code>next_cursor</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Notes:</strong></p>
+<ul>
+<li><code>pagination.total</code> is intentionally <code>-1</code> to avoid expensive COUNT queries.</li>
+<li>Cursor pagination state is returned in <code>pagination.has_next</code> and <code>pagination.next_cursor</code>.</li>
+</ul>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/prices/history?market_hash_name=AK-47+%7C+Redline+%28Field-Tested%29&amp;provider=steam&amp;limit=50&quot;
+</code></pre>
+<p><strong>Example Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;meta&quot;: {
+    &quot;currency&quot;: &quot;USD&quot;,
+    &quot;filters&quot;: {
+      &quot;item_id&quot;: 156,
+      &quot;market_hash_name&quot;: &quot;AK-47 | Redline (Field-Tested)&quot;,
+      &quot;phase&quot;: null,
+      &quot;provider&quot;: &quot;steam&quot;,
+      &quot;start&quot;: &quot;2025-12-29T00:00:00Z&quot;,
+      &quot;end&quot;: &quot;2025-12-30T00:00:00Z&quot;
+    },
+    &quot;result_count&quot;: 1
+  },
+  &quot;items&quot;: [
+    {
+      &quot;time&quot;: &quot;2025-12-29T10:00:00Z&quot;,
+      &quot;item_id&quot;: 156,
+      &quot;market_hash_name&quot;: &quot;AK-47 | Redline (Field-Tested)&quot;,
+      &quot;phase&quot;: null,
+      &quot;provider&quot;: &quot;Steam Community Market&quot;,
+      &quot;price&quot;: 2550,
+      &quot;currency&quot;: &quot;USD&quot;,
+      &quot;quantity&quot;: 142
+    }
+  ],
+  &quot;pagination&quot;: {
+    &quot;limit&quot;: 50,
+    &quot;offset&quot;: 0,
+    &quot;total&quot;: -1,
+    &quot;has_next&quot;: false,
+    &quot;has_prev&quot;: false,
+    &quot;next_cursor&quot;: null
+  }
+}
+</code></pre>
+<hr />
+<h4 id="get-v1pricescandles">GET /v1/prices/candles</h4>
+<p>Available to: <code>free</code>/<code>pro</code>/<code>quant</code></p>
+<p>OHLC candles for a single item/provider.</p>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>item_id</code></td>
+<td>integer</td>
+<td>Conditionally</td>
+<td>-</td>
+<td>Item ID (required if <code>market_hash_name</code> not provided)</td>
+</tr>
+<tr>
+<td><code>market_hash_name</code></td>
+<td>string</td>
+<td>Conditionally</td>
+<td>-</td>
+<td>Item name (required if <code>item_id</code> not provided)</td>
+</tr>
+<tr>
+<td><code>phase</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Optional phase filter</td>
+</tr>
+<tr>
+<td><code>provider</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>-</td>
+<td>Single provider key string (<code>provider=...</code>, exactly one provider)</td>
+</tr>
+<tr>
+<td><code>start</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>ISO 8601 start timestamp</td>
+</tr>
+<tr>
+<td><code>end</code></td>
+<td>string</td>
+<td>No</td>
+<td>now</td>
+<td>ISO 8601 end timestamp</td>
+</tr>
+<tr>
+<td><code>lookback</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Duration shorthand (<code>7d</code>, <code>30d</code>); overrides <code>start</code></td>
+</tr>
+<tr>
+<td><code>interval</code></td>
+<td>string</td>
+<td>No</td>
+<td><code>1h</code></td>
+<td>One of: <code>5m</code>, <code>1h</code>, <code>1d</code></td>
+</tr>
+<tr>
+<td><code>fill</code></td>
+<td>boolean</td>
+<td>No</td>
+<td><code>false</code></td>
+<td>Forward-fill empty buckets</td>
+</tr>
+<tr>
+<td><code>currency</code></td>
+<td>string</td>
+<td>No</td>
+<td>USD</td>
+<td>Any ISO 4217 code supported by <code>/v1/fx</code> (see <code>/v1/fx</code> for the full list of available currencies). Invalid codes return <code>422</code></td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>integer</td>
+<td>No</td>
+<td>100/1000</td>
+<td>Results per page (tier-capped: <code>free</code> = 100, <code>pro</code>/<code>quant</code> = 1000</td>
+</tr>
+<tr>
+<td><code>cursor</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Opaque cursor from <code>next_cursor</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/prices/candles?item_id=156&amp;provider=steam&amp;interval=1h&amp;lookback=7d&quot;
+</code></pre>
+<p><strong>Example Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;meta&quot;: {
+    &quot;item_id&quot;: 156,
+    &quot;market_hash_name&quot;: &quot;AWP | Dragon Lore (Factory New)&quot;,
+    &quot;phase&quot;: null,
+    &quot;provider&quot;: &quot;Steam Community Market&quot;,
+    &quot;currency&quot;: &quot;USD&quot;,
+    &quot;interval&quot;: &quot;1h&quot;,
+    &quot;start&quot;: &quot;2025-12-22T10:30:00+00:00&quot;,
+    &quot;end&quot;: &quot;2025-12-29T10:30:00+00:00&quot;
+  },
+  &quot;data&quot;: [
+    {
+      &quot;t&quot;: 1766998800,
+      &quot;o&quot;: 2245050,
+      &quot;h&quot;: 2250000,
+      &quot;l&quot;: 2240000,
+      &quot;c&quot;: 2248000
+    }
+  ],
+  &quot;pagination&quot;: {
+    &quot;limit&quot;: 500,
+    &quot;offset&quot;: 0,
+    &quot;total&quot;: -1,
+    &quot;has_next&quot;: false,
+    &quot;has_prev&quot;: false,
+    &quot;next_cursor&quot;: null
+  }
+}
+</code></pre>
+<hr />
+<h4 id="get-v1fx">GET /v1/fx</h4>
+<p>Available to: <code>free</code>/<code>pro</code>/<code>quant</code></p>
+<p>Current foreign exchange rates (167 currencies total).</p>
+<p>Base currency: <code>USD</code></p>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/fx&quot;
+</code></pre>
+<p><strong>Example Response:</strong></p>
+<pre><code class="language-json">{
+ &quot;timestamp&quot;: &quot;2026-03-08T20:24:54.886213+00:00&quot;,
+ &quot;rates&quot;: {
+  &quot;USD&quot;: 1.0,
+  &quot;EUR&quot;: 0.92,
+  &quot;GBP&quot;: 0.79,
+  &quot;CNY&quot;: 7.25,
+  &quot;RUB&quot;: 92.5,
+  &quot;BRL&quot;: 5.15,
+  ...
+ }
+}
+</code></pre>
+<hr />
+<h3 id="buy-orders">Buy Orders</h3>
+<h4 id="get-v1bids">GET /v1/bids</h4>
+<p>Available to: <code>pro</code>/<code>quant</code></p>
+<p>List buy orders/bids with filtering by item, provider, and phase.</p>
+<p><code>highest_bid</code> is returned as minor units of the response currency (for example USD cents when <code>currency=USD</code>).</p>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>item_id</code></td>
+<td>integer</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by item ID</td>
+</tr>
+<tr>
+<td><code>market_hash_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by item name</td>
+</tr>
+<tr>
+<td><code>phase</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by Doppler phase (applies globally, not just with market_hash_name); empty strings treated as unset</td>
+</tr>
+<tr>
+<td><code>providers</code></td>
+<td>array[enum[string]]</td>
+<td>No</td>
+<td>-</td>
+<td>Provider-key enum values (repeat <code>providers</code> for multiple providers)</td>
+</tr>
+<tr>
+<td><code>currency</code></td>
+<td>string</td>
+<td>No</td>
+<td>USD</td>
+<td>Any ISO 4217 code supported by <code>/v1/fx</code> (see <code>/v1/fx</code> for the full list of available currencies). Invalid codes return <code>422</code></td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>integer</td>
+<td>No</td>
+<td>100/1000</td>
+<td>Results per page (tier-capped: <code>free</code> = 100, <code>pro</code>/<code>quant</code> = 1000</td>
+</tr>
+<tr>
+<td><code>offset</code></td>
+<td>integer</td>
+<td>No</td>
+<td>0</td>
+<td>Pagination offset</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Providers with Buy Orders:</strong></p>
+<ul>
+<li><code>buff163</code>, <code>buffmarket</code>, <code>csfloat</code>, <code>dmarket</code>, <code>ecosteam</code>,</li>
+<li><code>marketcsgo</code>, <code>steam</code>, <code>waxpeer</code>, <code>whitemarket</code></li>
+</ul>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/bids?market_hash_name=★+Karambit+|+Gamma+Doppler+(Factory+New)&amp;phase=Phase+2&quot;
+</code></pre>
+<p><strong>Example Response:</strong></p>
+<pre><code class="language-json">{
+    &quot;meta&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;filters&quot;: {
+            &quot;item_id&quot;: null,
+            &quot;market_hash_name&quot;: null,
+            &quot;phase&quot;: null,
+            &quot;requested_providers&quot;: null
+        },
+        &quot;providers_queried&quot;: [
+            &quot;buff163&quot;,
+            &quot;buffmarket&quot;,
+            &quot;csfloat&quot;,
+            &quot;dmarket&quot;,
+            &quot;ecosteam&quot;,
+            &quot;marketcsgo&quot;,
+            &quot;steam&quot;,
+            &quot;waxpeer&quot;,
+            &quot;whitemarket&quot;
+        ]
+    },
+    &quot;items&quot;: [
+        {
+            &quot;item_id&quot;: 60,
+            &quot;market_hash_name&quot;: &quot;'The Doctor' Romanov | Sabre&quot;,
+            &quot;phase&quot;: null,
+            &quot;provider&quot;: &quot;buff163&quot;,
+            &quot;highest_bid&quot;: 1663,
+            &quot;num_bids&quot;: 224,
+            &quot;timestamp&quot;: &quot;2026-03-08T21:07:34.278922Z&quot;,
+            &quot;last_updated&quot;: &quot;2026-03-08T21:07:49.422001Z&quot;
+        },
+        {
+            &quot;item_id&quot;: 60,
+            &quot;market_hash_name&quot;: &quot;'The Doctor' Romanov | Sabre&quot;,
+            &quot;phase&quot;: null,
+            &quot;provider&quot;: &quot;csfloat&quot;,
+            &quot;highest_bid&quot;: 1620,
+            &quot;num_bids&quot;: 1,
+            &quot;timestamp&quot;: &quot;2026-03-08T21:24:52.084750Z&quot;,
+            &quot;last_updated&quot;: &quot;2026-03-08T21:26:14.308082Z&quot;
+        }
+        ...
+    ],
+    &quot;pagination&quot;: {
+        &quot;limit&quot;: 1000,
+        &quot;offset&quot;: 0,
+        &quot;total&quot;: 132020,
+        &quot;has_next&quot;: true,
+        &quot;has_prev&quot;: false,
+        &quot;next_cursor&quot;: null
+    }
+}
+</code></pre>
+<hr />
+<h3 id="recent-sales">Recent Sales</h3>
+<h4 id="get-v1sales">GET /v1/sales</h4>
+<p>Available to: <code>pro</code>/<code>quant</code></p>
+<p>Retrieve sales transaction history with on-demand provider fetching.</p>
+<p><code>price</code> is returned as minor units of the response currency (for example USD cents when <code>currency=USD</code>). Divide by 100 for display.</p>
+<p><strong>This is a live-query endpoint (not pre-ingested): cache misses trigger synchronous provider API calls, so response times vary by provider/network conditions.</strong></p>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>item_id</code></td>
+<td>integer</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by item ID</td>
+</tr>
+<tr>
+<td><code>market_hash_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by item name (<code>item_id</code> or <code>market_hash_name</code> required)</td>
+</tr>
+<tr>
+<td><code>phase</code></td>
+<td>string</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by Doppler phase; empty strings treated as unset</td>
+</tr>
+<tr>
+<td><code>providers</code></td>
+<td>array[enum[string]]</td>
+<td>No</td>
+<td>-</td>
+<td>Provider-key enum values to query (repeat <code>providers</code> for multiple providers)</td>
+</tr>
+<tr>
+<td><code>currency</code></td>
+<td>string</td>
+<td>No</td>
+<td>USD</td>
+<td>Any ISO 4217 code supported by <code>/v1/fx</code> (see <code>/v1/fx</code> for the full list of available currencies). Invalid codes return <code>422</code></td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>integer</td>
+<td>No</td>
+<td>25</td>
+<td>Results per page (tier-capped, endpoint max 50)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cache Behavior (<code>cache_status</code>):</strong></p>
+<ul>
+<li><code>cache_status</code> is a map keyed by provider key: <code>{ [provider_key]: status }</code>.</li>
+<li>Status values:</li>
+<li><code>hit</code>: served from Redis sales cache</li>
+<li><code>miss</code>: cache miss, fetched live during this request</li>
+<li><code>error</code>: live fetch attempted but failed</li>
+<li><code>unavailable</code>: provider was requested but is not available in the active runtime registry</li>
+<li>Sales cache TTL for a hit is currently <strong>1 hour</strong> per <code>item_id + provider</code>.</li>
+</ul>
+<p><strong>Providers with Recent Sales:</strong></p>
+<ul>
+<li><code>bitskins</code>, <code>buff163</code>, <code>buffmarket</code>, <code>c5</code>, <code>csfloat</code>, <code>csgo500</code></li>
+<li><code>csgoempire</code>, <code>dmarket</code>, <code>skinbaron</code>, <code>youpin</code></li>
+</ul>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/sales?market_hash_name=AK-47+%7C+Redline+%28Field-Tested%29&amp;providers=csfloat&amp;providers=buff163&quot;
+</code></pre>
+<p><strong>Example Response:</strong></p>
+<pre><code class="language-json">{
+    &quot;meta&quot;: {
+        &quot;currency&quot;: &quot;USD&quot;,
+        &quot;filters&quot;: {
+            &quot;item_id&quot;: 12635,
+            &quot;market_hash_name&quot;: &quot;StatTrak™ AK-47 | Redline (Well-Worn)&quot;,
+            &quot;phase&quot;: null,
+            &quot;requested_providers&quot;: null,
+            &quot;limit&quot;: 50
+        },
+        &quot;providers_queried&quot;: [
+            &quot;c5&quot;,
+            &quot;skinbaron&quot;,
+            &quot;bitskins&quot;,
+            &quot;buffmarket&quot;,
+            &quot;dmarket&quot;,
+            &quot;buff163&quot;,
+            &quot;csgo500&quot;,
+            &quot;csfloat&quot;,
+            &quot;csgoempire&quot;,
+            &quot;youpin&quot;
+        ],
+        &quot;result_count&quot;: 50
+    },
+    &quot;items&quot;: [
+        {
+            &quot;date&quot;: &quot;2026-02-20T16:00:00+00:00&quot;,
+            &quot;provider&quot;: &quot;buff163&quot;,
+            &quot;price&quot;: 7054,
+            &quot;currency&quot;: &quot;USD&quot;,
+            &quot;item_id&quot;: 12635,
+            &quot;market_hash_name&quot;: &quot;StatTrak™ AK-47 | Redline (Well-Worn)&quot;,
+            &quot;phase&quot;: null,
+            &quot;float&quot;: 0.3843424618244171,
+            &quot;paint_seed&quot;: 896,
+            &quot;stickers&quot;: [
+                {
+                    &quot;name&quot;: &quot;Sticker | Cloud9 (Foil) | Krakow 2017&quot;,
+                    &quot;slot&quot;: 0,
+                    &quot;wear&quot;: null
+                },
+                {
+                    &quot;name&quot;: &quot;Sticker | Virtus.Pro (Holo) | Krakow 2017&quot;,
+                    &quot;slot&quot;: 1,
+                    &quot;wear&quot;: null
+                },
+                {
+                    &quot;name&quot;: &quot;Sticker | ELEAGUE (Holo) | Atlanta 2017&quot;,
+                    &quot;slot&quot;: 3,
+                    &quot;wear&quot;: null
+                },
+                {
+                    &quot;name&quot;: &quot;Sticker | NiKo (Glitter) | Shanghai 2024&quot;,
+                    &quot;slot&quot;: 2,
+                    &quot;wear&quot;: null
+                },
+                {
+                    &quot;name&quot;: &quot;Sticker | MAJ3R | Austin 2025&quot;,
+                    &quot;slot&quot;: 2,
+                    &quot;wear&quot;: 0.6200000047683716
+                }
+            ],
+            &quot;charms&quot;: [
+                {
+                    &quot;name&quot;: &quot;Charm | Lil' Crass&quot;,
+                    &quot;pattern_id&quot;: 42531
+                }
+            ],
+            &quot;inspect&quot;: {
+                &quot;in_game&quot;: &quot;steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20001807209A02280538899193F6034080079AD9F0F9&quot;,
+                &quot;screenshot_front&quot;: &quot;https://spect.fp.ps.netease.com/file/6999dec15bf7f4fc0db4f14a8Mb3yhGR07&quot;,
+                &quot;screenshot_back&quot;: &quot;https://spect.fp.ps.netease.com/file/6999dec15bf7f4fc0db4f14a8Mb3yhGR07&quot;
+            }
+        }
+        ...
+    ],
+    &quot;cache_status&quot;: {
+        &quot;c5&quot;: &quot;hit&quot;,
+        &quot;skinbaron&quot;: &quot;hit&quot;,
+        &quot;bitskins&quot;: &quot;miss&quot;,
+        &quot;buffmarket&quot;: &quot;miss&quot;,
+        &quot;dmarket&quot;: &quot;miss&quot;,
+        &quot;buff163&quot;: &quot;hit&quot;,
+        &quot;csgo500&quot;: &quot;miss&quot;,
+        &quot;csfloat&quot;: &quot;hit&quot;,
+        &quot;csgoempire&quot;: &quot;hit&quot;,
+        &quot;youpin&quot;: &quot;hit&quot;
+    }
+}
+</code></pre>
+<p><strong>Error Codes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400</td>
+<td>Missing item filter (<code>item_id</code> or <code>market_hash_name</code>) or invalid provider selection</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Item could not be resolved</td>
+</tr>
+</tbody>
+</table>
+<p><strong>400 Example (Missing Required Item Filter):</strong></p>
+<pre><code class="language-json">{
+  &quot;code&quot;: &quot;BAD_REQUEST&quot;,
+  &quot;detail&quot;: &quot;Either item_id or market_hash_name must be provided&quot;
+}
+</code></pre>
+<hr />
+<h3 id="market-intelligence">Market Intelligence</h3>
+<p>Market intelligence endpoints provide quant-focused analytics with consistent <code>meta</code> + <code>data</code> envelopes.
+All endpoints are USD-only and require API key authentication.
+Access is tiered by endpoint: <code>pro</code> can access <code>/v1/market/items/{item_id}</code>, while <code>quant</code> can access all <code>/v1/market/*</code> endpoints.</p>
+<h4 id="get-v1marketmovers">GET /v1/market/movers</h4>
+<p>Available to: <code>quant</code></p>
+<p>Get top gainers and losers by price change (no pagination).</p>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timeframe</code></td>
+<td>string</td>
+<td>No</td>
+<td>24h</td>
+<td>Time window (1h, 24h, 7d, 30d)</td>
+</tr>
+<tr>
+<td><code>start_at</code></td>
+<td>datetime</td>
+<td>No</td>
+<td>—</td>
+<td>Explicit start time (UTC, inclusive)</td>
+</tr>
+<tr>
+<td><code>end_at</code></td>
+<td>datetime</td>
+<td>No</td>
+<td>—</td>
+<td>Explicit end time (UTC, exclusive)</td>
+</tr>
+<tr>
+<td><code>limit_per_side</code></td>
+<td>integer</td>
+<td>No</td>
+<td>tier cap</td>
+<td>Number of top/bottom items per side (capped at 50)</td>
+</tr>
+<tr>
+<td><code>min_volume</code></td>
+<td>integer</td>
+<td>No</td>
+<td>—</td>
+<td>Minimum depletion-activity volume threshold</td>
+</tr>
+<tr>
+<td><code>min_price_usd</code></td>
+<td>number</td>
+<td>No</td>
+<td>—</td>
+<td>Minimum USD price</td>
+</tr>
+<tr>
+<td><code>max_price_usd</code></td>
+<td>number</td>
+<td>No</td>
+<td>—</td>
+<td>Maximum USD price</td>
+</tr>
+<tr>
+<td><code>providers</code></td>
+<td>array[enum[string]]</td>
+<td>No</td>
+<td>—</td>
+<td>Provider-key enum values (repeat <code>providers</code> for multiple providers)</td>
+</tr>
+<tr>
+<td><code>sort_by</code></td>
+<td>string</td>
+<td>No</td>
+<td>price_change_abs</td>
+<td>price_change_abs, price_change_pct, volume, current_price</td>
+</tr>
+<tr>
+<td><code>order</code></td>
+<td>string</td>
+<td>No</td>
+<td>desc</td>
+<td>Sort order (asc, desc)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Time window behavior:</strong> if <code>start_at</code> and <code>end_at</code> are both provided, <code>timeframe</code> is ignored regardless of its value. If only <code>start_at</code> OR <code>end_at</code> is provided, <code>400 Bad Request</code></p>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/market/movers?timeframe=24h&amp;limit_per_side=25&quot;
+</code></pre>
+<hr />
+<h4 id="get-v1marketrankingsmetric">GET /v1/market/rankings/{metric}</h4>
+<p>Available to: <code>quant</code></p>
+<p>Get item rankings for one metric with cursor pagination.</p>
+<p>Valid metric values: <code>volatility</code>, <code>volume</code>, <code>liquidity</code>.</p>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timeframe</code></td>
+<td>string</td>
+<td>No</td>
+<td>24h</td>
+<td>Time window (1h, 24h, 7d, 30d)</td>
+</tr>
+<tr>
+<td><code>start_at</code></td>
+<td>datetime</td>
+<td>No</td>
+<td>—</td>
+<td>Explicit start time (UTC, inclusive)</td>
+</tr>
+<tr>
+<td><code>end_at</code></td>
+<td>datetime</td>
+<td>No</td>
+<td>—</td>
+<td>Explicit end time (UTC, exclusive)</td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>integer</td>
+<td>No</td>
+<td>50</td>
+<td>Number of items to return (capped at 100)</td>
+</tr>
+<tr>
+<td><code>cursor</code></td>
+<td>string</td>
+<td>No</td>
+<td>—</td>
+<td>Opaque cursor from previous page</td>
+</tr>
+<tr>
+<td><code>order</code></td>
+<td>string</td>
+<td>No</td>
+<td>desc</td>
+<td>Sort order (asc, desc)</td>
+</tr>
+<tr>
+<td><code>providers</code></td>
+<td>array[enum[string]]</td>
+<td>No</td>
+<td>—</td>
+<td>Provider-key enum values (repeat <code>providers</code> for multiple providers)</td>
+</tr>
+<tr>
+<td><code>min_volatility_pct</code></td>
+<td>number</td>
+<td>No</td>
+<td>—</td>
+<td>Valid only for <code>metric=volatility</code></td>
+</tr>
+<tr>
+<td><code>min_volume_usd</code></td>
+<td>number</td>
+<td>No</td>
+<td>—</td>
+<td>Valid only for <code>metric=volume</code></td>
+</tr>
+<tr>
+<td><code>min_liquidity_score</code></td>
+<td>number</td>
+<td>No</td>
+<td>—</td>
+<td>Valid only for <code>metric=liquidity</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Time window behavior:</strong> if <code>start_at</code> and <code>end_at</code> are both provided, <code>timeframe</code> is ignored regardless of its value. If only <code>start_at</code> OR <code>end_at</code> is provided, <code>400 Bad Request</code></p>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/market/rankings/volatility?limit=50&quot;
+</code></pre>
+<hr />
+<h4 id="get-v1marketarbitrage">GET /v1/market/arbitrage</h4>
+<p>Available to: <code>quant</code></p>
+<p>Find arbitrage opportunities across providers.</p>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>min_spread_pct</code></td>
+<td>number</td>
+<td>No</td>
+<td>1.0</td>
+<td>Minimum spread percentage to filter by</td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>integer</td>
+<td>No</td>
+<td>50</td>
+<td>Number of opportunities to return (capped at 100)</td>
+</tr>
+<tr>
+<td><code>cursor</code></td>
+<td>string</td>
+<td>No</td>
+<td>—</td>
+<td>Opaque cursor from previous page</td>
+</tr>
+<tr>
+<td><code>providers_buy</code></td>
+<td>array[enum[string]]</td>
+<td>No</td>
+<td>—</td>
+<td>Buy-side provider-key enum values (repeat <code>providers_buy</code> for multiple providers)</td>
+</tr>
+<tr>
+<td><code>providers_sell</code></td>
+<td>array[enum[string]]</td>
+<td>No</td>
+<td>—</td>
+<td>Sell-side provider-key enum values (repeat <code>providers_sell</code> for multiple providers)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/market/arbitrage?min_spread_pct=5.0&amp;limit=20&quot;
+</code></pre>
+<hr />
+<h4 id="get-v1marketitemsitem_id">GET /v1/market/items/{item_id}</h4>
+<p>Available to: <code>pro</code>/<code>quant</code></p>
+<p>Get detailed analytics for a specific item.</p>
+<p><strong>Path Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>item_id</code></td>
+<td>integer</td>
+<td>Yes</td>
+<td>Item ID to analyze</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timeframe</code></td>
+<td>string</td>
+<td>No</td>
+<td>24h</td>
+<td>Time window (1h, 24h, 7d, 30d)</td>
+</tr>
+<tr>
+<td><code>start_at</code></td>
+<td>datetime</td>
+<td>No</td>
+<td>—</td>
+<td>Explicit start time (UTC, inclusive)</td>
+</tr>
+<tr>
+<td><code>end_at</code></td>
+<td>datetime</td>
+<td>No</td>
+<td>—</td>
+<td>Explicit end time (UTC, exclusive)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Time window behavior:</strong> if <code>start_at</code> and <code>end_at</code> are both provided, <code>timeframe</code> is ignored regardless of its value. If only <code>start_at</code> OR <code>end_at</code> is provided, <code>400 Bad Request</code></p>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">curl -H &quot;Authorization: Bearer your_key&quot; \
+  &quot;https://api.cs2c.app/v1/market/items/156?timeframe=24h&quot;
+</code></pre>
+<hr />
+<h4 id="get-v1marketindicators">GET /v1/market/indicators</h4>
+<p>Available to: <code>quant</code></p>
+<p>Compute technical indicators for one item (live mode) or fetch screener signals (cache mode).</p>
+<p><strong>Modes:</strong></p>
+<ul>
+<li><strong>Individual item mode:</strong> provide <code>item_id</code> (or <code>market_hash_name</code>) plus <code>provider</code>.</li>
+<li><strong>Bulk screener mode:</strong> omit item filters and read precomputed screener rows.</li>
+</ul>
+<p><strong>Query Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>item_id</code></td>
+<td>integer</td>
+<td>No</td>
+<td>—</td>
+<td>Item ID for individual mode</td>
+</tr>
+<tr>
+<td><code>market_hash_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>—</td>
+<td>Alternate item selector for individual mode</td>
+</tr>
+<tr>
+<td><code>phase</code></td>
+<td>string</td>
+<td>No</td>
+<td>—</td>
+<td>Optional phase filter in individual mode</td>
+</tr>
+<tr>
+<td><code>provider</code></td>
+<td>string</td>
+<td>Conditional</td>
+<td>—</td>
+<td>Single provider key string (<code>provider=...</code>); required for individual mode, optional single-provider filter for screener mode</td>
+</tr>
+<tr>
+<td><code>interval</code></td>
+<td>string</td>
+<td>No</td>
+<td>1d</td>
+<td>Candle interval (<code>1h</code>, <code>1d</code>)</td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>integer</td>
+<td>No</td>
+<td>50</td>
+<td>Screener page size (max 100)</td>
+</tr>
+<tr>
+<td><code>offset</code></td>
+<td>integer</td>
+<td>No</td>
+<td>0</td>
+<td>Screener page offset</td>
+</tr>
+<tr>
+<td><code>sort_by</code></td>
+<td>string</td>
+<td>No</td>
+<td>composite_score</td>
+<td>Screener sort (<code>composite_score</code>, <code>rsi_14</code>, <code>macd_histogram</code>, <code>atr_14</code>)</td>
+</tr>
+<tr>
+<td><code>order</code></td>
+<td>string</td>
+<td>No</td>
+<td>desc</td>
+<td>Sort order (<code>asc</code>, <code>desc</code>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="schemas">Schemas</h2>
+<h3 id="item-schema">Item Schema</h3>
+<pre><code class="language-typescript">{
+  item_id: number;          // Normalized dictionary ID
+  market_hash_name: string; // Full item name
+  phase: string | null;     // Doppler phase (if applicable)
+}
+</code></pre>
+<h3 id="marketitem-schema">MarketItem Schema</h3>
+<pre><code class="language-typescript">{
+  provider: string;                // Provider key
+  item_id: number;                 // Item ID
+  market_hash_name: string;        // Full item name
+  phase: string | null;            // Doppler phase
+  lowest_ask: integer;             // Best asking price (minor units of response currency; divide by 100 for display)
+  quantity: number;                // Available quantity
+  link: string | null;             // Branded redirect URL via /r/{provider}/{item_id}; may include tracking/referral attribution
+  url?: string | null;             // Raw marketplace listing URL (paid tiers only: pro, quant)
+  timestamp: datetime | null;      // Provider observed timestamp
+  last_updated: datetime | null;   // Last ingestion timestamp
+}
+</code></pre>
+<h3 id="salerecord-schema">SaleRecord Schema</h3>
+<pre><code class="language-typescript">{
+  date: string;                // ISO 8601 timestamp
+  price: integer;              // Sale price (minor units of response currency; divide by 100 for display)
+  currency: string;            // Currency code
+  market_hash_name: string;    // Item name
+  provider: string;            // Provider name
+  phase: string | null;        // Doppler phase
+  float: number | null;        // Float value (0-1)
+  paint_seed: number | null;   // Paint seed
+  stickers: Array&lt;{            // Sticker details
+    name: string;
+    slot: number;
+    wear: number | null;
+  }&gt; | null;
+  charms: Array&lt;{              // Charm/keychain details
+    name: string;
+    pattern_id: number | null;
+  }&gt; | null;
+  inspect: {                   // Inspect links
+    in_game: string | null;
+    screenshot_front: string | null;
+    screenshot_back: string | null;
+  } | null;
+}
+</code></pre>
+<h3 id="saleshistoryresponse-schema">SalesHistoryResponse Schema</h3>
+<pre><code class="language-typescript">{
+  meta: {
+    currency: string;
+    filters: {
+      item_id: number | null;
+      market_hash_name: string | null;
+      phase: string | null;
+      requested_providers: string[] | null;
+      limit: number;
+    };
+    providers_queried: string[];
+    result_count: number;
+  };
+  items: SaleRecord[];
+  cache_status: {
+    [provider_key: string]: &quot;hit&quot; | &quot;miss&quot; | &quot;error&quot; | &quot;unavailable&quot;;
+  }; // Per-provider cache outcome map (sales cache hit TTL: 1 hour)
+}
+</code></pre>
+<h3 id="liquidityscore-schema">LiquidityScore Schema</h3>
+<pre><code class="language-typescript">{
+  item_id: number;        // Item ID
+  provider: string;       // Provider name (or \&quot;global\&quot;)
+  liquidity_score: number; // 0-100 aggregate score
+  exec: number;           // 0-1 execution component
+  turnover: number;       // 0-1 turnover component
+  breadth: number;        // 0-1 breadth component
+  spread_pct: number | null; // Bid-ask spread percentage
+  dos: number | null;     // Days of supply (sales-based)
+  dos_proxy: number | null; // Proxy days of supply (no sales)
+  used_proxy: boolean;    // True if proxy path used
+  confidence: number;     // 0-1 data confidence
+  bid_anomaly: boolean;   // Bid &gt;= ask anomaly
+  currency: string;       // Target currency for reference
+  last_updated: string;   // ISO 8601 timestamp
+}
+</code></pre>
+<h2 id="code-examples">Code Examples</h2>
+<h3 id="python">Python</h3>
+<h4 id="basic-price-lookup">Basic Price Lookup</h4>
+<pre><code class="language-python">import requests
+
+API_KEY = &quot;your_api_key&quot;
+BASE_URL = &quot;https://api.cs2c.app&quot;
+
+def get_item_prices(market_hash_name: str):
+    &quot;&quot;&quot;Get prices for an item across all providers.&quot;&quot;&quot;
+    headers = {&quot;Authorization&quot;: f&quot;Bearer {API_KEY}&quot;}
+    params = {
+        &quot;market_hash_name&quot;: market_hash_name,
+        &quot;currency&quot;: &quot;USD&quot;
+    }
+
+    response = requests.get(
+        f&quot;{BASE_URL}/v1/prices&quot;,
+        headers=headers,
+        params=params
+    )
+    response.raise_for_status()
+    return response.json()
+
+# Usage
+prices = get_item_prices(&quot;AWP | Dragon Lore (Factory New)&quot;)
+print(f&quot;Providers: {prices['meta']['returned_providers']}&quot;)
+for item in prices[&quot;items&quot;]:
+    print(f&quot;{item['provider']}: ${(item['lowest_ask'] / 100):.2f}&quot;)
+</code></pre>
+<h4 id="async-batch-processing">Async Batch Processing</h4>
+<pre><code class="language-python">import asyncio
+import aiohttp
+
+API_KEY = &quot;your_api_key&quot;
+BASE_URL = &quot;https://api.cs2c.app&quot;
+
+async def get_item_prices(session: aiohttp.ClientSession, item_id: int):
+    &quot;&quot;&quot;Async fetch prices for an item.&quot;&quot;&quot;
+    headers = {&quot;Authorization&quot;: f&quot;Bearer {API_KEY}&quot;}
+    params = {&quot;item_id&quot;: item_id}
+
+    async with session.get(
+        f&quot;{BASE_URL}/v1/prices&quot;,
+        headers=headers,
+        params=params
+    ) as response:
+        return await response.json()
+
+async def batch_price_lookup(item_ids: list[int]):
+    &quot;&quot;&quot;Fetch prices for multiple items concurrently.&quot;&quot;&quot;
+    async with aiohttp.ClientSession() as session:
+        tasks = [get_item_prices(session, item_id) for item_id in item_ids]
+        return await asyncio.gather(*tasks)
+
+# Usage
+item_ids = [1, 2, 3, 4, 5]
+results = asyncio.run(batch_price_lookup(item_ids))
+</code></pre>
+<h3 id="javascripttypescript">JavaScript/TypeScript</h3>
+<h4 id="basic-usage-with-fetch">Basic Usage with Fetch</h4>
+<pre><code class="language-typescript">const API_KEY = &quot;your_api_key&quot;;
+const BASE_URL = &quot;https://api.cs2c.app&quot;;
+
+async function getItemPrices(marketHashName: string) {
+  const params = new URLSearchParams({
+    market_hash_name: marketHashName,
+    currency: &quot;USD&quot;
+  });
+
+  const response = await fetch(
+    `${BASE_URL}/v1/prices?${params}`,
+    {
+      headers: {
+        &quot;Authorization&quot;: `Bearer ${API_KEY}`
+      }
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+  }
+
+  return await response.json();
+}
+
+// Usage
+getItemPrices(&quot;AWP | Dragon Lore (Factory New)&quot;)
+  .then(data =&gt; {
+    console.log(&quot;Providers:&quot;, data.meta.returned_providers);
+    data.items.forEach(item =&gt; {
+      console.log(`${item.provider}: $${(item.lowest_ask / 100).toFixed(2)}`);
+    });
+  });
+</code></pre>
+<h4 id="rate-limit-handling">Rate Limit Handling</h4>
+<pre><code class="language-typescript">class CS2CAPI {
+  private apiKey: string;
+  private baseUrl: string;
+  private requestQueue: Promise&lt;any&gt;[] = [];
+
+  constructor(apiKey: string, baseUrl: string = &quot;https://api.cs2c.app&quot;) {
+    this.apiKey = apiKey;
+    this.baseUrl = baseUrl;
+  }
+
+  async request(endpoint: string, params: Record&lt;string, any&gt; = {}) {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) =&gt; {
+      if (value === undefined || value === null) return;
+      if (Array.isArray(value)) {
+        value.forEach(v =&gt; searchParams.append(key, String(v)));
+        return;
+      }
+      searchParams.set(key, String(value));
+    });
+    const queryString = searchParams.toString();
+    const url = `${this.baseUrl}${endpoint}?${queryString}`;
+
+    const response = await fetch(url, {
+      headers: {
+        &quot;Authorization&quot;: `Bearer ${this.apiKey}`
+      }
+    });
+
+    if (response.status === 429) {
+      const retryAfter = parseInt(response.headers.get(&quot;retry-after&quot;) || &quot;60&quot;);
+      console.log(`Rate limited. Retrying after ${retryAfter}s`);
+      await new Promise(resolve =&gt; setTimeout(resolve, retryAfter * 1000));
+      return this.request(endpoint, params);
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+    }
+
+    return await response.json();
+  }
+
+  async getPrices(params: {
+    market_hash_name?: string;
+    providers?: string[];
+    currency?: string;
+  }) {
+    return this.request(&quot;/v1/prices&quot;, params);
+  }
+}
+
+// Usage
+const api = new CS2CAPI(&quot;your_api_key&quot;);
+const prices = await api.getPrices({
+  market_hash_name: &quot;AWP | Dragon Lore (Factory New)&quot;,
+  providers: [&quot;steam&quot;, &quot;skinport&quot;],
+  currency: &quot;USD&quot;
+});
+</code></pre>
+<h3 id="curl-examples">cURL Examples</h3>
+<h4 id="get-prices-with-providers-filter">Get Prices with Providers Filter</h4>
+<pre><code class="language-bash">curl -X GET &quot;https://api.cs2c.app/v1/prices?market_hash_name=AWP%20%7C%20Dragon%20Lore%20%28Factory%20New%29&amp;providers=steam&amp;providers=skinport&amp;currency=USD&quot; \
+  -H &quot;Authorization: Bearer your_api_key&quot; \
+  -H &quot;Accept: application/json&quot;
+</code></pre>
+<h4 id="get-recent-sales">Get Recent Sales</h4>
+<pre><code class="language-bash">curl -X GET &quot;https://api.cs2c.app/v1/sales?market_hash_name=AK-47%20%7C%20Redline%20%28Field-Tested%29&amp;providers=csfloat&amp;providers=buff163&quot; \
+  -H &quot;Authorization: Bearer your_api_key&quot; \
+  -H &quot;Accept: application/json&quot;
+</code></pre>
+<hr />
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-error-handling">1. Error Handling</h3>
+<p>Always implement proper error handling:</p>
+<pre><code class="language-python">try:
+    response = requests.get(url, headers=headers, params=params)
+    response.raise_for_status()
+    data = response.json()
+except requests.exceptions.HTTPError as e:
+    if e.response.status_code == 429:
+        # Handle rate limit
+        retry_after = int(e.response.headers.get(&quot;retry-after&quot;, 60))
+        time.sleep(retry_after)
+    elif e.response.status_code == 401:
+        # Handle authentication error
+        print(&quot;Invalid API key&quot;)
+    else:
+        # Handle other errors
+        print(f&quot;HTTP error: {e}&quot;)
+except requests.exceptions.RequestException as e:
+    # Handle network errors
+    print(f&quot;Request failed: {e}&quot;)
+</code></pre>
+<h3 id="2-caching">2. Caching</h3>
+<p>Implement client-side caching to reduce API calls:</p>
+<pre><code class="language-python">from functools import lru_cache
+import time
+
+@lru_cache(maxsize=128)
+def get_prices_cached(item_id: int, cache_time: int):
+    &quot;&quot;&quot;Cache results for cache_time seconds.&quot;&quot;&quot;
+    # cache_time is used to bust cache periodically
+    return get_item_prices(item_id)
+
+# Usage with 5-minute cache
+current_period = int(time.time() / 300)  # 5 minutes
+prices = get_prices_cached(item_id=1, cache_time=current_period)
+</code></pre>
+<h3 id="3-respect-rate-limits">3. Respect Rate Limits</h3>
+<p>Monitor your usage and implement backoff strategies:</p>
+<pre><code class="language-python">import time
+from collections import deque
+
+class RateLimiter:
+    def __init__(self, requests_per_second: int):
+        self.rate = requests_per_second
+        self.allowance = requests_per_second
+        self.last_check = time.time()
+
+    def wait_if_needed(self):
+        current = time.time()
+        elapsed = current - self.last_check
+        self.last_check = current
+        self.allowance += elapsed * self.rate
+
+        if self.allowance &gt; self.rate:
+            self.allowance = self.rate
+
+        if self.allowance &lt; 1.0:
+            sleep_time = (1.0 - self.allowance) / self.rate
+            time.sleep(sleep_time)
+            self.allowance = 0.0
+        else:
+            self.allowance -= 1.0
+
+# Usage
+limiter = RateLimiter(requests_per_second=5)  # Basic tier
+
+for item_id in item_ids:
+    limiter.wait_if_needed()
+    prices = get_item_prices(item_id)
+</code></pre>
+<h3 id="4-batch-requests">4. Batch Requests</h3>
+<p>Use async/concurrent requests for better performance:</p>
+<pre><code class="language-python">import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
+def batch_requests(item_ids: list[int], batch_size: int = 10):
+    &quot;&quot;&quot;Process items in batches to avoid overwhelming the API.&quot;&quot;&quot;
+    results = []
+
+    for i in range(0, len(item_ids), batch_size):
+        batch = item_ids[i:i + batch_size]
+        batch_results = asyncio.run(batch_price_lookup(batch))
+        results.extend(batch_results)
+        time.sleep(1)  # Brief pause between batches
+
+    return results
+</code></pre>
+<hr />
+<h2 id="related-documentation">Related Documentation</h2>
+<p>Essential guides for working with CS2C-API:</p>
+<ul>
+<li><strong><a href="../getting-started/">Quick Start</a></strong> — Fast path to first successful API request</li>
+<li><strong><a href="../pagination/">Pagination Guide</a></strong> — Offset vs cursor pagination patterns and iteration examples</li>
+<li><strong><a href="../core-concepts/">Core Concepts</a></strong> — Canonical domain definitions and endpoint-to-concept mapping</li>
+</ul>
+<hr />
+<h2 id="support">Support</h2>
+<ul>
+<li><strong>Email</strong>: <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#100;&#97;&#100;&#115;&#99;&#97;&#112;&#116;&#118;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#100;&#97;&#100;&#115;&#99;&#97;&#112;&#116;&#118;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
