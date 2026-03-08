@@ -1,0 +1,200 @@
+/* ============================================================
+   CS2C-API — Extra styles for Material for MkDocs
+   Scheme: slate (dark default), primary: black, accent: cyan
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   1. CSS custom properties — scoped per scheme
+   ---------------------------------------------------------- */
+
+[data-md-color-scheme="slate"] {
+  --cs2c-hero-bg: linear-gradient(135deg, #0d0d0d 0%, #0a1628 60%, #071220 100%);
+  --cs2c-hero-border: rgba(0, 188, 212, 0.18);
+  --cs2c-accent-glow: rgba(0, 188, 212, 0.12);
+  --cs2c-card-bg: rgba(255, 255, 255, 0.035);
+  --cs2c-card-border: rgba(255, 255, 255, 0.08);
+  --cs2c-card-hover-border: rgba(0, 188, 212, 0.45);
+  --cs2c-card-hover-bg: rgba(0, 188, 212, 0.06);
+  --cs2c-tag-bg: rgba(0, 188, 212, 0.15);
+  --cs2c-tag-color: #00e5ff;
+  --cs2c-muted: rgba(255, 255, 255, 0.45);
+}
+
+[data-md-color-scheme="default"] {
+  --cs2c-hero-bg: linear-gradient(135deg, #f0f4f8 0%, #e8eef7 60%, #dde6f5 100%);
+  --cs2c-hero-border: rgba(63, 81, 181, 0.18);
+  --cs2c-accent-glow: rgba(63, 81, 181, 0.08);
+  --cs2c-card-bg: rgba(0, 0, 0, 0.02);
+  --cs2c-card-border: rgba(0, 0, 0, 0.08);
+  --cs2c-card-hover-border: rgba(63, 81, 181, 0.45);
+  --cs2c-card-hover-bg: rgba(63, 81, 181, 0.05);
+  --cs2c-tag-bg: rgba(63, 81, 181, 0.12);
+  --cs2c-tag-color: #3f51b5;
+  --cs2c-muted: rgba(0, 0, 0, 0.45);
+}
+
+/* ----------------------------------------------------------
+   2. Hero block
+   ---------------------------------------------------------- */
+
+.cs2c-hero {
+  background: var(--cs2c-hero-bg);
+  border: 1px solid var(--cs2c-hero-border);
+  border-radius: 12px;
+  padding: 3rem 2.5rem 2.5rem;
+  margin: 0 0 2.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle radial glow behind hero content */
+.cs2c-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 30%, var(--cs2c-accent-glow), transparent 70%);
+  pointer-events: none;
+}
+
+.cs2c-hero h1 {
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.75rem;
+  line-height: 1.15;
+}
+
+.cs2c-hero p.cs2c-hero__sub {
+  font-size: 1.1rem;
+  color: var(--cs2c-muted);
+  margin: 0 auto 2rem;
+  max-width: 560px;
+  line-height: 1.6;
+}
+
+.cs2c-hero__actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Tag/badge row */
+.cs2c-tags {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.cs2c-tag {
+  background: var(--cs2c-tag-bg);
+  color: var(--cs2c-tag-color);
+  font-family: var(--md-code-font);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.2em 0.65em;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* ----------------------------------------------------------
+   3. Grid cards — enhance Material's built-in .grid.cards
+   ---------------------------------------------------------- */
+
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li {
+  background: var(--cs2c-card-bg);
+  border: 1px solid var(--cs2c-card-border);
+  border-radius: 10px;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover {
+  border-color: var(--cs2c-card-hover-border);
+  background: var(--cs2c-card-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* ----------------------------------------------------------
+   4. Dark-mode code block polish
+   ---------------------------------------------------------- */
+
+[data-md-color-scheme="slate"] .md-typeset pre > code {
+  background-color: #0d1117;
+}
+
+[data-md-color-scheme="slate"] .highlight {
+  border-left: 3px solid var(--md-accent-fg-color);
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* ----------------------------------------------------------
+   5. Admonition accent overrides for dark mode
+   ---------------------------------------------------------- */
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.tip,
+[data-md-color-scheme="slate"] .md-typeset details.tip {
+  border-color: #00bcd4;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.warning,
+[data-md-color-scheme="slate"] .md-typeset details.warning {
+  border-color: #ff9800;
+}
+
+/* ----------------------------------------------------------
+   6. Navigation tab bar — active tab accent underline
+   ---------------------------------------------------------- */
+
+.md-tabs__item--active .md-tabs__link {
+  border-bottom: 2px solid var(--md-accent-fg-color);
+}
+
+/* ----------------------------------------------------------
+   7. Table polish
+   ---------------------------------------------------------- */
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) {
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  background: rgba(0, 188, 212, 0.12);
+}
+
+/* ----------------------------------------------------------
+   8. Scrollbar — subtle styling in dark mode
+   ---------------------------------------------------------- */
+
+[data-md-color-scheme="slate"] * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+[data-md-color-scheme="slate"] *::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+[data-md-color-scheme="slate"] *::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+/* ----------------------------------------------------------
+   9. Footer
+   ---------------------------------------------------------- */
+
+.md-footer-meta {
+  background: transparent;
+  border-top: 1px solid var(--cs2c-card-border);
+}
