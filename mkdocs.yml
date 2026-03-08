@@ -30,6 +30,7 @@ theme:
     - navigation.instant.progress
     - navigation.sections
     - toc.follow
+    - toc.integrate
     - search.suggest
     - search.highlight
     - content.code.copy
