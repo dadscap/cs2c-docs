@@ -1,6 +1,78 @@
 # Core Concepts
 
-- `item_id`: the canonical normalized item identifier used across endpoints
-- `market_hash_name`: the canonical Steam market item name
-- `provider`: the provider key used by this API
-- `phase`: phased finish or variant label when applicable
+Canonical public terminology used across CS2C-API endpoints.
+
+## Terminology
+
+| Term | Meaning | Common Fields | Primary Endpoints |
+| ---- | ------- | ------------- | ----------------- |
+| **Quote** | Current listing snapshot for one item on one provider. | `provider`, `item_id`, `lowest_ask`, `quantity`, `timestamp` | `/v1/prices` |
+| **BuyOrderRecord** | Current highest bid snapshot for one item on one provider. | `provider`, `item_id`, `highest_bid`, `num_bids`, `timestamp` | `/v1/bids` |
+| **SaleRecord** | Completed sale event. | `provider`, `item_id`, `price`, `sold_at` | `/v1/sales` |
+| **Provider** | Marketplace source such as `steam`, `skinport`, or `buff163`. | provider key, fee data, health metadata | `/v1/providers` |
+| **Phase** | Doppler or Gamma Doppler variant marker. | `phase` | `/v1/items`, `/v1/prices`, `/v1/bids`, `/v1/sales` |
+| **Wear** | Condition bucket from Factory New to Battle-Scarred. | item naming and float context | `/v1/items`, `/v1/sales` |
+| **Liquidity Score** | Composite tradability score based on activity and supply. | liquidity metrics and rankings | `/v1/market/rankings/liquidity` |
+| **Arbitrage** | Cross-provider net edge after fee-aware comparison. | buy provider, sell provider, edge metrics | `/v1/market/arbitrage` |
+| **Movers** | Items with notable directional price movement. | change metrics, timeframe | `/v1/market/movers` |
+| **FX Conversion** | Response-time currency conversion. | `currency` query parameter | most market-data endpoints, `/v1/fx` |
+
+## Data Semantics
+
+### Prices Use Minor Units
+
+Price integers are returned in minor units.
+
+Examples:
+
+- `USD`: cents
+- `lowest_ask = 2550` means `$25.50`
+
+This applies to fields such as `lowest_ask`, `highest_bid`, and `price`.
+
+### Provider Keys Matter
+
+Use provider keys in request parameters.
+
+Examples:
+
+- `steam`
+- `skinport`
+- `csfloat`
+
+Do not substitute display names where provider keys are required.
+
+### Item Identity
+
+Most item lookup endpoints accept:
+
+- `item_id` for stable production integration
+- `market_hash_name` for human-readable lookup
+
+Prefer `item_id` after your application has resolved it once.
+
+### Optional Item Attributes
+
+Some metadata is item-dependent rather than universal.
+
+Examples:
+
+- `phase`
+- `wear_name`
+- `min_float`
+- `max_float`
+
+Null does not imply malformed data. It often means the field is not relevant to that item.
+
+## Common Pitfalls
+
+- treating price integers as major units
+- using provider display names instead of provider keys
+- assuming all items support phase metadata
+- confusing tracked redirect links with direct marketplace URLs
+
+## Related Guides
+
+- [Getting Started](getting-started.md)
+- [API Reference](api-reference.md)
+- [Pagination](pagination.md)

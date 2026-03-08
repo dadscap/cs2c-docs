@@ -8,7 +8,6 @@ nav:
   - Getting Started: getting-started.md
   - Authentication: authentication.md
   - API Reference: api-reference.md
-  - Billing: billing.md
   - Core Concepts: core-concepts.md
   - Pagination: pagination.md
   - Changelog: changelog.md

@@ -1,6 +1,6 @@
 # CS2C-API
 
-CS2C-API provides Counter-Strike 2 market data across multiple providers through a unified REST API.
+Public documentation for the CS2C-API market-data platform.
 
 ## Start Here
 
@@ -10,11 +10,10 @@ CS2C-API provides Counter-Strike 2 market data across multiple providers through
 
 ## Guides
 
-- [Billing](billing.md)
 - [Core Concepts](core-concepts.md)
 - [Pagination](pagination.md)
 - [Changelog](changelog.md)
 
 ## OpenAPI
 
-The public OpenAPI spec lives at `../openapi/openapi.json`.
+The bundled public OpenAPI spec at `../openapi/openapi.json` is limited to the externally documented market-data surface used for SDK generation and docs rendering.

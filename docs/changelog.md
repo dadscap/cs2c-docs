@@ -1,3 +1,3 @@
 # Changelog
 
-Track public API contract changes here as the published docs surface evolves.
+High-level changes to the public docs bundle and public API surface.
