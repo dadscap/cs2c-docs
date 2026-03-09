@@ -889,40 +889,6 @@ Market intelligence endpoints provide quant-focused analytics with consistent `m
 All endpoints are USD-only and require API key authentication.
 Access is tiered by endpoint: `pro` can access `/v1/market/items/{item_id}`, while `quant` can access all `/v1/market/*` endpoints.
 
-#### GET /v1/market/rankings/{metric}
-
-Available to: `quant`
-
-Get item rankings for one metric with cursor pagination.
-
-Valid metric values: `volatility`, `volume`, `liquidity`.
-
-**Query Parameters:**
-
-| Parameter | Type | Required | Default | Description |
-| --------- | ---- | -------- | ------- | ----------- |
-| `timeframe` | string | No | 24h | Time window (1h, 24h, 7d, 30d) |
-| `start_at` | datetime | No | — | Explicit start time (UTC, inclusive) |
-| `end_at` | datetime | No | — | Explicit end time (UTC, exclusive) |
-| `limit` | integer | No | 50 | Number of items to return (capped at 100) |
-| `cursor` | string | No | — | Opaque cursor from previous page |
-| `order` | string | No | desc | Sort order (asc, desc) |
-| `providers` | array[enum[string]] | No | — | Provider-key enum values (repeat `providers` for multiple providers) |
-| `min_volatility_pct` | number | No | — | Valid only for `metric=volatility` |
-| `min_volume_usd` | number | No | — | Valid only for `metric=volume` |
-| `min_liquidity_score` | number | No | — | Valid only for `metric=liquidity` |
-
-**Time window behavior:** if `start_at` and `end_at` are both provided, `timeframe` is ignored regardless of its value. If only `start_at` OR `end_at` is provided, `400 Bad Request`
-
-**Example Request:**
-
-```bash
-curl -H "Authorization: Bearer your_key" \
-  "https://api.cs2c.app/v1/market/rankings/volatility?limit=50"
-```
-
----
-
 #### GET /v1/market/arbitrage
 
 Available to: `quant`
@@ -983,26 +949,20 @@ curl -H "Authorization: Bearer your_key" \
 
 Available to: `quant`
 
-Compute technical indicators for one item (live mode) or fetch screener signals (cache mode).
-
-**Modes:**
-
-- **Individual item mode:** provide `item_id` (or `market_hash_name`) plus `provider`.
-- **Bulk screener mode:** omit item filters and read precomputed screener rows.
+Compute technical indicators for one item from live OHLCV candle data.
 
 **Query Parameters:**
 
 | Parameter | Type | Required | Default | Description |
 | --------- | ---- | -------- | ------- | ----------- |
-| `item_id` | integer | No | — | Item ID for individual mode |
-| `market_hash_name` | string | No | — | Alternate item selector for individual mode |
-| `phase` | string | No | — | Optional phase filter in individual mode |
-| `provider` | string | Conditional | — | Single provider key string (`provider=...`); required for individual mode, optional single-provider filter for screener mode |
+| `item_id` | integer | No | — | Item ID for indicator computation |
+| `market_hash_name` | string | No | — | Alternate item selector for indicator computation |
+| `phase` | string | No | — | Optional phase filter |
+| `provider` | string | Yes | — | Single provider key string (`provider=...`) |
 | `interval` | string | No | 1d | Candle interval (`1h`, `1d`) |
-| `limit` | integer | No | 50 | Screener page size (max 100) |
-| `offset` | integer | No | 0 | Screener page offset |
-| `sort_by` | string | No | composite_score | Screener sort (`composite_score`, `rsi_14`, `macd_histogram`, `atr_14`) |
-| `order` | string | No | desc | Sort order (`asc`, `desc`) |
+| `currency` | string | No | USD | Output currency for price-level indicators |
+
+**Required selector:** provide `item_id` or `market_hash_name` together with `provider`.
 
 ---
 

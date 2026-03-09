@@ -12,7 +12,7 @@ Canonical public terminology used across CS2C-API endpoints.
 | **Provider** | Marketplace source such as `steam`, `skinport`, or `buff163`. | provider key, fee data, health metadata | `/v1/providers` |
 | **Phase** | Doppler or Gamma Doppler variant marker. | `phase` | `/v1/items`, `/v1/prices`, `/v1/bids`, `/v1/sales` |
 | **Wear** | Condition bucket from Factory New to Battle-Scarred. | item naming and float context | `/v1/items`, `/v1/sales` |
-| **Liquidity Score** | Composite tradability score based on activity and supply. | liquidity metrics and rankings | `/v1/market/rankings/liquidity` |
+| **Liquidity Score** | Composite tradability score based on activity and supply. | liquidity metrics | `/v1/market/items/{item_id}` |
 | **Arbitrage** | Cross-provider net edge after fee-aware comparison. | buy provider, sell provider, edge metrics | `/v1/market/arbitrage` |
 | **FX Conversion** | Response-time currency conversion. | `currency` query parameter | most market-data endpoints, `/v1/fx` |
 

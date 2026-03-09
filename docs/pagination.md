@@ -58,7 +58,6 @@ Common cursor endpoints:
 
 - `/v1/prices/history`
 - `/v1/prices/candles`
-- `/v1/market/rankings/{metric}`
 - `/v1/market/arbitrage`
 
 Iteration rule:
