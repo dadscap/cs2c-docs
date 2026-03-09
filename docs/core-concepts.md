@@ -14,7 +14,6 @@ Canonical public terminology used across CS2C-API endpoints.
 | **Wear** | Condition bucket from Factory New to Battle-Scarred. | item naming and float context | `/v1/items`, `/v1/sales` |
 | **Liquidity Score** | Composite tradability score based on activity and supply. | liquidity metrics and rankings | `/v1/market/rankings/liquidity` |
 | **Arbitrage** | Cross-provider net edge after fee-aware comparison. | buy provider, sell provider, edge metrics | `/v1/market/arbitrage` |
-| **Movers** | Items with notable directional price movement. | change metrics, timeframe | `/v1/market/movers` |
 | **FX Conversion** | Response-time currency conversion. | `currency` query parameter | most market-data endpoints, `/v1/fx` |
 
 ## Data Semantics

@@ -889,38 +889,6 @@ Market intelligence endpoints provide quant-focused analytics with consistent `m
 All endpoints are USD-only and require API key authentication.
 Access is tiered by endpoint: `pro` can access `/v1/market/items/{item_id}`, while `quant` can access all `/v1/market/*` endpoints.
 
-#### GET /v1/market/movers
-
-Available to: `quant`
-
-Get top gainers and losers by price change (no pagination).
-
-**Query Parameters:**
-
-| Parameter | Type | Required | Default | Description |
-| --------- | ---- | -------- | ------- | ----------- |
-| `timeframe` | string | No | 24h | Time window (1h, 24h, 7d, 30d) |
-| `start_at` | datetime | No | — | Explicit start time (UTC, inclusive) |
-| `end_at` | datetime | No | — | Explicit end time (UTC, exclusive) |
-| `limit_per_side` | integer | No | tier cap | Number of top/bottom items per side (capped at 50) |
-| `min_volume` | integer | No | — | Minimum depletion-activity volume threshold |
-| `min_price_usd` | number | No | — | Minimum USD price |
-| `max_price_usd` | number | No | — | Maximum USD price |
-| `providers` | array[enum[string]] | No | — | Provider-key enum values (repeat `providers` for multiple providers) |
-| `sort_by` | string | No | price_change_abs | price_change_abs, price_change_pct, volume, current_price |
-| `order` | string | No | desc | Sort order (asc, desc) |
-
-**Time window behavior:** if `start_at` and `end_at` are both provided, `timeframe` is ignored regardless of its value. If only `start_at` OR `end_at` is provided, `400 Bad Request`
-
-**Example Request:**
-
-```bash
-curl -H "Authorization: Bearer your_key" \
-  "https://api.cs2c.app/v1/market/movers?timeframe=24h&limit_per_side=25"
-```
-
----
-
 #### GET /v1/market/rankings/{metric}
 
 Available to: `quant`

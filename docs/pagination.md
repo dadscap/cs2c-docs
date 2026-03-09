@@ -74,7 +74,6 @@ Some endpoints return bounded datasets and do not expose offset or cursor contra
 Examples:
 
 - `/v1/sales`
-- `/v1/market/movers`
 - `/v1/market/items/{item_id}`
 - `/v1/market/indicators`
 
