@@ -59,23 +59,25 @@ hide:
 
     [View arbitrage endpoint](api-reference.md)
 
--   :material-trending-up: **Market Movers**
+-   :material-receipt-text: **Recent Sales**
 
     ---
 
-    Track items with notable directional price movement in a given timeframe
-    using `GET /v1/market/movers`.
+    `GET /v1/sales` fetches timestamped sale records across 10+ providers.
+    Live-queried with a 1-hour cache per item/provider — useful for demand
+    analysis and fair-value pricing.
 
-    [View movers endpoint](api-reference.md)
+    [View sales endpoint](api-reference.md#recent-sales)
 
--   :material-podium: **Liquidity Rankings**
+-   :material-gavel: **Buy Orders**
 
     ---
 
-    Rank items by a composite liquidity score derived from activity and supply
-    metrics via `GET /v1/market/rankings/liquidity`.
+    `GET /v1/bids` returns the highest bid and bid depth per provider across
+    9 marketplaces. Surface buy-side demand to time listings or spot
+    undervalued items.
 
-    [View rankings endpoint](api-reference.md)
+    [View bids endpoint](api-reference.md#buy-orders)
 
 -   :material-currency-usd: **FX Conversion**
 
