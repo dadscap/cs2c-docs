@@ -886,8 +886,14 @@ curl -H "Authorization: Bearer your_key" \
 ### Market Intelligence
 
 Market intelligence endpoints provide quant-focused analytics with consistent `meta` + `data` envelopes.
-All endpoints are USD-only and require API key authentication.
+`/v1/market/arbitrage` and `/v1/market/items/{item_id}` are USD-only. `/v1/market/indicators` also accepts a `currency` parameter for price-level output conversion.
 Access is tiered by endpoint: `pro` can access `/v1/market/items/{item_id}`, while `quant` can access all `/v1/market/*` endpoints.
+
+**Active market endpoints only:**
+
+- `GET /v1/market/arbitrage`
+- `GET /v1/market/items/{item_id}`
+- `GET /v1/market/indicators`
 
 #### GET /v1/market/arbitrage
 
@@ -900,10 +906,18 @@ Find arbitrage opportunities across providers.
 | Parameter | Type | Required | Default | Description |
 | --------- | ---- | -------- | ------- | ----------- |
 | `min_spread_pct` | number | No | 1.0 | Minimum spread percentage to filter by |
-| `limit` | integer | No | 50 | Number of opportunities to return (capped at 100) |
+| `limit` | integer | No | tier cap | Number of opportunities to return (effective default is the tier cap; quant currently resolves to 100, capped at 100) |
 | `cursor` | string | No | — | Opaque cursor from previous page |
 | `providers_buy` | array[enum[string]] | No | — | Buy-side provider-key enum values (repeat `providers_buy` for multiple providers) |
 | `providers_sell` | array[enum[string]] | No | — | Sell-side provider-key enum values (repeat `providers_sell` for multiple providers) |
+
+**Cursor behavior:**
+
+- pagination is cursor-only
+- `pagination.total` is intentionally `-1`
+- cursor tokens are tied to endpoint, sort context, and filter hash
+- changing filters or reusing a mismatched cursor returns `400`
+- malformed cursor tokens also return `400`
 
 **Example Request:**
 
@@ -934,7 +948,18 @@ Get detailed analytics for a specific item.
 | `start_at` | datetime | No | — | Explicit start time (UTC, inclusive) |
 | `end_at` | datetime | No | — | Explicit end time (UTC, exclusive) |
 
-**Time window behavior:** if `start_at` and `end_at` are both provided, `timeframe` is ignored regardless of its value. If only `start_at` OR `end_at` is provided, `400 Bad Request`
+**Time window behavior:**
+
+- if `start_at` and `end_at` are both provided, `timeframe` is ignored
+- if only one of `start_at` or `end_at` is provided, the endpoint returns `400`
+- if `end_at <= start_at`, the endpoint returns `400`
+- explicit ranges longer than 30 days return `400`
+
+**Response window metadata:**
+
+- response `meta.window` includes `window_kind`, `timeframe`, `start_at`, and `end_at`
+- explicit ranges return `window_kind="range"` and `timeframe=null`
+- preset timeframes return `window_kind="preset"`
 
 **Example Request:**
 
@@ -957,12 +982,23 @@ Compute technical indicators for one item from live OHLCV candle data.
 | --------- | ---- | -------- | ------- | ----------- |
 | `item_id` | integer | No | — | Item ID for indicator computation |
 | `market_hash_name` | string | No | — | Alternate item selector for indicator computation |
-| `phase` | string | No | — | Optional phase filter |
+| `phase` | string | No | — | Optional phase filter; primarily relevant when resolving by `market_hash_name` |
 | `provider` | string | Yes | — | Single provider key string (`provider=...`) |
 | `interval` | string | No | 1d | Candle interval (`1h`, `1d`) |
-| `currency` | string | No | USD | Output currency for price-level indicators |
+| `currency` | string | No | USD | Output currency for price-level indicators (response field name `close_price_usd` is retained for compatibility) |
 
 **Required selector:** provide `item_id` or `market_hash_name` together with `provider`.
+
+**Error behavior:**
+
+| Status | Condition |
+| --- | --- |
+| `400` | `provider` missing |
+| `400` | both `item_id` and `market_hash_name` missing |
+| `400` | unknown provider |
+| `404` | unknown item |
+| `422` | insufficient candle history for indicator computation |
+| `503` | FX rate unavailable for requested output currency |
 
 ---
 
@@ -1044,6 +1080,111 @@ Compute technical indicators for one item from live OHLCV candle data.
   cache_status: {
     [provider_key: string]: "hit" | "miss" | "error" | "unavailable";
   }; // Per-provider cache outcome map (sales cache hit TTL: 1 hour)
+}
+```
+
+### MarketArbitrageResponse Schema
+
+```typescript
+{
+  meta: {
+    generated_at: string;
+    data_source: "live";
+    freshness_sec: number;
+    window: null;
+  };
+  data: {
+    items: Array<{
+      item_id: number;
+      market_hash_name: string;
+      phase: string | null;
+      buy_provider: string;
+      sell_provider: string;
+      buy_price_usd: string;
+      sell_price_usd: string;
+      gross_spread_pct: number;
+      estimated_fees_usd: string;
+      net_profit_usd: string;
+      last_updated: string | null;
+    }>;
+  };
+  pagination: {
+    limit: number;
+    total: -1;
+    has_next: boolean;
+    has_prev: boolean;
+    next_cursor: string | null;
+  };
+}
+```
+
+### MarketItemAnalyticsResponse Schema
+
+```typescript
+{
+  meta: {
+    generated_at: string;
+    data_source: "live";
+    freshness_sec: number;
+    window: {
+      window_kind: "preset" | "range";
+      timeframe: "1h" | "24h" | "7d" | "30d" | null;
+      start_at: string;
+      end_at: string;
+    };
+  };
+  data: {
+    item_id: number;
+    market_hash_name: string;
+    phase: string | null;
+    summary: {
+      provider_count: number;
+      total_volume_24h: number | null;
+      best_ask_usd: string | null;
+      best_bid_usd: string | null;
+      avg_spread_pct: number | null;
+    };
+    providers: LiquidityScore[];
+    coverage: {
+      provider_count: number;
+      providers_with_volume: number;
+      providers_with_liquidity: number;
+      providers_with_bid_side: number;
+    };
+  };
+}
+```
+
+### MarketIndicatorsItemResponse Schema
+
+```typescript
+{
+  meta: {
+    generated_at: string;
+    data_source: "live";
+    freshness_sec: number;
+    interval: "1h" | "1d";
+    provider: string;
+  };
+  data: {
+    item_id: number;
+    market_hash_name: string;
+    phase: string | null;
+    provider: string;
+    interval: "1h" | "1d";
+    close_price_usd: string;
+    momentum: object;
+    volatility: object;
+    volume: object;
+    signals: object;
+    coverage: {
+      candle_count: number;
+      first_bucket: string | null;
+      last_bucket: string | null;
+      sufficient_for: string[];
+      insufficient_for: string[];
+    };
+  };
 }
 ```
 

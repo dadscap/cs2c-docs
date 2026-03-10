@@ -10,11 +10,11 @@ Canonical public terminology used across CS2C-API endpoints.
 | **BuyOrderRecord** | Current highest bid snapshot for one item on one provider. | `provider`, `item_id`, `highest_bid`, `num_bids`, `timestamp` | `/v1/bids` |
 | **SaleRecord** | Completed sale event. | `provider`, `item_id`, `price`, `sold_at` | `/v1/sales` |
 | **Provider** | Marketplace source such as `steam`, `skinport`, or `buff163`. | provider key, fee data, health metadata | `/v1/providers` |
-| **Phase** | Doppler or Gamma Doppler variant marker. | `phase` | `/v1/items`, `/v1/prices`, `/v1/bids`, `/v1/sales` |
+| **Phase** | Doppler or Gamma Doppler variant marker. | `phase` | `/v1/items`, `/v1/prices`, `/v1/bids`, `/v1/sales`, `/v1/market/*` |
 | **Wear** | Condition bucket from Factory New to Battle-Scarred. | item naming and float context | `/v1/items`, `/v1/sales` |
 | **Liquidity Score** | Composite tradability score based on activity and supply. | liquidity metrics | `/v1/market/items/{item_id}` |
 | **Arbitrage** | Cross-provider net edge after fee-aware comparison. | buy provider, sell provider, edge metrics | `/v1/market/arbitrage` |
-| **FX Conversion** | Response-time currency conversion. | `currency` query parameter | most market-data endpoints, `/v1/fx` |
+| **FX Conversion** | Currency normalization or response-time conversion of returned values. | `currency` query parameter | most market-data endpoints, `/v1/fx` |
 
 ## Data Semantics
 
@@ -28,6 +28,13 @@ Examples:
 - `lowest_ask = 2550` means `$25.50`
 
 This applies to fields such as `lowest_ask`, `highest_bid`, and `price`.
+
+### Prices and Bids Are Indexed-Only
+
+`/v1/prices` and `/v1/bids` are served from indexed Redis payloads.
+
+- Temporary index unavailability or integrity failures return `503`.
+- Clients should treat `PRICES_INDEX_UNAVAILABLE` and `BIDS_INDEX_UNAVAILABLE` as retryable conditions.
 
 ### Provider Keys Matter
 
@@ -61,7 +68,7 @@ Examples:
 - `min_float`
 - `max_float`
 
-Null does not imply malformed data. It often means the field is not relevant to that item.
+Null often means the field is not relevant to that item.
 
 ## Common Pitfalls
 
@@ -69,6 +76,7 @@ Null does not imply malformed data. It often means the field is not relevant to 
 - using provider display names instead of provider keys
 - assuming all items support phase metadata
 - confusing tracked redirect links with direct marketplace URLs
+- assuming prices and bids fall back to a non-indexed runtime path
 
 ## Related Guides
 

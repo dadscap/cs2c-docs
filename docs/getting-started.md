@@ -8,7 +8,7 @@ Make your first successful CS2C-API request in a few minutes.
 - An API key
 - `curl`, Python, or a JavaScript runtime
 
-If you do not have a key yet, follow [Authentication](authentication.md).
+If you do not have a key yet, follow [Authentication](authentication.md). Initial API key issuance requires a verified email, and free-tier keys bind to a single source IP on first successful use.
 
 ## 1. Set Environment Variables
 
@@ -19,7 +19,7 @@ export CS2C_API_KEY="your_api_key_here"
 
 ## 2. Make Your First Request
 
-`GET /v1/prices` is the fastest path to a useful first response.
+`GET /v1/prices` is the fastest path to a useful first response. Prices and bids are indexed-only runtime endpoints, so temporary indexed-data issues return `503` and should be retried shortly.
 
 ### cURL
 
@@ -101,6 +101,13 @@ curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/v1/items?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&limit=1"
 ```
 
+### Fetch provider-native market IDs in bulk
+
+```bash
+curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
+  "$CS2C_API_BASE/v1/items/market-ids"
+```
+
 ### Fetch bids
 
 ```bash
@@ -125,6 +132,7 @@ curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
 ## 5. Quick Troubleshooting
 
 - `401` with `AUTH_INVALID_API_KEY`: missing or invalid Bearer token
+- `403` with `AUTH_FREE_TIER_IP_RESTRICTED`: free-tier key is being used from a different source IP
 - `429` with `RATE_LIMIT_EXCEEDED`: slow down and respect `Retry-After`
 - `429` with `RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED`: tier quota exhausted
 - `503` with `PRICES_INDEX_UNAVAILABLE` or `BIDS_INDEX_UNAVAILABLE`: retry shortly
