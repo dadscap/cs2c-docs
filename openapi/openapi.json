@@ -3615,7 +3615,7 @@
           "Market Intelligence"
         ],
         "summary": "Get Item Analytics",
-        "description": "Return per-item market analytics across providers for a requested time window.\n\nIncludes:\n- best ask, best bid, and spread summary\n- provider-level liquidity, volume, depth, and bid-side metrics\n- coverage diagnostics showing which providers contributed data\n\nWindow selection:\n- preset `timeframe`\n- or explicit `start_at` + `end_at`\n\nTier: Pro and Quant.",
+        "description": "Return per-item market analytics across providers for a requested time window.\n\nIncludes:\n- best ask, best bid, and spread summary\n- item-level liquidity summary and provider-level price/depth/volume metrics\n- coverage diagnostics showing which providers contributed data\n\nWindow selection uses preset `timeframe` only.\nThe selected timeframe affects the item-level liquidity summary only.\nProvider volume fields remain literal trailing 24h/7d depletion metrics.\n\nTier: Pro and Quant.",
         "operationId": "get_item_analytics_v1_market_items__item_id__get",
         "security": [
           {
@@ -3651,44 +3651,6 @@
               "title": "Timeframe"
             },
             "description": "Analysis time window."
-          },
-          {
-            "name": "start_at",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Range start (UTC, inclusive). Must be paired with end_at.",
-              "title": "Start At"
-            },
-            "description": "Range start (UTC, inclusive). Must be paired with end_at."
-          },
-          {
-            "name": "end_at",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Range end (UTC, exclusive). Must be paired with start_at.",
-              "title": "End At"
-            },
-            "description": "Range end (UTC, exclusive). Must be paired with start_at."
           }
         ],
         "responses": {
@@ -3703,12 +3665,9 @@
                   "meta": {
                     "generated_at": "2026-01-20T12:06:10Z",
                     "data_source": "live",
-                    "freshness_sec": 91,
+                    "freshness_sec": 0,
                     "window": {
-                      "window_kind": "preset",
-                      "timeframe": "24h",
-                      "start_at": "2026-01-19T12:06:10Z",
-                      "end_at": "2026-01-20T12:06:10Z"
+                      "timeframe": "24h"
                     }
                   },
                   "data": {
@@ -3719,7 +3678,15 @@
                       "total_volume_24h": 668,
                       "best_ask_usd": "24.90",
                       "best_bid_usd": "24.90",
-                      "avg_spread_pct": 2.78
+                      "avg_spread_pct": 2.78,
+                      "liquidity_score": 78,
+                      "listing_score": 25,
+                      "gap_score": 25,
+                      "volume_score": 28,
+                      "doppler_bonus": false,
+                      "price_anomaly": false,
+                      "high_tier_override": false,
+                      "liquidity_last_updated": "2026-01-20T12:06:10Z"
                     },
                     "providers": [
                       {
@@ -3733,21 +3700,12 @@
                         "volume_24h": 520,
                         "volume_7d": 3120,
                         "total_value_24h_usd": "13260.00",
-                        "liquidity_score": 78.2,
-                        "exec": 0.72,
-                        "turnover": 0.65,
-                        "breadth": 0.81,
-                        "dos": 4.2,
-                        "used_proxy": false,
-                        "confidence": 0.95,
-                        "bid_anomaly": false,
-                        "liquidity_last_updated": "2026-01-20T12:00:00Z"
+                        "bid_anomaly": false
                       }
                     ],
                     "coverage": {
                       "provider_count": 2,
                       "providers_with_volume": 2,
-                      "providers_with_liquidity": 2,
                       "providers_with_bid_side": 2
                     }
                   }
@@ -5740,11 +5698,6 @@
             "title": "Providers With Volume",
             "description": "Providers with depletion activity volume data."
           },
-          "providers_with_liquidity": {
-            "type": "integer",
-            "title": "Providers With Liquidity",
-            "description": "Providers with liquidity value."
-          },
           "providers_with_bid_side": {
             "type": "integer",
             "title": "Providers With Bid Side",
@@ -5755,7 +5708,6 @@
         "required": [
           "provider_count",
           "providers_with_volume",
-          "providers_with_liquidity",
           "providers_with_bid_side"
         ],
         "title": "MarketItemAnalyticsCoverage",
@@ -5925,102 +5877,6 @@
             "title": "Total Value 24H Usd",
             "description": "Total traded value over 24 hours in USD major units."
           },
-          "liquidity_score": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Liquidity Score",
-            "description": "Overall liquidity score (0-100)."
-          },
-          "exec": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Exec",
-            "description": "Execution component score (0-1)."
-          },
-          "turnover": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Turnover",
-            "description": "Turnover component score (0-1)."
-          },
-          "breadth": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Breadth",
-            "description": "Breadth component score (0-1)."
-          },
-          "dos": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Dos",
-            "description": "Days-of-supply estimate derived from sales data."
-          },
-          "dos_proxy": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Dos Proxy",
-            "description": "Proxy days-of-supply estimate used when sales data is sparse."
-          },
-          "used_proxy": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Used Proxy",
-            "description": "Whether proxy computation was used due to insufficient direct sales data."
-          },
-          "confidence": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Confidence",
-            "description": "Data quality confidence score (0-1)."
-          },
           "bid_anomaly": {
             "anyOf": [
               {
@@ -6032,19 +5888,6 @@
             ],
             "title": "Bid Anomaly",
             "description": "Whether bid is greater than or equal to ask (anomalous market state)."
-          },
-          "liquidity_last_updated": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Liquidity Last Updated",
-            "description": "ISO 8601 UTC timestamp when liquidity metrics were last refreshed."
           }
         },
         "type": "object",
@@ -6123,6 +5966,85 @@
             ],
             "title": "Avg Spread Pct",
             "description": "Percentage value for avg spread."
+          },
+          "liquidity_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Liquidity Score",
+            "description": "Item-level liquidity score."
+          },
+          "listing_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Listing Score",
+            "description": "Listing-count component score."
+          },
+          "gap_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gap Score",
+            "description": "Gap component score."
+          },
+          "volume_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume Score",
+            "description": "Volume component score."
+          },
+          "doppler_bonus": {
+            "type": "boolean",
+            "title": "Doppler Bonus",
+            "description": "Whether Doppler bonus was applied.",
+            "default": false
+          },
+          "price_anomaly": {
+            "type": "boolean",
+            "title": "Price Anomaly",
+            "description": "Whether a bid-above-ask anomaly was detected.",
+            "default": false
+          },
+          "high_tier_override": {
+            "type": "boolean",
+            "title": "High Tier Override",
+            "description": "Whether the high-tier override was applied.",
+            "default": false
+          },
+          "liquidity_last_updated": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Liquidity Last Updated",
+            "description": "ISO 8601 UTC timestamp when item liquidity was last refreshed."
           }
         },
         "type": "object",
@@ -6180,48 +6102,18 @@
       },
       "MarketTimeWindowMeta": {
         "properties": {
-          "window_kind": {
-            "type": "string",
-            "enum": [
-              "preset",
-              "range"
-            ],
-            "title": "Window Kind",
-            "description": "Type of time window selection used for this query."
-          },
           "timeframe": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "string",
             "title": "Timeframe",
             "description": "Selected timeframe preset for this query."
-          },
-          "start_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Start At",
-            "description": "Inclusive start timestamp of the effective analytics window (UTC)."
-          },
-          "end_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "End At",
-            "description": "Exclusive end timestamp of the effective analytics window (UTC)."
           }
         },
         "type": "object",
         "required": [
-          "window_kind",
-          "start_at",
-          "end_at"
+          "timeframe"
         ],
         "title": "MarketTimeWindowMeta",
-        "description": "Effective time window used for the analytics query."
+        "description": "Preset time window used for the analytics query."
       },
       "PaginatedResponse_ItemOut_": {
         "properties": {

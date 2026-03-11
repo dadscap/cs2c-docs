@@ -945,21 +945,18 @@ Get detailed analytics for a specific item.
 | Parameter | Type | Required | Default | Description |
 | --------- | ---- | -------- | ------- | ----------- |
 | `timeframe` | string | No | 24h | Time window (1h, 24h, 7d, 30d) |
-| `start_at` | datetime | No | — | Explicit start time (UTC, inclusive) |
-| `end_at` | datetime | No | — | Explicit end time (UTC, exclusive) |
 
-**Time window behavior:**
+**Response shape notes:**
 
-- if `start_at` and `end_at` are both provided, `timeframe` is ignored
-- if only one of `start_at` or `end_at` is provided, the endpoint returns `400`
-- if `end_at <= start_at`, the endpoint returns `400`
-- explicit ranges longer than 30 days return `400`
-
-**Response window metadata:**
-
-- response `meta.window` includes `window_kind`, `timeframe`, `start_at`, and `end_at`
-- explicit ranges return `window_kind="range"` and `timeframe=null`
-- preset timeframes return `window_kind="preset"`
+- `meta.window` contains preset-only metadata: `timeframe`
+- `timeframe` selects the liquidity horizon used for `data.summary.liquidity_*`
+- item-level liquidity fields live in `data.summary`
+- `timeframe=1h` reuses the `24h` liquidity horizon
+- provider rows keep pricing, bid-side, spread, depth, volume, and `bid_anomaly`
+- provider rows no longer include liquidity component metrics
+- `data.providers[].volume_24h` is always trailing 24h depletion activity
+- `data.providers[].volume_7d` is always trailing 7d depletion activity
+- `data.summary.total_volume_24h` is always the sum of trailing 24h provider volume
 
 **Example Request:**
 
@@ -1127,10 +1124,7 @@ Compute technical indicators for one item from live OHLCV candle data.
     data_source: "live";
     freshness_sec: number;
     window: {
-      window_kind: "preset" | "range";
-      timeframe: "1h" | "24h" | "7d" | "30d" | null;
-      start_at: string;
-      end_at: string;
+      timeframe: "1h" | "24h" | "7d" | "30d";
     };
   };
   data: {
@@ -1143,12 +1137,19 @@ Compute technical indicators for one item from live OHLCV candle data.
       best_ask_usd: string | null;
       best_bid_usd: string | null;
       avg_spread_pct: number | null;
+      liquidity_score: number | null;
+      listing_score: number | null;
+      gap_score: number | null;
+      volume_score: number | null;
+      doppler_bonus: boolean;
+      price_anomaly: boolean;
+      high_tier_override: boolean;
+      liquidity_last_updated: string | null;
     };
-    providers: LiquidityScore[];
+    providers: MarketItemAnalyticsProvider[];
     coverage: {
       provider_count: number;
       providers_with_volume: number;
-      providers_with_liquidity: number;
       providers_with_bid_side: number;
     };
   };
@@ -1192,20 +1193,18 @@ Compute technical indicators for one item from live OHLCV candle data.
 
 ```typescript
 {
-  item_id: number;        // Item ID
-  provider: string;       // Provider name (or \"global\")
-  liquidity_score: number; // 0-100 aggregate score
-  exec: number;           // 0-1 execution component
-  turnover: number;       // 0-1 turnover component
-  breadth: number;        // 0-1 breadth component
-  spread_pct: number | null; // Bid-ask spread percentage
-  dos: number | null;     // Days of supply (sales-based)
-  dos_proxy: number | null; // Proxy days of supply (no sales)
-  used_proxy: boolean;    // True if proxy path used
-  confidence: number;     // 0-1 data confidence
-  bid_anomaly: boolean;   // Bid >= ask anomaly
-  currency: string;       // Target currency for reference
-  last_updated: string;   // ISO 8601 timestamp
+  item_id: number;             // Item ID
+  provider: string;            // "global" for ranked liquidity listings
+  liquidity_score: number;     // 0-100 aggregate score
+  listing_score: number;       // 0-33 listing-count component
+  gap_score: number;           // 0-33 bid/ask gap component
+  volume_score: number;        // 0-34 volume component
+  doppler_bonus: boolean;      // Whether Doppler multiplier was applied
+  price_anomaly: boolean;      // Bid >= ask anomaly short-circuit
+  high_tier_override: boolean; // High-tier fallback volume override
+  volume_source: "steam" | "depletion" | "none";
+  currency: string;            // Target currency for reference
+  last_updated: string;        // ISO 8601 timestamp
 }
 ```
 

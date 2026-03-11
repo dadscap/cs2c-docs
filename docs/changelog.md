@@ -9,14 +9,24 @@ Public-facing API and platform changes.
   - `GET /v1/market/arbitrage`
   - `GET /v1/market/items/{item_id}`
   - `GET /v1/market/indicators`
-- Item analytics now support explicit `start_at` and `end_at` windows and return effective window metadata in `meta.window`.
 - Indicators support non-USD output via the `currency` parameter.
+
+## 2026-03-11
+
+- `GET /v1/market/items/{item_id}` now uses preset `timeframe` windows only.
+- The selected `timeframe` now affects the item-level liquidity summary only.
+- Provider `volume_24h` and `volume_7d` remain literal trailing windows.
+- Item analytics now return one item-level liquidity summary instead of provider-level liquidity metrics.
+- Missing or stale item liquidity is recomputed on read from live Redis market state.
+- Liquidity recomputation failures now degrade to stale-or-null liquidity instead of failing the item analytics response.
+- Steam sold counts now feed liquidity scoring when available, with depletion activity as the fallback volume signal.
+- Steam sold snapshots now carry per-item freshness metadata so stale sold counters are ignored.
+- Item analytics volume reads now use aggregate-backed depletion data instead of raw history scans.
 
 ## 2026-03-07
 
 - Added `GET /v1/items/market-ids` to expose provider-native identifiers in one authenticated response.
 - Added optional `supply` to `/v1/items`.
-- Updated market item analytics to support explicit time-range filters in addition to preset timeframes.
 - Volume analytics now use depletion-activity semantics while preserving stable response field names.
 
 ## 2026-03-04 to 2026-03-06
