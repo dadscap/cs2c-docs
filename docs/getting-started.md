@@ -133,6 +133,8 @@ curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
 
 - `401` with `AUTH_INVALID_API_KEY`: missing or invalid Bearer token
 - `403` with `AUTH_FREE_TIER_IP_RESTRICTED`: free-tier key is being used from a different source IP
+- If that happens on free tier, call `POST /v1/account/key/reset-ip` from the new IP to rebind the
+  key. The endpoint is limited to once every 24 hours.
 - `429` with `RATE_LIMIT_EXCEEDED`: slow down and respect `Retry-After`
 - `429` with `RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED`: tier quota exhausted
 - `503` with `PRICES_INDEX_UNAVAILABLE` or `BIDS_INDEX_UNAVAILABLE`: retry shortly

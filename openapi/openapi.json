@@ -3296,6 +3296,184 @@
         }
       }
     },
+    "/v1/account/key/reset-ip": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Reset Free Tier Ip Binding",
+        "description": "Rebind the active key to the caller IP for free tier with cooldown protection.",
+        "operationId": "reset_free_tier_ip_binding_v1_account_key_reset_ip_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IPResetResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "detail": "Missing Authorization header"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted to access this resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "detail": "Account is disabled"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (burst or monthly quota).",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying when present.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1.0
+                }
+              },
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant).",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Monthly request quota for this key (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0.0
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining monthly requests (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0.0
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until monthly quota reset (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0.0
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "burstRateLimit": {
+                    "summary": "Per-window rate limit exceeded",
+                    "value": {
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "detail": "Too Many Requests"
+                    }
+                  },
+                  "monthlyQuotaExceeded": {
+                    "summary": "Monthly quota exhausted",
+                    "value": {
+                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
+                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed. The detail list contains field-specific validation errors.",
+            "headers": {
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "invalidProviderEnum": {
+                    "summary": "Empty providers query value",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "enum",
+                          "loc": [
+                            "query",
+                            "providers",
+                            0
+                          ],
+                          "msg": "Input should be one of the allowed provider keys",
+                          "input": "",
+                          "ctx": {
+                            "expected": "'steam', 'skinport', 'buff163', ..."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "limitTooHigh": {
+                    "summary": "Limit exceeds maximum",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "less_than_equal",
+                          "loc": [
+                            "query",
+                            "limit"
+                          ],
+                          "msg": "Input should be less than or equal to 1000",
+                          "input": 5000,
+                          "ctx": {
+                            "le": 1000
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/v1/market/arbitrage": {
       "get": {
         "tags": [
@@ -4523,6 +4701,32 @@
         ],
         "title": "FXRatesResponse",
         "description": "FX rates response - returns USD to X conversion rates."
+      },
+      "IPResetResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok",
+            "description": "Boolean success indicator for this operation."
+          },
+          "key_id": {
+            "type": "string",
+            "title": "Key Id",
+            "description": "Unique identifier for the API key."
+          },
+          "cooldown_sec": {
+            "type": "integer",
+            "title": "Cooldown Sec",
+            "description": "Cooldown period in seconds before this action can be retried."
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "key_id",
+          "cooldown_sec"
+        ],
+        "title": "IPResetResponse"
       },
       "IndicatorDataCoverage": {
         "properties": {

@@ -88,6 +88,10 @@ Monthly quota violations use:
 }
 ```
 
+Monthly quota is charged only on public core market-data endpoints. Non-core account, billing,
+verification, and recovery routes keep burst protection but do not consume the advertised monthly
+quota.
+
 ## Response Format
 
 All responses follow a consistent JSON structure:
@@ -143,6 +147,18 @@ Error responses include a stable machine-readable `code` plus a human-readable `
 | `PRICES_INDEX_UNAVAILABLE` | Indexed prices data unavailable | Retry shortly |
 | `BIDS_INDEX_UNAVAILABLE` | Indexed bids data unavailable | Retry shortly |
 | `VALIDATION_ERROR` | Request validation failed | Check request parameters |
+
+### Account
+
+#### POST /v1/account/key/reset-ip
+
+Rebind the active API key to the caller's current IP.
+
+- Free tier: immediately replaces the previous bound IP.
+- Pro/Quant: succeeds but does not change account state.
+- Cooldown: once every 24 hours per account.
+- Authentication: Bearer API key or session JWT.
+- Monthly quota: exempt.
 
 ## Endpoints
 

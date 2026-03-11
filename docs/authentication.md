@@ -21,6 +21,8 @@ Notes:
 
 - Max 1 active API key per account.
 - Free-tier API keys are bound to a single source IP.
+- Free-tier keys can be rebound to the current caller IP with `POST /v1/account/key/reset-ip`
+  once every 24 hours.
 - Email verification is required before initial key issuance.
 
 ## Authentication Scope
@@ -51,7 +53,11 @@ API keys are tied to account tiers:
 Free tier specifics:
 
 - first successful use binds the key to a source IP
+- `POST /v1/account/key/reset-ip` rebinds the active key to the caller IP
 - analytics access is limited compared to higher tiers
+
+Monthly quota applies to public core market-data endpoints. Non-core account, billing, recovery,
+and verification routes keep burst protection but do not consume the advertised monthly quota.
 
 ## Common Auth Errors
 
