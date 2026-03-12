@@ -784,7 +784,7 @@
           "Prices"
         ],
         "summary": "Price Candles",
-        "description": "Return OHLC candle data for a single item and single provider.\n\nParameters:\n- Item filter: `item_id` or `market_hash_name` (one is required).\n- Optional filter: `phase`.\n- Required filter: `provider` (singular string key for one specific provider).\n- Time window: `start`/`end` (ISO 8601) or `lookback` (for example `7d`, `30d`).\n- `interval`: `5m`, `1h`, or `1d`.\n- `fill`: Include empty buckets with carry-forward prices when `true`.\n- `currency`: Quote currency (default `USD`).\n- `limit`, `cursor`: Cursor-based pagination controls.\n\nNotes:\n- If both `start` and `lookback` are sent, `lookback` takes precedence.\n- Maximum lookback depends on `interval`:\n  `5m` up to 7 days, `1h` up to 30 days, `1d` up to 365 days.\n\nResponse:\n- `meta`: Item, interval, provider/phase, currency, start/end.\n- `data`: Candle buckets in oldest-to-newest order (`t`, `o`, `h`, `l`, `c`).\n- `pagination`: Standardized pagination footer with cursor state.\n\nRequirements:\n- Valid API key with access to `/v1/prices/candles`.\n- `item_id` or `market_hash_name` is required.\n- `provider` is required and accepts exactly one provider key.\n- `start`/`end` must be valid ISO 8601 timestamps.\n- `limit` is capped by your tier.",
+        "description": "Return OHLCV candle data for a single item and single provider.\n\nParameters:\n- Item filter: `item_id` or `market_hash_name` (one is required).\n- Optional filter: `phase`.\n- Required filter: `provider` (singular string key for one specific provider).\n- Time window: `start`/`end` (ISO 8601) or `lookback` (for example `7d`, `30d`).\n- `interval`: `5m`, `1h`, or `1d`.\n- `fill`: Include empty buckets with carry-forward prices when `true`.\n- `currency`: Quote currency (default `USD`).\n- `limit`, `cursor`: Cursor-based pagination controls.\n\nNotes:\n- If both `start` and `lookback` are sent, `lookback` takes precedence.\n- Maximum lookback depends on `interval`:\n  `5m` up to 7 days, `1h` up to 30 days, `1d` up to 365 days.\n\nResponse:\n- `meta`: Item, interval, provider/phase, currency, start/end.\n- `data`: Candle buckets in oldest-to-newest order (`t`, `o`, `h`, `l`, `c`, `v`).\n  `v` is the last observed listing quantity in the bucket, not transaction volume.\n- `pagination`: Standardized pagination footer with cursor state.\n\nRequirements:\n- Valid API key with access to `/v1/prices/candles`.\n- `item_id` or `market_hash_name` is required.\n- `provider` is required and accepts exactly one provider key.\n- `start`/`end` must be valid ISO 8601 timestamps.\n- `limit` is capped by your tier.",
         "operationId": "price_candles_v1_prices_candles_get",
         "security": [
           {
@@ -1014,14 +1014,16 @@
                       "o": 2480,
                       "h": 2520,
                       "l": 2460,
-                      "c": 2505
+                      "c": 2505,
+                      "v": 142
                     },
                     {
                       "t": 1768910400,
                       "o": 2510,
                       "h": 2580,
                       "l": 2495,
-                      "c": 2550
+                      "c": 2550,
+                      "v": 139
                     }
                   ],
                   "pagination": {
@@ -6228,7 +6230,7 @@
           "price_anomaly": {
             "type": "boolean",
             "title": "Price Anomaly",
-            "description": "Whether a bid-above-ask anomaly was detected.",
+            "description": "Whether a same-provider bid-above-ask anomaly was detected, excluding Steam.",
             "default": false
           },
           "high_tier_override": {
@@ -6437,6 +6439,11 @@
             "type": "integer",
             "title": "C",
             "description": "Money amount in minor units of the response currency (for example USD cents when currency=USD). Divide by 100 for display."
+          },
+          "v": {
+            "type": "integer",
+            "title": "V",
+            "description": "Last observed listing quantity in the bucket. This is a supply/depth proxy, not transaction volume."
           }
         },
         "type": "object",
@@ -6445,10 +6452,11 @@
           "o",
           "h",
           "l",
-          "c"
+          "c",
+          "v"
         ],
         "title": "PriceCandleItem",
-        "description": "Single OHLC candle data point (time-varying fields only)."
+        "description": "Single OHLCV candle data point (time-varying fields only)."
       },
       "PriceCandlesMeta": {
         "properties": {

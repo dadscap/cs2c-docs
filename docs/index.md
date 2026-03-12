@@ -45,7 +45,7 @@ hide:
 
     ---
 
-    Retrieve timestamped price history and OHLC candles for trend analysis,
+    Retrieve timestamped price history and OHLCV candles for trend analysis,
     backtesting, or charting — with cursor-based pagination for deep scans.
 
     [View history endpoints](api-reference.md)

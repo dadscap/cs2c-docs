@@ -552,7 +552,7 @@ curl -H "Authorization: Bearer your_key" \
 
 Available to: `free`/`pro`/`quant`
 
-OHLC candles for a single item/provider.
+OHLCV candles for a single item/provider.
 
 **Query Parameters:**
 
@@ -598,7 +598,8 @@ curl -H "Authorization: Bearer your_key" \
       "o": 2245050,
       "h": 2250000,
       "l": 2240000,
-      "c": 2248000
+      "c": 2248000,
+      "v": 142
     }
   ],
   "pagination": {
@@ -611,6 +612,8 @@ curl -H "Authorization: Bearer your_key" \
   }
 }
 ```
+
+`v` is the last observed listing quantity in the bucket. It is a supply/depth proxy, not transaction volume, and it is not FX-converted.
 
 ---
 
@@ -989,6 +992,8 @@ Available to: `quant`
 
 Compute technical indicators for one item from live OHLCV candle data.
 
+For this endpoint, the volume-dependent indicators still use depletion-based candle `volume_qty` internally. They do not use the public `/v1/prices/candles` `v` field.
+
 **Query Parameters:**
 
 | Parameter | Type | Required | Default | Description |
@@ -1216,7 +1221,7 @@ Compute technical indicators for one item from live OHLCV candle data.
   gap_score: number;           // 0-33 bid/ask gap component
   volume_score: number;        // 0-34 volume component
   doppler_bonus: boolean;      // Whether Doppler multiplier was applied
-  price_anomaly: boolean;      // Bid >= ask anomaly short-circuit
+  price_anomaly: boolean;      // Same-provider bid > ask*1.05 anomaly short-circuit, excluding Steam
   high_tier_override: boolean; // High-tier fallback volume override
   volume_source: "steam" | "depletion" | "none";
   currency: string;            // Target currency for reference
