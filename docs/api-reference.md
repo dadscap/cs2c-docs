@@ -613,7 +613,7 @@ curl -H "Authorization: Bearer your_key" \
 }
 ```
 
-`v` is the last observed listing quantity in the bucket. It is a supply/depth proxy, not transaction volume, and it is not FX-converted.
+`v` is the bucket's depletion-derived `volume_qty` value. It is a supply-flow proxy, not transaction volume, and it is not FX-converted.
 
 ---
 
