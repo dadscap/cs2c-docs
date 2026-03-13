@@ -2124,7 +2124,7 @@
           "Items"
         ],
         "summary": "List Items",
-        "description": "Search the normalized CS2 item catalog with exact-match metadata filters and offset pagination.\n\nFilters:\n- exact catalog fields such as `item_type`, `collection`, `rarity_name`, and `phase`\n- `q` for case-insensitive substring search on `market_hash_name`\n- `item_id` for direct lookup\n\nResponse:\n- paginated item records with canonical identifiers and item metadata\n- optional `supply` values when available\n\nUse this endpoint to resolve canonical `item_id` values before calling prices, bids, sales, or market analytics.",
+        "description": "Search the normalized CS2 item catalog with exact-match metadata filters and offset pagination.\n\nFilters:\n- exact catalog fields such as `item_type`, `collection`, `rarity_name`, and `phase`\n- `q` for case-insensitive substring search on `market_hash_name`\n- `item_id` for direct lookup\n\nPagination:\n- provide `limit` to request a paginated slice (still tier-capped, endpoint max 1000)\n- omit `limit` to return all matched items from `offset` onward in one response, for any tier\n\nResponse:\n- paginated item records with canonical identifiers and item metadata\n- optional `supply` values when available\n\nUse this endpoint to resolve canonical `item_id` values before calling prices, bids, sales, or market analytics.",
         "operationId": "list_items_v1_items_get",
         "security": [
           {
@@ -2721,10 +2721,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Maximum number of items to return.",
+              "description": "Maximum number of items to return. Omit to return all matched items from `offset` onward in one response.",
               "title": "Limit"
             },
-            "description": "Maximum number of items to return."
+            "description": "Maximum number of items to return. Omit to return all matched items from `offset` onward in one response."
           },
           {
             "name": "offset",
@@ -2746,7 +2746,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginatedResponse_ItemOut_"
+                  "$ref": "#/components/schemas/ItemsPaginatedResponse_ItemOut_"
                 }
               }
             }
@@ -5440,6 +5440,82 @@
         "title": "ItemOut",
         "description": "Catalog item metadata returned by `/v1/items`."
       },
+      "ItemsPaginatedResponse_ItemOut_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ItemOut"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "List of returned items."
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/ItemsPaginationMeta",
+            "description": "Pagination metadata for this `/v1/items` response."
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "ItemsPaginatedResponse[ItemOut]"
+      },
+      "ItemsPaginationMeta": {
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Limit",
+            "description": "Items included in this response window. When `/v1/items` is called without a `limit`, this equals the number of returned items and may exceed 1000."
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Offset",
+            "description": "Starting position"
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total",
+            "description": "Total matching catalog items available."
+          },
+          "has_next": {
+            "type": "boolean",
+            "title": "Has Next",
+            "description": "More items available after current page"
+          },
+          "has_prev": {
+            "type": "boolean",
+            "title": "Has Prev",
+            "description": "Items available before current page"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor",
+            "description": "Always null for `/v1/items`, which uses offset pagination only."
+          }
+        },
+        "type": "object",
+        "required": [
+          "limit",
+          "offset",
+          "total",
+          "has_next",
+          "has_prev"
+        ],
+        "title": "ItemsPaginationMeta",
+        "description": "Pagination metadata for `/v1/items` full-catalog responses."
+      },
       "MarketArbitrageData": {
         "properties": {
           "items": {
@@ -6320,28 +6396,6 @@
         ],
         "title": "MarketTimeWindowMeta",
         "description": "Preset time window used for the analytics query."
-      },
-      "PaginatedResponse_ItemOut_": {
-        "properties": {
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/ItemOut"
-            },
-            "type": "array",
-            "title": "Items",
-            "description": "List of returned items."
-          },
-          "pagination": {
-            "$ref": "#/components/schemas/PaginationMeta",
-            "description": "Pagination metadata for this response."
-          }
-        },
-        "type": "object",
-        "required": [
-          "items",
-          "pagination"
-        ],
-        "title": "PaginatedResponse[ItemOut]"
       },
       "PaginationMeta": {
         "properties": {

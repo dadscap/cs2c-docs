@@ -177,6 +177,8 @@ Available to: `free`/`pro`/`quant`
 
 Search and retrieve items from the catalog.
 
+If `limit` is omitted, `/v1/items` returns all matched items from `offset` onward in a single response for any tier.
+
 **Query Parameters:**
 
 | Parameter          | Type          | Required | Default  | Description                                                       |
@@ -198,7 +200,7 @@ Search and retrieve items from the catalog.
 | `style_name`       | string        | No       | -        | Exact style name match (case-insensitive)                         |
 | `is_stattrak`      | boolean       | No       | -        | Filter by StatTrak items                                          |
 | `is_souvenir`      | boolean       | No       | -        | Filter by Souvenir items                                          |
-| `limit`            | integer       | No       | 100/1000 | Results per page (tier-capped: `free` = 100, `pro`/`quant` = 1000 |
+| `limit`            | integer       | No       | all matches | Results per page when provided (tier-capped: `free` = 100, `pro`/`quant` = 1000). Omit to return the full matched payload from `offset` onward |
 | `offset`           | integer       | No       | 0        | Pagination offset                                                 |
 
 **Example Request:**
