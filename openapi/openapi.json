@@ -3476,6 +3476,1561 @@
         ]
       }
     },
+    "/v1/account/watchlist": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Get Watchlist",
+        "description": "List saved watchlist items for the authenticated user.",
+        "operationId": "get_watchlist_v1_account_watchlist_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WatchlistResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication credentials.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "detail": "Missing Authorization header"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted to access this resource.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "FORBIDDEN",
+                  "detail": "Account is disabled"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (burst or monthly quota).",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "burstRateLimit": {
+                    "summary": "Per-window rate limit exceeded",
+                    "value": {
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "detail": "Too Many Requests"
+                    }
+                  },
+                  "monthlyQuotaExceeded": {
+                    "summary": "Monthly quota exhausted",
+                    "value": {
+                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
+                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying when present.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant).",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Monthly request quota for this key (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining monthly requests (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until monthly quota reset (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed. The detail list contains field-specific validation errors.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalidProviderEnum": {
+                    "summary": "Empty providers query value",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "enum",
+                          "loc": [
+                            "query",
+                            "providers",
+                            0
+                          ],
+                          "msg": "Input should be one of the allowed provider keys",
+                          "input": "",
+                          "ctx": {
+                            "expected": "'steam', 'skinport', 'buff163', ..."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "limitTooHigh": {
+                    "summary": "Limit exceeds maximum",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "less_than_equal",
+                          "loc": [
+                            "query",
+                            "limit"
+                          ],
+                          "msg": "Input should be less than or equal to 1000",
+                          "input": 5000,
+                          "ctx": {
+                            "le": 1000
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Create Watchlist Entry",
+        "description": "Save one item to the default account watchlist.",
+        "operationId": "create_watchlist_entry_v1_account_watchlist_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WatchlistCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WatchlistItem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication credentials.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "detail": "Missing Authorization header"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted to access this resource.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "FORBIDDEN",
+                  "detail": "Account is disabled"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (burst or monthly quota).",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "burstRateLimit": {
+                    "summary": "Per-window rate limit exceeded",
+                    "value": {
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "detail": "Too Many Requests"
+                    }
+                  },
+                  "monthlyQuotaExceeded": {
+                    "summary": "Monthly quota exhausted",
+                    "value": {
+                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
+                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying when present.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant).",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Monthly request quota for this key (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining monthly requests (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until monthly quota reset (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed. The detail list contains field-specific validation errors.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalidProviderEnum": {
+                    "summary": "Empty providers query value",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "enum",
+                          "loc": [
+                            "query",
+                            "providers",
+                            0
+                          ],
+                          "msg": "Input should be one of the allowed provider keys",
+                          "input": "",
+                          "ctx": {
+                            "expected": "'steam', 'skinport', 'buff163', ..."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "limitTooHigh": {
+                    "summary": "Limit exceeds maximum",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "less_than_equal",
+                          "loc": [
+                            "query",
+                            "limit"
+                          ],
+                          "msg": "Input should be less than or equal to 1000",
+                          "input": 5000,
+                          "ctx": {
+                            "le": 1000
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/account/watchlist/{item_id}": {
+      "delete": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Delete Watchlist Entry",
+        "description": "Delete one item from the default account watchlist.",
+        "operationId": "delete_watchlist_entry_v1_account_watchlist__item_id__delete",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountMutationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication credentials.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "detail": "Missing Authorization header"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted to access this resource.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "FORBIDDEN",
+                  "detail": "Account is disabled"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (burst or monthly quota).",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "burstRateLimit": {
+                    "summary": "Per-window rate limit exceeded",
+                    "value": {
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "detail": "Too Many Requests"
+                    }
+                  },
+                  "monthlyQuotaExceeded": {
+                    "summary": "Monthly quota exhausted",
+                    "value": {
+                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
+                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying when present.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant).",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Monthly request quota for this key (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining monthly requests (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until monthly quota reset (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed. The detail list contains field-specific validation errors.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalidProviderEnum": {
+                    "summary": "Empty providers query value",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "enum",
+                          "loc": [
+                            "query",
+                            "providers",
+                            0
+                          ],
+                          "msg": "Input should be one of the allowed provider keys",
+                          "input": "",
+                          "ctx": {
+                            "expected": "'steam', 'skinport', 'buff163', ..."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "limitTooHigh": {
+                    "summary": "Limit exceeds maximum",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "less_than_equal",
+                          "loc": [
+                            "query",
+                            "limit"
+                          ],
+                          "msg": "Input should be less than or equal to 1000",
+                          "input": 5000,
+                          "ctx": {
+                            "le": 1000
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/account/alerts": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Get Alerts",
+        "description": "List configured alerts for the authenticated user.",
+        "operationId": "get_alerts_v1_account_alerts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "detail": "Missing Authorization header"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted to access this resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "detail": "Account is disabled"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (burst or monthly quota).",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying when present.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1.0
+                }
+              },
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant).",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Monthly request quota for this key (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0.0
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining monthly requests (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0.0
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until monthly quota reset (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0.0
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "burstRateLimit": {
+                    "summary": "Per-window rate limit exceeded",
+                    "value": {
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "detail": "Too Many Requests"
+                    }
+                  },
+                  "monthlyQuotaExceeded": {
+                    "summary": "Monthly quota exhausted",
+                    "value": {
+                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
+                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed. The detail list contains field-specific validation errors.",
+            "headers": {
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "invalidProviderEnum": {
+                    "summary": "Empty providers query value",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "enum",
+                          "loc": [
+                            "query",
+                            "providers",
+                            0
+                          ],
+                          "msg": "Input should be one of the allowed provider keys",
+                          "input": "",
+                          "ctx": {
+                            "expected": "'steam', 'skinport', 'buff163', ..."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "limitTooHigh": {
+                    "summary": "Limit exceeds maximum",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "less_than_equal",
+                          "loc": [
+                            "query",
+                            "limit"
+                          ],
+                          "msg": "Input should be less than or equal to 1000",
+                          "input": 5000,
+                          "ctx": {
+                            "le": 1000
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Create Alert Route",
+        "description": "Create a new account alert.",
+        "operationId": "create_alert_route_v1_account_alerts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertDefinition"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "detail": "Missing Authorization header"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted to access this resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "detail": "Account is disabled"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (burst or monthly quota).",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying when present.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1.0
+                }
+              },
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant).",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Monthly request quota for this key (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0.0
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining monthly requests (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0.0
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until monthly quota reset (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0.0
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "burstRateLimit": {
+                    "summary": "Per-window rate limit exceeded",
+                    "value": {
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "detail": "Too Many Requests"
+                    }
+                  },
+                  "monthlyQuotaExceeded": {
+                    "summary": "Monthly quota exhausted",
+                    "value": {
+                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
+                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed. The detail list contains field-specific validation errors.",
+            "headers": {
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
+                "examples": {
+                  "invalidProviderEnum": {
+                    "summary": "Empty providers query value",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "enum",
+                          "loc": [
+                            "query",
+                            "providers",
+                            0
+                          ],
+                          "msg": "Input should be one of the allowed provider keys",
+                          "input": "",
+                          "ctx": {
+                            "expected": "'steam', 'skinport', 'buff163', ..."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "limitTooHigh": {
+                    "summary": "Limit exceeds maximum",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "less_than_equal",
+                          "loc": [
+                            "query",
+                            "limit"
+                          ],
+                          "msg": "Input should be less than or equal to 1000",
+                          "input": 5000,
+                          "ctx": {
+                            "le": 1000
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/account/alerts/{alert_id}": {
+      "patch": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Patch Alert",
+        "description": "Update an existing account alert.",
+        "operationId": "patch_alert_v1_account_alerts__alert_id__patch",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertDefinition"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication credentials.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "detail": "Missing Authorization header"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted to access this resource.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "FORBIDDEN",
+                  "detail": "Account is disabled"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (burst or monthly quota).",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "burstRateLimit": {
+                    "summary": "Per-window rate limit exceeded",
+                    "value": {
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "detail": "Too Many Requests"
+                    }
+                  },
+                  "monthlyQuotaExceeded": {
+                    "summary": "Monthly quota exhausted",
+                    "value": {
+                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
+                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying when present.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant).",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Monthly request quota for this key (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining monthly requests (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until monthly quota reset (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed. The detail list contains field-specific validation errors.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalidProviderEnum": {
+                    "summary": "Empty providers query value",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "enum",
+                          "loc": [
+                            "query",
+                            "providers",
+                            0
+                          ],
+                          "msg": "Input should be one of the allowed provider keys",
+                          "input": "",
+                          "ctx": {
+                            "expected": "'steam', 'skinport', 'buff163', ..."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "limitTooHigh": {
+                    "summary": "Limit exceeds maximum",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "less_than_equal",
+                          "loc": [
+                            "query",
+                            "limit"
+                          ],
+                          "msg": "Input should be less than or equal to 1000",
+                          "input": 5000,
+                          "ctx": {
+                            "le": 1000
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Delete Alert Route",
+        "description": "Delete an account alert.",
+        "operationId": "delete_alert_route_v1_account_alerts__alert_id__delete",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountMutationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication credentials.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "detail": "Missing Authorization header"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted to access this resource.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "FORBIDDEN",
+                  "detail": "Account is disabled"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (burst or monthly quota).",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "burstRateLimit": {
+                    "summary": "Per-window rate limit exceeded",
+                    "value": {
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "detail": "Too Many Requests"
+                    }
+                  },
+                  "monthlyQuotaExceeded": {
+                    "summary": "Monthly quota exhausted",
+                    "value": {
+                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
+                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying when present.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant).",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Monthly request quota for this key (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining monthly requests (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until monthly quota reset (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed. The detail list contains field-specific validation errors.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalidProviderEnum": {
+                    "summary": "Empty providers query value",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "enum",
+                          "loc": [
+                            "query",
+                            "providers",
+                            0
+                          ],
+                          "msg": "Input should be one of the allowed provider keys",
+                          "input": "",
+                          "ctx": {
+                            "expected": "'steam', 'skinport', 'buff163', ..."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "limitTooHigh": {
+                    "summary": "Limit exceeds maximum",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "less_than_equal",
+                          "loc": [
+                            "query",
+                            "limit"
+                          ],
+                          "msg": "Input should be less than or equal to 1000",
+                          "input": 5000,
+                          "ctx": {
+                            "le": 1000
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/account/alerts/events": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Get Alert Event History",
+        "description": "List recent alert trigger events with delivery status.",
+        "operationId": "get_alert_event_history_v1_account_alerts_events_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertEventsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication credentials.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "detail": "Missing Authorization header"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted to access this resource.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "FORBIDDEN",
+                  "detail": "Account is disabled"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (burst or monthly quota).",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "burstRateLimit": {
+                    "summary": "Per-window rate limit exceeded",
+                    "value": {
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "detail": "Too Many Requests"
+                    }
+                  },
+                  "monthlyQuotaExceeded": {
+                    "summary": "Monthly quota exhausted",
+                    "value": {
+                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
+                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying when present.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant).",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Monthly request quota for this key (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining monthly requests (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until monthly quota reset (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed. The detail list contains field-specific validation errors.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalidProviderEnum": {
+                    "summary": "Empty providers query value",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "enum",
+                          "loc": [
+                            "query",
+                            "providers",
+                            0
+                          ],
+                          "msg": "Input should be one of the allowed provider keys",
+                          "input": "",
+                          "ctx": {
+                            "expected": "'steam', 'skinport', 'buff163', ..."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "limitTooHigh": {
+                    "summary": "Limit exceeds maximum",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "less_than_equal",
+                          "loc": [
+                            "query",
+                            "limit"
+                          ],
+                          "msg": "Input should be less than or equal to 1000",
+                          "input": 5000,
+                          "ctx": {
+                            "le": 1000
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/market/arbitrage": {
       "get": {
         "tags": [
@@ -4372,6 +5927,389 @@
   },
   "components": {
     "schemas": {
+      "AccountMutationResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok",
+            "description": "Boolean success indicator for this operation."
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "title": "AccountMutationResponse"
+      },
+      "AlertCreateRequest": {
+        "properties": {
+          "item_id": {
+            "type": "integer",
+            "title": "Item Id",
+            "description": "Normalized catalog item ID to monitor."
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "Alert kind: price_below, price_above, or spread_exceeds."
+          },
+          "threshold_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              }
+            ],
+            "title": "Threshold Value",
+            "description": "Threshold value in alert units."
+          },
+          "threshold_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold Currency",
+            "description": "Currency code for price alerts; omit for spread alerts."
+          },
+          "is_enabled": {
+            "type": "boolean",
+            "title": "Is Enabled",
+            "description": "Whether the alert should be enabled immediately.",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "item_id",
+          "kind",
+          "threshold_value"
+        ],
+        "title": "AlertCreateRequest"
+      },
+      "AlertDefinition": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique alert identifier."
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "Alert kind."
+          },
+          "threshold_value": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Threshold Value",
+            "description": "Threshold value in configured units."
+          },
+          "threshold_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold Currency",
+            "description": "Currency code for price alerts; null for spread alerts."
+          },
+          "is_enabled": {
+            "type": "boolean",
+            "title": "Is Enabled",
+            "description": "Whether the alert is enabled."
+          },
+          "last_triggered_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Triggered At",
+            "description": "ISO 8601 UTC timestamp of the most recent trigger."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "ISO 8601 UTC timestamp when the alert was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "description": "ISO 8601 UTC timestamp when the alert was last updated."
+          },
+          "item": {
+            "$ref": "#/components/schemas/AlertItemSummary",
+            "description": "Item metadata for the alert target."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "threshold_value",
+          "is_enabled",
+          "created_at",
+          "updated_at",
+          "item"
+        ],
+        "title": "AlertDefinition",
+        "description": "Configured alert rule."
+      },
+      "AlertDeliverySummary": {
+        "properties": {
+          "channel": {
+            "type": "string",
+            "title": "Channel",
+            "description": "Delivery channel key."
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Delivery status."
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Failure message when delivery fails."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "ISO 8601 UTC timestamp when this delivery row was created."
+          }
+        },
+        "type": "object",
+        "required": [
+          "channel",
+          "status",
+          "created_at"
+        ],
+        "title": "AlertDeliverySummary",
+        "description": "Outbound delivery result for one alert event."
+      },
+      "AlertEventSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique event identifier."
+          },
+          "alert_id": {
+            "type": "string",
+            "title": "Alert Id",
+            "description": "Alert identifier that triggered."
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "Alert kind."
+          },
+          "item": {
+            "$ref": "#/components/schemas/AlertItemSummary",
+            "description": "Item metadata for the triggered alert."
+          },
+          "triggered_value": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Triggered Value",
+            "description": "Observed value that triggered the alert."
+          },
+          "triggered_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Triggered Currency",
+            "description": "Currency code for observed price values; null for spread alerts."
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Human-readable trigger reason."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "ISO 8601 UTC timestamp when the event was created."
+          },
+          "deliveries": {
+            "items": {
+              "$ref": "#/components/schemas/AlertDeliverySummary"
+            },
+            "type": "array",
+            "title": "Deliveries",
+            "description": "Delivery attempts for this event."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "alert_id",
+          "kind",
+          "item",
+          "triggered_value",
+          "created_at",
+          "deliveries"
+        ],
+        "title": "AlertEventSummary",
+        "description": "Recent alert trigger event."
+      },
+      "AlertEventsResponse": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/AlertEventSummary"
+            },
+            "type": "array",
+            "title": "Events",
+            "description": "Recent alert trigger events."
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationMeta",
+            "description": "Cursor pagination metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "events",
+          "pagination"
+        ],
+        "title": "AlertEventsResponse",
+        "description": "Paginated alert event history."
+      },
+      "AlertItemSummary": {
+        "properties": {
+          "item_id": {
+            "type": "integer",
+            "title": "Item Id",
+            "description": "Normalized catalog item ID."
+          },
+          "market_hash_name": {
+            "type": "string",
+            "title": "Market Hash Name",
+            "description": "Canonical Steam market hash name for the item."
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase",
+            "description": "Phased finish/variant label when applicable."
+          }
+        },
+        "type": "object",
+        "required": [
+          "item_id",
+          "market_hash_name"
+        ],
+        "title": "AlertItemSummary",
+        "description": "Item metadata attached to an alert."
+      },
+      "AlertListResponse": {
+        "properties": {
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/AlertDefinition"
+            },
+            "type": "array",
+            "title": "Alerts",
+            "description": "Configured alert rules."
+          }
+        },
+        "type": "object",
+        "required": [
+          "alerts"
+        ],
+        "title": "AlertListResponse",
+        "description": "List response for configured alerts."
+      },
+      "AlertUpdateRequest": {
+        "properties": {
+          "threshold_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold Value",
+            "description": "Updated threshold value."
+          },
+          "threshold_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold Currency",
+            "description": "Updated currency code for price alerts."
+          },
+          "is_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Enabled",
+            "description": "Updated enabled state."
+          }
+        },
+        "type": "object",
+        "title": "AlertUpdateRequest"
+      },
       "AllProviders": {
         "type": "string",
         "enum": [
@@ -7538,6 +9476,89 @@
         ],
         "title": "ValidationErrorResponse",
         "description": "Validation error response payload returned for 422 responses."
+      },
+      "WatchlistCreateRequest": {
+        "properties": {
+          "item_id": {
+            "type": "integer",
+            "title": "Item Id",
+            "description": "Normalized catalog item ID to save to the watchlist."
+          }
+        },
+        "type": "object",
+        "required": [
+          "item_id"
+        ],
+        "title": "WatchlistCreateRequest"
+      },
+      "WatchlistItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier for this saved entry."
+          },
+          "item_id": {
+            "type": "integer",
+            "title": "Item Id",
+            "description": "Normalized catalog item ID."
+          },
+          "market_hash_name": {
+            "type": "string",
+            "title": "Market Hash Name",
+            "description": "Canonical Steam market hash name for the item."
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase",
+            "description": "Phased finish/variant label when applicable."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "ISO 8601 UTC timestamp when this entry was created."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "item_id",
+          "market_hash_name",
+          "created_at"
+        ],
+        "title": "WatchlistItem",
+        "description": "One saved watchlist entry."
+      },
+      "WatchlistResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/WatchlistItem"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "Saved watchlist entries."
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationMeta",
+            "description": "Cursor pagination metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "pagination"
+        ],
+        "title": "WatchlistResponse",
+        "description": "Paginated watchlist response."
       }
     },
     "securitySchemes": {
