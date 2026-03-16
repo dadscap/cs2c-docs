@@ -784,7 +784,7 @@
           "Prices"
         ],
         "summary": "Price Candles",
-        "description": "Return OHLCV candle data for a single item and single provider.\n\nParameters:\n- Item filter: `item_id` or `market_hash_name` (one is required).\n- Optional filter: `phase`.\n- Required filter: `provider` (singular string key for one specific provider).\n- Time window: `start`/`end` (ISO 8601) or `lookback` (for example `7d`, `30d`).\n- `interval`: `5m`, `1h`, or `1d`.\n- `fill`: Include empty buckets with carry-forward prices when `true`.\n- `currency`: Quote currency (default `USD`).\n- `limit`, `cursor`: Cursor-based pagination controls.\n\nNotes:\n- If both `start` and `lookback` are sent, `lookback` takes precedence.\n- Maximum lookback depends on `interval`:\n  `5m` up to 7 days, `1h` up to 30 days, `1d` up to 365 days.\n\nResponse:\n- `meta`: Item, interval, provider/phase, currency, start/end.\n- `data`: Candle buckets in oldest-to-newest order (`t`, `o`, `h`, `l`, `c`, `v`).\n  `v` is depletion-derived bucket quantity (`volume_qty`), not transaction volume.\n- `pagination`: Standardized pagination footer with cursor state.\n\nRequirements:\n- Valid API key with access to `/v1/prices/candles`.\n- `item_id` or `market_hash_name` is required.\n- `provider` is required and accepts exactly one provider key.\n- `start`/`end` must be valid ISO 8601 timestamps.\n- `limit` is capped by your tier.",
+        "description": "Return composite OHLCV candle data for a single item across all providers.\n\nParameters:\n- Item filter: `item_id` or `market_hash_name` (one is required).\n- Optional filter: `phase`.\n- Time window: `start`/`end` (ISO 8601) or `lookback` (for example `7d`, `30d`).\n- `interval`: `5m`, `1h`, or `1d`.\n- `fill`: Include empty buckets with carry-forward prices when `true`.\n- `currency`: Quote currency (default `USD`).\n- `limit`, `cursor`: Cursor-based pagination controls.\n\nNotes:\n- If both `start` and `lookback` are sent, `lookback` takes precedence.\n- Maximum lookback depends on `interval`:\n  `5m` up to 7 days, `1h` up to 30 days, `1d` up to 365 days.\n\nResponse:\n- `meta`: Item, interval, fixed provider label (`All Providers`), phase, currency, start/end.\n- `data`: Candle buckets in oldest-to-newest order (`t`, `o`, `h`, `l`, `c`, `v`).\n  `o`/`c` are unweighted averages across provider snapshots, `l` is the minimum provider\n  low, `h` is capped at `median(provider_highs) * 1.5`, and `v` is the summed close-side\n  listing count across providers. For `1d` requests starting more than 30 days back,\n  `v` falls back to legacy depletion-derived `volume_qty`.\n- `pagination`: Standardized pagination footer with cursor state.\n\nRequirements:\n- Valid API key with access to `/v1/prices/candles`.\n- `item_id` or `market_hash_name` is required.\n- `start`/`end` must be valid ISO 8601 timestamps.\n- `limit` is capped by your tier.",
         "operationId": "price_candles_v1_prices_candles_get",
         "security": [
           {
@@ -845,17 +845,6 @@
               "title": "Phase"
             },
             "description": "Filter by phase (e.g., Phase 1, Ruby, Sapphire)"
-          },
-          {
-            "name": "provider",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "Single provider key string (singular parameter, required; e.g. provider=steam).",
-              "title": "Provider"
-            },
-            "description": "Single provider key string (singular parameter, required; e.g. provider=steam)."
           },
           {
             "name": "start",
@@ -1002,7 +991,7 @@
                   "meta": {
                     "item_id": 156,
                     "market_hash_name": "AK-47 | Redline (Field-Tested)",
-                    "provider": "Steam Community Market",
+                    "provider": "All Providers",
                     "currency": "USD",
                     "interval": "1h",
                     "start": "2026-01-20T00:00:00Z",
@@ -1011,19 +1000,19 @@
                   "data": [
                     {
                       "t": 1768906800,
-                      "o": 2480,
-                      "h": 2520,
+                      "o": 2508,
+                      "h": 2535,
                       "l": 2460,
-                      "c": 2505,
-                      "v": 142
+                      "c": 2516,
+                      "v": 179
                     },
                     {
                       "t": 1768910400,
-                      "o": 2510,
-                      "h": 2580,
-                      "l": 2495,
-                      "c": 2550,
-                      "v": 139
+                      "o": 2522,
+                      "h": 2560,
+                      "l": 2490,
+                      "c": 2544,
+                      "v": 176
                     }
                   ],
                   "pagination": {
@@ -1239,6 +1228,12 @@
                     "summary": "Invalid cursor",
                     "value": {
                       "detail": "invalid cursor format"
+                    }
+                  },
+                  "legacyProvider": {
+                    "summary": "Removed provider parameter",
+                    "value": {
+                      "detail": "provider parameter has been removed; /v1/prices/candles now returns composite candles across all providers"
                     }
                   }
                 },

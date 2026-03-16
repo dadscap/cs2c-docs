@@ -554,7 +554,7 @@ curl -H "Authorization: Bearer your_key" \
 
 Available to: `free`/`pro`/`quant`
 
-OHLCV candles for a single item/provider.
+Composite OHLCV candles for a single item across all providers.
 
 **Query Parameters:**
 
@@ -563,7 +563,6 @@ OHLCV candles for a single item/provider.
 | `item_id`          | integer | Conditionally | -        | Item ID (required if `market_hash_name` not provided)                                                                        |
 | `market_hash_name` | string  | Conditionally | -        | Item name (required if `item_id` not provided)                                                                               |
 | `phase`            | string  | No            | -        | Optional phase filter                                                                                                        |
-| `provider`         | string  | Yes           | -        | Single provider key string (`provider=...`, exactly one provider)                                                            |
 | `start`            | string  | No            | -        | ISO 8601 start timestamp                                                                                                     |
 | `end`              | string  | No            | now      | ISO 8601 end timestamp                                                                                                       |
 | `lookback`         | string  | No            | -        | Duration shorthand (`7d`, `30d`); overrides `start`                                                                          |
@@ -577,7 +576,7 @@ OHLCV candles for a single item/provider.
 
 ```bash
 curl -H "Authorization: Bearer your_key" \
-  "https://api.cs2c.app/v1/prices/candles?item_id=156&provider=steam&interval=1h&lookback=7d"
+  "https://api.cs2c.app/v1/prices/candles?item_id=156&interval=1h&lookback=7d"
 ```
 
 **Example Response:**
@@ -588,7 +587,7 @@ curl -H "Authorization: Bearer your_key" \
     "item_id": 156,
     "market_hash_name": "AWP | Dragon Lore (Factory New)",
     "phase": null,
-    "provider": "Steam Community Market",
+    "provider": "All Providers",
     "currency": "USD",
     "interval": "1h",
     "start": "2025-12-22T10:30:00+00:00",
@@ -597,11 +596,11 @@ curl -H "Authorization: Bearer your_key" \
   "data": [
     {
       "t": 1766998800,
-      "o": 2245050,
-      "h": 2250000,
+      "o": 2247525,
+      "h": 2253500,
       "l": 2240000,
-      "c": 2248000,
-      "v": 142
+      "c": 2249100,
+      "v": 179
     }
   ],
   "pagination": {
@@ -615,7 +614,7 @@ curl -H "Authorization: Bearer your_key" \
 }
 ```
 
-`v` is the bucket's depletion-derived `volume_qty` value. It is a supply-flow proxy, not transaction volume, and it is not FX-converted.
+`o` and `c` are unweighted averages across provider snapshots in the response currency. `l` is the minimum provider low, `h` is capped at `median(provider_highs) * 1.5`, and `v` is the summed close-side listing count across providers. For `1d` windows starting more than 30 days back, `v` falls back to legacy depletion-derived `volume_qty`.
 
 ---
 
