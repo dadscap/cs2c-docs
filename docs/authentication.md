@@ -14,8 +14,9 @@ Authorization: Bearer your_api_key_here
 
 1. Sign up with a supported OAuth provider.
 2. Set and verify an email address for the account.
-3. Read the initial API key, or reissue one, through the account flow.
-4. Use the key for market-data requests with `Authorization: Bearer {api_key}`.
+3. Open the verification link and explicitly confirm it, or call the confirm endpoint directly.
+4. Read the initial API key, or reissue one, through the account flow.
+5. Use the key for market-data requests with `Authorization: Bearer {api_key}`.
 
 Notes:
 
@@ -24,6 +25,11 @@ Notes:
 - Free-tier keys can be rebound to the current caller IP with `POST /v1/account/key/reset-ip`
   once every 24 hours.
 - Email verification is required before initial key issuance.
+- Browser verification links are safe on `GET`; the token is consumed only after explicit
+  confirmation.
+- `POST /v1/account/email` can return `503` if the email was saved but delivery failed; retry or
+  resend verification in that case.
+- Plaintext API-key responses are marked non-cacheable.
 
 ## Authentication Scope
 
