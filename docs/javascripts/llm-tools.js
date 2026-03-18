@@ -242,46 +242,113 @@
     }, 2200);
   }
 
-  function installSidebarTools() {
-    const sidebarInner = document.querySelector(".md-sidebar--secondary .md-sidebar__inner");
-    const drawerToggle = document.getElementById("__drawer");
-    if (!sidebarInner || !drawerToggle || sidebarInner.querySelector(".cs2c-sidebar-tools")) {
-      return;
-    }
-
-    const navTitle = sidebarInner.querySelector(".md-nav--secondary > .md-nav__title");
-    if (navTitle) {
+  function relabelTocTitles() {
+    document.querySelectorAll(".md-nav--secondary > .md-nav__title").forEach((navTitle) => {
       navTitle.childNodes.forEach((child) => {
         if (child.nodeType === Node.TEXT_NODE) {
           child.textContent = "";
         }
       });
+
       if (!navTitle.dataset.cs2cRelabeled) {
         navTitle.append(document.createTextNode("On this page"));
         navTitle.dataset.cs2cRelabeled = "true";
       }
+    });
+  }
+
+  function setCollapsed(item, collapsed) {
+    item.dataset.cs2cCollapsed = collapsed ? "true" : "false";
+    const button = item.querySelector(":scope > .cs2c-toc-toggle");
+    if (button) {
+      button.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    }
+  }
+
+  function expandAncestorItems(item) {
+    let current = item;
+    while (current) {
+      if (current.classList.contains("cs2c-toc-item--collapsible")) {
+        setCollapsed(current, false);
+      }
+      current = current.parentElement ? current.parentElement.closest(".md-nav__item") : null;
+    }
+  }
+
+  function currentHashMatches(link) {
+    const href = link.getAttribute("href");
+    if (!href || !window.location.hash) {
+      return false;
+    }
+    return href === window.location.hash;
+  }
+
+  function installCollapsibleToc(nav, depth) {
+    const list = nav.querySelector(":scope > .md-nav__list");
+    if (!list) {
+      return;
     }
 
-    const tools = document.createElement("div");
-    tools.className = "cs2c-sidebar-tools";
+    Array.from(list.children)
+      .filter((child) => child.classList && child.classList.contains("md-nav__item"))
+      .forEach((item) => {
+        const link = item.querySelector(":scope > .md-nav__link");
+        const childNav = item.querySelector(":scope > .md-nav");
 
-    const label = document.createElement("div");
-    label.className = "cs2c-sidebar-tools__label";
-    label.textContent = "Docs";
+        if (childNav) {
+          item.classList.add("cs2c-toc-item--collapsible");
 
-    const button = document.createElement("button");
-    button.className = "cs2c-sidebar-tools__button";
-    button.type = "button";
-    button.setAttribute("aria-label", "Browse docs navigation");
-    button.innerHTML =
-      '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>';
-    button.addEventListener("click", () => {
-      drawerToggle.checked = !drawerToggle.checked;
+          let toggle = item.querySelector(":scope > .cs2c-toc-toggle");
+          if (!toggle) {
+            toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.className = "cs2c-toc-toggle";
+            toggle.setAttribute("aria-label", `Toggle ${text(link || item)}`);
+            toggle.innerHTML =
+              '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m7 10 5 5 5-5z"/></svg>';
+            toggle.addEventListener("click", (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              const collapsed = item.dataset.cs2cCollapsed === "true";
+              setCollapsed(item, !collapsed);
+            });
+            item.insertBefore(toggle, childNav);
+          }
+
+          if (!item.dataset.cs2cCollapseInitialized) {
+            const containsCurrentHash = Array.from(item.querySelectorAll('a[href^="#"]')).some(currentHashMatches);
+            const defaultCollapsed = depth >= 1 && !containsCurrentHash;
+            setCollapsed(item, defaultCollapsed);
+            item.dataset.cs2cCollapseInitialized = "true";
+          }
+
+          installCollapsibleToc(childNav, depth + 1);
+        }
+
+        if (link && currentHashMatches(link)) {
+          expandAncestorItems(item);
+        }
+      });
+  }
+
+  function installTocBehavior() {
+    relabelTocTitles();
+
+    document.querySelectorAll(".md-sidebar--primary .md-nav--secondary").forEach((nav) => {
+      installCollapsibleToc(nav, 0);
+      nav.querySelectorAll('a[href^="#"]').forEach((link) => {
+        if (link.dataset.cs2cTocBound === "true") {
+          return;
+        }
+        link.dataset.cs2cTocBound = "true";
+        link.addEventListener("click", () => {
+          const item = link.closest(".md-nav__item");
+          if (item) {
+            expandAncestorItems(item);
+          }
+        });
+      });
     });
-
-    tools.appendChild(label);
-    tools.appendChild(button);
-    sidebarInner.prepend(tools);
   }
 
   function installPageTools() {
@@ -349,7 +416,7 @@
 
   function installTools() {
     removeDuplicateApiReferenceBlock();
-    installSidebarTools();
+    installTocBehavior();
     installPageTools();
   }
 
@@ -364,4 +431,8 @@
       installTools();
     });
   }
+
+  window.addEventListener("hashchange", () => {
+    installTocBehavior();
+  });
 })();

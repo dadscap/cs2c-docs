@@ -35,10 +35,10 @@ theme:
     - content.code.annotate
 
 extra_css:
-  - stylesheets/extra.css?v=20260318b
+  - stylesheets/extra.css?v=20260318c
 
 extra_javascript:
-  - javascripts/llm-tools.js?v=20260318b
+  - javascripts/llm-tools.js?v=20260318c
 
 extra:
   social:
