@@ -29,7 +29,6 @@ theme:
     - navigation.instant
     - navigation.instant.progress
     - toc.follow
-    - toc.integrate
     - search.suggest
     - search.highlight
     - content.code.copy
