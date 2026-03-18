@@ -1,9 +1,6 @@
-# Getting Started
+# Quickstart
 
-## Prerequisites
-
-- An API key
-- `curl`, Python, or a JavaScript runtime
+Get from zero to a successful request with one API key and one endpoint.
 
 ## 1. Set Environment Variables
 
@@ -14,62 +11,68 @@ export CS2C_API_KEY="your_api_key_here"
 
 ## 2. Make Your First Request
 
-### cURL
+=== "cURL"
 
-```bash
-curl -sS \
-  -H "Authorization: Bearer $CS2C_API_KEY" \
-  "$CS2C_API_BASE/v1/prices?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=steam&currency=USD&limit=5"
-```
+    ```bash
+    curl -sS \
+      -H "Authorization: Bearer $CS2C_API_KEY" \
+      "$CS2C_API_BASE/v1/prices?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=steam&currency=USD&limit=5"
+    ```
 
-### Python
+=== "Python"
 
-```python
-import os
-import requests
+    ```python
+    import os
+    import requests
 
-base = os.environ["CS2C_API_BASE"]
-key = os.environ["CS2C_API_KEY"]
+    base = os.environ["CS2C_API_BASE"]
+    key = os.environ["CS2C_API_KEY"]
 
-response = requests.get(
-    f"{base}/v1/prices",
-    headers={"Authorization": f"Bearer {key}"},
-    params={
-        "market_hash_name": "AK-47 | Redline (Field-Tested)",
-        "providers": "steam",
-        "currency": "USD",
-        "limit": 5,
-    },
-    timeout=20,
-)
-response.raise_for_status()
-print(response.json())
-```
+    response = requests.get(
+        f"{base}/v1/prices",
+        headers={"Authorization": f"Bearer {key}"},
+        params={
+            "market_hash_name": "AK-47 | Redline (Field-Tested)",
+            "providers": "steam",
+            "currency": "USD",
+            "limit": 5,
+        },
+        timeout=20,
+    )
+    response.raise_for_status()
+    print(response.json())
+    ```
 
-### JavaScript
+=== "JavaScript"
 
-```javascript
-const base = process.env.CS2C_API_BASE;
-const key = process.env.CS2C_API_KEY;
+    ```javascript
+    const base = process.env.CS2C_API_BASE;
+    const key = process.env.CS2C_API_KEY;
 
-const url = new URL(`${base}/v1/prices`);
-url.searchParams.set('market_hash_name', 'AK-47 | Redline (Field-Tested)');
-url.searchParams.set('providers', 'steam');
-url.searchParams.set('currency', 'USD');
-url.searchParams.set('limit', '5');
+    const url = new URL(`${base}/v1/prices`);
+    url.searchParams.set('market_hash_name', 'AK-47 | Redline (Field-Tested)');
+    url.searchParams.set('providers', 'steam');
+    url.searchParams.set('currency', 'USD');
+    url.searchParams.set('limit', '5');
 
-const response = await fetch(url, {
-  headers: { Authorization: `Bearer ${key}` },
-});
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${key}` },
+    });
 
-if (!response.ok) {
-  throw new Error(`${response.status} ${await response.text()}`);
-}
+    if (!response.ok) {
+      throw new Error(`${response.status} ${await response.text()}`);
+    }
 
-console.log(await response.json());
-```
+    console.log(await response.json());
+    ```
 
 ## 3. Response
+
+List endpoints generally return:
+
+- `items`: returned records
+- `meta`: applied filters and response context when relevant
+- `pagination`: page state and limits
 
 ```json
 {
@@ -111,48 +114,33 @@ console.log(await response.json());
 }
 ```
 
-Example:
-
-- `lowest_ask: 2550` with `currency: USD` means `$25.50`
+`lowest_ask: 2550` with `currency: USD` means `$25.50`.
 
 ## 4. Common Next Requests
 
-### Get an item's `item_id` (Free/Pro/Quant plans)
-
 ```bash
+# Get an item's `item_id`
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/v1/items?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&limit=1"
-```
 
-### Get all marketplace-specific IDs (Free/Pro/Quant plans)
-
-```bash
+# Get all marketplace-specific IDs
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/v1/items/market-ids"
-```
 
-### Get current buy orders (Pro/Quant plans)
-
-```bash
+# Get current buy orders (`pro`/`quant`)
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/v1/bids?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=steam&limit=5"
-```
 
-### Get most recent sales (Pro/Quant plans)
-
-```bash
+# Get recent sales (`pro`/`quant`)
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/v1/sales?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=csfloat&limit=10"
-```
 
-### Get snapshot of all prices across all providers at once (Quant plans) [Rate limit: 1 request/5 minutes]
-
-```bash
+# Get historical prices (`pro`/`quant`)
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/v1/prices/history?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&provider=steam&limit=50"
 ```
 
-## 5. Quick Troubleshooting
+## 5. Common Failures
 
 - `401` with `AUTH_INVALID_API_KEY`: missing or invalid Bearer token
 - `403` with `AUTH_FREE_TIER_IP_RESTRICTED`: free-tier key is being used from a different source IP
@@ -163,7 +151,7 @@ curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
 - `503` with `PRICES_INDEX_UNAVAILABLE` or `BIDS_INDEX_UNAVAILABLE`: retry shortly
 - `422` with `VALIDATION_ERROR`: request shape or parameter values are invalid
 
-## 6. Where To Go Next
+## 6. Go Deeper
 
 - [API Reference](api-reference.md)
 - [Core Concepts](core-concepts.md)

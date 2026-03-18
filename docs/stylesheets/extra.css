@@ -1,126 +1,281 @@
-/* ============================================================
-   CS2C-API Docs — Minimal custom styles
-   Header, tabs, sidebar, search: handled by Material theme.
-   Only hero, cards, tags, and minor polish live here.
-   ============================================================ */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap");
 
-/* --- Hero --- */
-.cs2c-hero {
-  position: relative;
-  overflow: hidden;
-  border-radius: 10px;
-  padding: 3.5rem 2.5rem 3rem;
-  margin: 0 0 2.5rem;
-  text-align: center;
+[data-md-color-scheme="default"] {
+  --cs2c-bg: #f6f1e8;
+  --cs2c-bg-elevated: #fbf8f2;
+  --cs2c-border: rgba(18, 33, 61, 0.14);
+  --cs2c-border-strong: rgba(18, 33, 61, 0.22);
+  --cs2c-heading: #172641;
+  --cs2c-copy: #24334d;
+  --cs2c-muted: #5f6d84;
+  --cs2c-accent: #41567f;
+  --cs2c-code: #ece4d7;
+  --md-default-bg-color: var(--cs2c-bg);
+  --md-default-fg-color: var(--cs2c-copy);
+  --md-default-fg-color--light: rgba(36, 51, 77, 0.76);
+  --md-default-fg-color--lighter: rgba(36, 51, 77, 0.56);
+  --md-default-fg-color--lightest: rgba(36, 51, 77, 0.34);
+  --md-primary-fg-color: #182742;
+  --md-primary-fg-color--light: #243759;
+  --md-primary-fg-color--dark: #101a2d;
+  --md-primary-bg-color: #f8f4ec;
+  --md-accent-fg-color: var(--cs2c-accent);
+  --md-accent-fg-color--transparent: rgba(65, 86, 127, 0.12);
+  --md-code-bg-color: var(--cs2c-code);
+  --md-typeset-a-color: var(--cs2c-accent);
+  --md-typeset-table-color: rgba(18, 33, 61, 0.12);
+  --md-typeset-table-color--light: rgba(18, 33, 61, 0.06);
+  --md-footer-bg-color: #182742;
+  --md-footer-bg-color--dark: #101a2d;
 }
 
-[data-md-color-scheme="slate"] .cs2c-hero {
-  background: linear-gradient(145deg, #1a2332 0%, #152238 50%, #0d1b2a 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+[data-md-color-scheme="slate"] {
+  --cs2c-bg: #111827;
+  --cs2c-bg-elevated: #182132;
+  --cs2c-border: rgba(241, 235, 224, 0.10);
+  --cs2c-border-strong: rgba(241, 235, 224, 0.18);
+  --cs2c-heading: #f2ede3;
+  --cs2c-copy: #d7dde8;
+  --cs2c-muted: #9fa9bc;
+  --cs2c-accent: #9fb2d8;
+  --cs2c-code: #1a2436;
+  --md-default-bg-color: var(--cs2c-bg);
+  --md-default-fg-color: var(--cs2c-copy);
+  --md-default-fg-color--light: rgba(215, 221, 232, 0.78);
+  --md-default-fg-color--lighter: rgba(215, 221, 232, 0.56);
+  --md-default-fg-color--lightest: rgba(215, 221, 232, 0.32);
+  --md-primary-fg-color: #0f1726;
+  --md-primary-fg-color--light: #182132;
+  --md-primary-fg-color--dark: #090f1a;
+  --md-primary-bg-color: #f2ede3;
+  --md-accent-fg-color: var(--cs2c-accent);
+  --md-accent-fg-color--transparent: rgba(159, 178, 216, 0.14);
+  --md-code-bg-color: var(--cs2c-code);
+  --md-typeset-a-color: #b7c6e4;
+  --md-typeset-table-color: rgba(241, 235, 224, 0.12);
+  --md-typeset-table-color--light: rgba(241, 235, 224, 0.06);
+  --md-footer-bg-color: #0f1726;
+  --md-footer-bg-color--dark: #090f1a;
 }
 
-[data-md-color-scheme="default"] .cs2c-hero {
-  background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 50%, #e0f7fa 100%);
-  border: 1px solid rgba(0, 150, 136, 0.10);
+body,
+input {
+  font-family: "Public Sans", var(--md-text-font, sans-serif);
 }
 
-.cs2c-hero__eyebrow {
-  font-family: "JetBrains Mono", var(--md-code-font, _), monospace;
-  font-size: 0.72rem;
+.md-typeset {
+  font-size: 0.8rem;
+  line-height: 1.72;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-family: "Source Serif 4", Georgia, serif;
+  color: var(--cs2c-heading);
   font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.md-typeset h1 {
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  margin-bottom: 0.8rem;
+}
+
+.md-typeset h2 {
+  margin-top: 2.4rem;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--cs2c-border);
+}
+
+.md-typeset h3 {
+  margin-top: 1.8rem;
+  margin-bottom: 0.55rem;
+}
+
+.md-grid {
+  max-width: 82rem;
+}
+
+.md-main__inner {
+  margin-top: 1.2rem;
+}
+
+.md-sidebar--primary {
+  border-right: 1px solid var(--cs2c-border);
+}
+
+.md-nav__title,
+.md-nav__item .md-nav__link,
+.md-tabs__link,
+.md-header__topic {
+  letter-spacing: 0.01em;
+}
+
+.md-nav--primary .md-nav__title {
+  font-size: 0.68rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--md-accent-fg-color);
-  margin-bottom: 1.25rem;
+  color: var(--cs2c-muted);
 }
 
-.cs2c-hero h1 {
-  font-size: clamp(2rem, 5vw, 2.8rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  margin: 0 0 0.85rem;
+.md-content__inner {
+  padding-bottom: 3rem;
 }
 
-.cs2c-hero p.cs2c-hero__sub {
-  font-size: 1.05rem;
-  opacity: 0.7;
-  margin: 0 auto 2rem;
-  max-width: 560px;
-  line-height: 1.6;
+.md-content__inner > .md-typeset {
+  max-width: 44rem;
 }
 
-.cs2c-hero__actions {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-  flex-wrap: wrap;
+.md-typeset p,
+.md-typeset li {
+  color: var(--cs2c-copy);
 }
 
-/* --- Tags --- */
-.cs2c-tags {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
+.md-typeset small,
+.md-typeset .admonition-title,
+.md-typeset .tabbed-labels > label {
+  letter-spacing: 0.01em;
 }
 
-[data-md-color-scheme="slate"] .cs2c-tag {
-  background: rgba(0, 188, 212, 0.10);
-  color: #4dd0e1;
-  border: 1px solid rgba(0, 188, 212, 0.20);
+.md-typeset code,
+.md-typeset pre,
+.md-typeset kbd {
+  font-family: "IBM Plex Mono", var(--md-code-font, monospace);
 }
 
-[data-md-color-scheme="default"] .cs2c-tag {
-  background: rgba(0, 150, 136, 0.08);
-  color: #00796b;
-  border: 1px solid rgba(0, 150, 136, 0.15);
+.md-typeset code {
+  border-radius: 0.35rem;
+  padding: 0.14em 0.38em;
 }
 
-.cs2c-tag {
-  font-family: var(--md-code-font, _);
-  font-size: 0.7rem;
+.md-typeset pre > code {
+  border: 1px solid var(--cs2c-border);
+  border-radius: 0.8rem;
+  padding: 1rem 1.1rem;
+}
+
+.md-typeset table:not([class]) {
+  border: 1px solid var(--cs2c-border);
+  border-radius: 0.7rem;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  color: var(--cs2c-heading);
+  background: color-mix(in srgb, var(--cs2c-bg-elevated) 82%, transparent);
   font-weight: 600;
-  letter-spacing: 0.03em;
-  padding: 0.2em 0.65em;
-  border-radius: 4px;
-  white-space: nowrap;
 }
 
-/* --- Grid Cards --- */
+.md-typeset table:not([class]) td,
+.md-typeset table:not([class]) th {
+  padding: 0.7rem 0.9rem;
+}
+
 .md-typeset .grid.cards > ul > li,
-.md-typeset .grid.cards > ol > li {
-  border-radius: 8px;
-  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+.md-typeset .grid.cards > ol > li,
+.docs-home-card {
+  background: var(--cs2c-bg-elevated);
+  border: 1px solid var(--cs2c-border);
+  border-radius: 0.9rem;
+  box-shadow: none;
 }
 
 .md-typeset .grid.cards > ul > li:hover,
 .md-typeset .grid.cards > ol > li:hover {
-  border-color: var(--md-accent-fg-color);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border-color: var(--cs2c-border-strong);
+  transform: none;
+  box-shadow: none;
 }
 
-/* --- Code block border --- */
-[data-md-color-scheme="slate"] .md-typeset pre > code {
-  background-color: #1a1a2e;
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 0.85rem;
 }
 
-/* --- Footer links --- */
-.cs2c-footer-links {
-  text-align: center;
-  padding: 1.5rem 0 0.5rem;
-  opacity: 0.6;
-  font-size: 0.88rem;
+.md-button {
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
-/* --- Responsive --- */
-@media (max-width: 44.9375em) {
-  .cs2c-hero {
-    padding: 2rem 1.25rem 1.75rem;
-    border-radius: 0;
-    margin-left: -0.8rem;
-    margin-right: -0.8rem;
+.docs-home-intro {
+  margin: 0 0 2rem;
+}
+
+.docs-home-kicker {
+  margin-bottom: 0.65rem;
+  color: var(--cs2c-muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.docs-home-dek {
+  max-width: 38rem;
+  margin: 0;
+  color: var(--cs2c-muted);
+  font-size: 1rem;
+}
+
+.docs-home-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 1.6rem 0 2.2rem;
+}
+
+.docs-home-card {
+  padding: 1.1rem 1.1rem 1rem;
+}
+
+.docs-home-card h2,
+.docs-home-card h3 {
+  border: 0;
+  margin-top: 0;
+  margin-bottom: 0.55rem;
+  padding: 0;
+  font-size: 1.05rem;
+}
+
+.docs-home-card p,
+.docs-home-card ul {
+  margin: 0;
+}
+
+.docs-home-card ul {
+  padding-left: 1rem;
+}
+
+.docs-home-card li + li {
+  margin-top: 0.28rem;
+}
+
+.docs-home-meta {
+  color: var(--cs2c-muted);
+  font-size: 0.92rem;
+}
+
+.docs-home-section {
+  margin-top: 2.2rem;
+}
+
+.docs-home-section h2 {
+  margin-bottom: 0.8rem;
+}
+
+@media (max-width: 76.1875em) {
+  .md-content__inner > .md-typeset {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 59.9375em) {
+  .docs-home-grid {
+    grid-template-columns: 1fr;
   }
 }

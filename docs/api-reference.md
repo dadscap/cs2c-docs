@@ -1,26 +1,6 @@
 # API Reference
 
-Complete API documentation for the CS2C-API service.
-
-## Table of Contents
-
-- [Base URL](#base-url)
-- [Authentication](#authentication)
-  - [Getting an API Key](#getting-an-api-key)
-- [Rate Limiting](#rate-limiting)
-- [Response Format](#response-format)
-- [Error Handling](#error-handling)
-- [Endpoints](#endpoints)
-  - [Account](#account)
-  - [Items](#items)
-  - [Providers](#providers)
-  - [Prices](#prices)
-  - [Market Intelligence](#market-intelligence)
-  - [Buy Orders](#buy-orders)
-  - [Recent Sales](#recent-sales)
-- [Schemas](#schemas)
-- [Code Examples](#code-examples)
-- [Related Documentation](#related-documentation)
+Reference for authentication, tiers, response conventions, and public endpoints.
 
 ## Base URL
 
@@ -30,26 +10,26 @@ https://api.cs2c.app
 
 ## Authentication
 
-Market-data endpoints require an API key via the `Authorization` header.
-Some account self-service routes also accept a session JWT bearer token.
-
-Bearer credentials are sent in the same header:
+Market-data endpoints require an API key in the `Authorization` header. Some account
+self-service routes also accept a session JWT bearer token.
 
 ```http
 Authorization: Bearer your_api_key_here
 ```
 
-## Getting an API Key
+### Getting an API Key
 
 1. Sign up with OAuth.
 2. Set and verify an email address associated with the account.
 3. Save the initial, or reissue a new, API key through the account flow.
 4. Use the key with `Authorization: Bearer {api_key}` when sending requests.
 
-Max 1 API key per account.
-Keys on the free-tier are bound to a single IP source bind.
+Constraints:
 
-## Rate Limiting
+- Maximum 1 active API key per account
+- Free-tier keys bind to the first source IP that uses them
+
+## Rate Limits
 
 Rate limits are enforced per API key based on the user's tier:
 
@@ -59,13 +39,13 @@ Rate limits are enforced per API key based on the user's tier:
 | `pro`   | 100             | 50,000         | 1,000             |
 | `quant` | 300             | 200,000        | 1,000             |
 
-**Rate Limit Headers:**
+On quota or burst enforcement, inspect these headers:
 
 ```http
 X-RateLimit-Tier: pro
 ```
 
-Quota-exceeded (`429`) responses include additional headers:
+`429` responses can also include:
 
 ```http
 Retry-After: 12345
@@ -74,55 +54,21 @@ X-RateLimit-Remaining: 0
 X-RateLimit-Reset: 12345
 ```
 
-**Rate Limit Exceeded Response:**
-
-```json
-{
-  "code": "RATE_LIMIT_EXCEEDED",
-  "detail": "Too Many Requests"
-}
-```
-
-Monthly quota violations use:
-
-```json
-{
-  "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-  "detail": "Monthly quota exceeded (50000/50000 requests)."
-}
-```
-
 Monthly quota is charged only on public core market-data endpoints. Non-core account, billing,
 verification, and recovery routes keep burst protection but do not consume the advertised monthly
 quota.
 
-## Response Format
+## Response Conventions
 
-All responses follow a consistent JSON structure:
+Most list endpoints return `items` plus pagination metadata:
 
-**Success Response:**
-
-```json
-{
-  "items": [...],
-  "count": 100,
-  "limit": 50,
-  "offset": 0
-}
-```
-
-**Error Response:**
-
-```json
-{
-  "code": "AUTH_INVALID_API_KEY",
-  "detail": "Invalid API key"
-}
-```
+- `items`: returned records
+- `meta`: applied filters or endpoint-specific context when relevant
+- `pagination`: page state; cursor endpoints intentionally use `pagination.total = -1`
 
 ## Error Handling
 
-### HTTP Status Codes
+Errors always return a stable machine-readable `code` plus a human-readable `detail`.
 
 | Code | Meaning | Description |
 | ---- | ------- | ----------- |
@@ -137,20 +83,39 @@ All responses follow a consistent JSON structure:
 | 500 | Internal Server Error | Server error |
 | 503 | Service Unavailable | Service temporarily unavailable |
 
-### Error Codes
+Common error payload:
 
-Error responses include a stable machine-readable `code` plus a human-readable `detail`.
+```json
+{
+  "code": "AUTH_INVALID_API_KEY",
+  "detail": "Invalid API key"
+}
+```
 
-| Code | Description | Resolution |
-| ---- | ----------- | ---------- |
-| `AUTH_INVALID_API_KEY` | API key is invalid | Check your API key |
-| `AUTH_API_KEY_REVOKED` | API key was revoked | Create a new key via account endpoints |
-| `AUTH_ACCOUNT_DISABLED` | Account is disabled | Contact support/admin |
-| `AUTH_FREE_TIER_IP_RESTRICTED` | Free-tier key used from a different IP | Use the original IP or upgrade tier |
-| `RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED` | Monthly quota exceeded | Wait for reset or upgrade tier |
-| `PRICES_INDEX_UNAVAILABLE` | Indexed prices data unavailable | Retry shortly |
-| `BIDS_INDEX_UNAVAILABLE` | Indexed bids data unavailable | Retry shortly |
-| `VALIDATION_ERROR` | Request validation failed | Check request parameters |
+Common codes:
+
+| Code | Meaning |
+| ---- | ------- |
+| `AUTH_INVALID_API_KEY` | Missing or invalid API key |
+| `AUTH_API_KEY_REVOKED` | API key was revoked |
+| `AUTH_ACCOUNT_DISABLED` | Account is disabled |
+| `AUTH_FREE_TIER_IP_RESTRICTED` | Free-tier key was used from a different IP |
+| `RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED` | Monthly quota is exhausted |
+| `PRICES_INDEX_UNAVAILABLE` | Prices index is temporarily unavailable |
+| `BIDS_INDEX_UNAVAILABLE` | Bids index is temporarily unavailable |
+| `VALIDATION_ERROR` | Request validation failed |
+
+## Endpoint Map
+
+| Area | Primary Routes | Notes |
+| ---- | -------------- | ----- |
+| Account | `/v1/account/*` | API key, watchlist, alerts, self-service flows |
+| Items | `/v1/items`, `/v1/items/market-ids` | Catalog lookup and provider-specific IDs |
+| Providers | `/v1/providers` | Health, fees, and market coverage |
+| Prices | `/v1/prices`, `/v1/prices/history`, `/v1/prices/candles` | Real-time prices, historical snapshots, OHLCV |
+| Market | `/v1/market/arbitrage`, `/v1/market/items/{item_id}`, `/v1/market/indicators` | Cross-market analytics |
+| Bids | `/v1/bids` | Indexed buy-order data |
+| Sales | `/v1/sales` | Live-query recent sales with cache mediation |
 
 ### Account
 
@@ -509,7 +474,7 @@ Behavior:
 
 ## Endpoints
 
-**Provider Parameter Naming Convention:**
+Provider parameter naming:
 
 - `providers` / `providers_buy` / `providers_sell` (plural): repeatable query params with provider-key enum values (for example `&providers=steam&providers=skinport`).
 - `provider` (singular): one provider key as a single string (for example `&provider=steam`).
