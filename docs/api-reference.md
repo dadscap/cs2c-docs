@@ -977,6 +977,7 @@ curl -H "Authorization: Bearer your_key" \
     "item_id": 156,
     "market_hash_name": "AWP | Dragon Lore (Factory New)",
     "phase": null,
+    "provider": "All Providers",
     "currency": "USD",
     "interval": "1h",
     "start": "2025-12-22T10:30:00+00:00",
