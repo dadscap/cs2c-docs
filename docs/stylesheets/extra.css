@@ -396,13 +396,16 @@ input {
 }
 
 .cs2c-sidebar-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   margin: 0 0 0.9rem;
   padding: 0 0.55rem 0.9rem;
   border-bottom: 1px solid var(--cs2c-border);
 }
 
 .cs2c-sidebar-tools__label {
-  margin: 0 0 0.55rem;
+  margin: 0;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -414,17 +417,17 @@ input {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  width: 100%;
   appearance: none;
   border: 1px solid var(--cs2c-border);
-  border-radius: 0.8rem;
+  border-radius: 0.72rem;
   background: color-mix(in srgb, var(--cs2c-bg-subtle) 78%, transparent);
   color: var(--cs2c-heading);
   cursor: pointer;
   font: inherit;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  padding: 0.55rem 0.72rem;
+  line-height: 1;
+  padding: 0.48rem 0.55rem;
   transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
 }
 
@@ -436,11 +439,19 @@ input {
 
 .cs2c-sidebar-tools__button svg {
   flex: 0 0 auto;
-  width: 0.95rem;
-  height: 0.95rem;
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 @media (min-width: 76.25em) {
+  .md-sidebar--primary {
+    display: none;
+  }
+
+  [data-md-toggle="drawer"]:checked ~ .md-container .md-sidebar--primary {
+    display: block;
+  }
+
   .md-sidebar--secondary {
     order: 1;
     flex: 0 0 14rem;

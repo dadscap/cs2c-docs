@@ -267,13 +267,14 @@
 
     const label = document.createElement("div");
     label.className = "cs2c-sidebar-tools__label";
-    label.textContent = "Docs menu";
+    label.textContent = "Docs";
 
     const button = document.createElement("button");
     button.className = "cs2c-sidebar-tools__button";
     button.type = "button";
+    button.setAttribute("aria-label", "Browse docs navigation");
     button.innerHTML =
-      '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg><span>Browse docs</span>';
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>';
     button.addEventListener("click", () => {
       drawerToggle.checked = !drawerToggle.checked;
     });
