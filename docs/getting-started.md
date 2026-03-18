@@ -1,14 +1,9 @@
 # Getting Started
 
-Make your first successful CS2C-API request in a few minutes.
-
 ## Prerequisites
 
-- Base URL: `https://api.cs2c.app`
 - An API key
 - `curl`, Python, or a JavaScript runtime
-
-If you do not have a key yet, follow [Authentication](authentication.md). Initial API key issuance requires a verified email, and free-tier keys bind to a single source IP on first successful use.
 
 ## 1. Set Environment Variables
 
@@ -18,8 +13,6 @@ export CS2C_API_KEY="your_api_key_here"
 ```
 
 ## 2. Make Your First Request
-
-`GET /v1/prices` is the fastest path to a useful first response. Prices and bids are indexed-only runtime endpoints, so temporary indexed-data issues return `503` and should be retried shortly.
 
 ### cURL
 
@@ -76,17 +69,47 @@ if (!response.ok) {
 console.log(await response.json());
 ```
 
-## 3. Read the Response
+## 3. Response
 
-Typical `GET /v1/prices` fields:
-
-- `items[]`: provider quote rows
-- `provider`: marketplace key
-- `lowest_ask`: price in minor units
-- `quantity`: available listing count
-- `currency`: response currency
-- `link`: tracked redirect URL
-- `pagination`: result-window metadata
+```json
+{
+    "meta": {
+        "currency": "USD",
+        "filters": {
+            "market_hash_name": "★ Falchion Knife | Doppler (Minimal Wear)",
+            "phase": "Phase 1",
+            "requested_providers": [
+                "gamerpay",
+                "marketcsgo"
+            ]
+        },
+        "returned_providers": [
+            "marketcsgo"
+        ]
+    },
+    "items": [
+        {
+            "provider": "marketcsgo",
+            "item_id": 3739,
+            "market_hash_name": "★ Falchion Knife | Doppler (Minimal Wear)",
+            "phase": "Phase 1",
+            "lowest_ask": 58915,
+            "quantity": 1,
+            "link": "https://cs2c.app/r/marketcsgo/3739",
+            "url": "https://market.csgo.com/%E2%98%85%20Falchion%20Knife%20%7C%20Doppler%20%28Minimal%20Wear%29?phase-product=phase1",
+            "timestamp": "2026-03-18T16:14:41.493719Z",
+            "last_updated": "2026-03-18T16:54:58.782196Z"
+        }
+    ],
+    "pagination": {
+        "limit": 658,
+        "offset": 0,
+        "total": 1,
+        "has_next": false,
+        "has_prev": false
+    }
+}
+```
 
 Example:
 
@@ -94,35 +117,35 @@ Example:
 
 ## 4. Common Next Requests
 
-### Resolve canonical item IDs
+### Get an item's `item_id` (Free/Pro/Quant plans)
 
 ```bash
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/v1/items?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&limit=1"
 ```
 
-### Fetch provider-native market IDs in bulk
+### Get all marketplace-specific IDs (Free/Pro/Quant plans)
 
 ```bash
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/v1/items/market-ids"
 ```
 
-### Fetch bids
+### Get current buy orders (Pro/Quant plans)
 
 ```bash
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/v1/bids?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=steam&limit=5"
 ```
 
-### Fetch recent sales
+### Get most recent sales (Pro/Quant plans)
 
 ```bash
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/v1/sales?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=csfloat&limit=10"
 ```
 
-### Scan price history
+### Get snapshot of all prices across all providers at once (Quant plans) [Rate limit: 1 request/5 minutes]
 
 ```bash
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
@@ -142,7 +165,5 @@ curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
 
 ## 6. Where To Go Next
 
-- [Authentication](authentication.md)
 - [API Reference](api-reference.md)
-- [Pagination](pagination.md)
 - [Core Concepts](core-concepts.md)

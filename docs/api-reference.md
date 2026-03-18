@@ -528,27 +528,27 @@ If `limit` is omitted, `/v1/items` returns all matched items from `offset` onwar
 
 **Query Parameters:**
 
-| Parameter          | Type          | Required | Default  | Description                                                       |
-| ------------------ | ------------- | -------- | -------- | ----------------------------------------------------------------- |
-| `q`                | string        | No       | -        | Search by market hash name substring (case-insensitive)           |
-| `item_id`          | integer       | No       | -        | Exact item ID match                                               |
-| `market_hash_name` | string        | No       | -        | Exact market hash name match (case-insensitive)                   |
-| `item_type`        | string        | No       | -        | Exact item type match (case-insensitive)                          |
-| `item_subtype`     | string        | No       | -        | Exact item subtype match (case-insensitive)                       |
-| `weapon_type`      | string        | No       | -        | Exact weapon type match (case-insensitive)                        |
-| `base_name`        | string        | No       | -        | Exact base name match (case-insensitive)                          |
-| `skin_name`        | string        | No       | -        | Exact skin name match (case-insensitive)                          |
-| `wear_name`        | string        | No       | -        | Exact wear name match (case-insensitive)                          |
-| `phase`            | string        | No       | -        | Exact phase match (case-insensitive)                              |
-| `collection`       | string        | No       | -        | Exact collection match (case-insensitive)                         |
-| `crates`           | array[string] | No       | -        | Filter by crate names (matches any value)                         |
-| `rarity_name`      | string        | No       | -        | Exact rarity name match (case-insensitive)                        |
-| `rarity_color`     | string        | No       | -        | Exact rarity color match (case-insensitive)                       |
-| `style_name`       | string        | No       | -        | Exact style name match (case-insensitive)                         |
-| `is_stattrak`      | boolean       | No       | -        | Filter by StatTrak items                                          |
-| `is_souvenir`      | boolean       | No       | -        | Filter by Souvenir items                                          |
-| `limit`            | integer       | No       | all matches | Results per page when provided (tier-capped: `free` = 100, `pro`/`quant` = 1000). Omit to return the full matched payload from `offset` onward |
-| `offset`           | integer       | No       | 0        | Pagination offset                                                 |
+| Parameter          | Type          | Required | Default     | Description                                                                                  |
+| ------------------ | ------------- | -------- | ----------- | -------------------------------------------------------------------------------------------- |
+| `q`                | string        | No       | -           | Search by market hash name substring (case-insensitive)                                      |
+| `item_id`          | integer       | No       | -           | Exact item ID match                                                                          |
+| `market_hash_name` | string        | No       | -           | Exact market hash name match (case-insensitive)                                              |
+| `item_type`        | string        | No       | -           | Exact item type match (case-insensitive)                                                     |
+| `item_subtype`     | string        | No       | -           | Exact item subtype match (case-insensitive)                                                  |
+| `weapon_type`      | string        | No       | -           | Exact weapon type match (case-insensitive)                                                   |
+| `base_name`        | string        | No       | -           | Exact base name match (case-insensitive)                                                     |
+| `skin_name`        | string        | No       | -           | Exact skin name match (case-insensitive)                                                     |
+| `wear_name`        | string        | No       | -           | Exact wear name match (case-insensitive)                                                     |
+| `phase`            | string        | No       | -           | Exact phase match (case-insensitive)                                                         |
+| `collection`       | string        | No       | -           | Exact collection match (case-insensitive)                                                    |
+| `crates`           | array[string] | No       | -           | Filter by crate names (matches any value)                                                    |
+| `rarity_name`      | string        | No       | -           | Exact rarity name match (case-insensitive)                                                   |
+| `rarity_color`     | string        | No       | -           | Exact rarity color match (case-insensitive)                                                  |
+| `style_name`       | string        | No       | -           | Exact style name match (case-insensitive)                                                    |
+| `is_stattrak`      | boolean       | No       | -           | Filter by StatTrak items                                                                     |
+| `is_souvenir`      | boolean       | No       | -           | Filter by Souvenir items                                                                     |
+| `limit`            | integer       | No       | all matches | Results per page when provided. Omit to return the full matched payload from `offset` onward |
+| `offset`           | integer       | No       | 0           | Pagination offset                                                                            |
 
 **Example Request:**
 
@@ -977,7 +977,6 @@ curl -H "Authorization: Bearer your_key" \
     "item_id": 156,
     "market_hash_name": "AWP | Dragon Lore (Factory New)",
     "phase": null,
-    "provider": "All Providers",
     "currency": "USD",
     "interval": "1h",
     "start": "2025-12-22T10:30:00+00:00",
@@ -1966,7 +1965,6 @@ def batch_requests(item_ids: list[int], batch_size: int = 10):
 Essential guides for working with CS2C-API:
 
 - **[Quick Start](getting-started.md)** — Fast path to first successful API request
-- **[Pagination Guide](pagination.md)** — Offset vs cursor pagination patterns and iteration examples
 - **[Core Concepts](core-concepts.md)** — Canonical domain definitions and endpoint-to-concept mapping
 
 ---

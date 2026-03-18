@@ -32,41 +32,41 @@ hide:
 
 <div class="grid cards" markdown>
 
--   :material-tag-multiple: **Prices** · `GET /v1/prices`
+- :material-tag-multiple: **Prices** · `GET /v1/prices`
 
     ---
 
-    Lowest ask + quantity across providers.
+    Lowest ask + quantity across 39 marketplaces.
 
--   :material-chart-line: **History** · `GET /v1/prices/history`
-
-    ---
-
-    Timestamped price records with cursor pagination.
-
--   :material-swap-horizontal: **Arbitrage** · `GET /v1/market/arbitrage`
+- :material-chart-line: **History** · `GET /v1/prices/history`
 
     ---
 
-    Fee-aware cross-provider spreads.
+    Timestamped price records for all marketplaces.
 
--   :material-receipt-text: **Sales** · `GET /v1/sales`
-
-    ---
-
-    Recent sale records across 10+ providers.
-
--   :material-gavel: **Bids** · `GET /v1/bids`
+- :material-swap-horizontal: **Arbitrage** · `GET /v1/market/arbitrage`
 
     ---
 
-    Highest bid + depth across 9 marketplaces.
+    Fee-aware cross-markets spreads.
 
--   :material-currency-usd: **FX** · `currency=USD`
+- :material-receipt-text: **Sales** · `GET /v1/sales`
 
     ---
 
-    Prices converted at response time on any endpoint.
+    Detailed record of recent sales w/ float, pattern, stickers, etc.
+
+- :material-gavel: **Bids** · `GET /v1/bids`
+
+    ---
+
+    Highest buy orders + depth on BUFF163, CSFloat, Steam, etc.
+
+- :material-currency-usd: **FX** · `currency=USD`
+
+    ---
+
+    Conversion to 160+ currencies on the fly
 
 </div>
 

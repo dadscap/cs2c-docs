@@ -82,4 +82,3 @@ Null often means the field is not relevant to that item.
 
 - [Getting Started](getting-started.md)
 - [API Reference](api-reference.md)
-- [Pagination](pagination.md)
