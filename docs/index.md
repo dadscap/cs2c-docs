@@ -6,9 +6,9 @@ hide:
 # CS2C-API Docs
 
 <div class="docs-home-intro" markdown>
-<div class="docs-home-kicker">Reference</div>
+<div class="docs-home-kicker">CS2 Market Data API</div>
 <p class="docs-home-dek">
-CS2C-API is a REST API for normalized CS2 prices, bids, sales, and market analytics across multiple providers.
+CS2C-API exposes normalized CS2 prices, bids, sales, and market analytics through a single integration surface.
 </p>
 </div>
 
