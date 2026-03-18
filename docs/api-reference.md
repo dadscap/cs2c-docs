@@ -11,6 +11,7 @@ Complete API documentation for the CS2C-API service.
 - [Response Format](#response-format)
 - [Error Handling](#error-handling)
 - [Endpoints](#endpoints)
+  - [Account](#account)
   - [Items](#items)
   - [Providers](#providers)
   - [Prices](#prices)
@@ -29,7 +30,10 @@ https://api.cs2c.app
 
 ## Authentication
 
-Endpoints require authentication using an API key via the `Authorization` header:
+Market-data endpoints require an API key via the `Authorization` header.
+Some account self-service routes also accept a session JWT bearer token.
+
+Bearer credentials are sent in the same header:
 
 ```http
 Authorization: Bearer your_api_key_here
@@ -159,6 +163,349 @@ Rebind the active API key to the caller's current IP.
 - Cooldown: once every 24 hours per account.
 - Authentication: Bearer API key or session JWT.
 - Monthly quota: exempt.
+
+#### GET /v1/account/watchlist
+
+List the authenticated user's saved watchlist items.
+
+Available to: tiers with watchlist access
+
+Authentication: Bearer API key or session JWT.
+
+Behavior:
+
+- cursor pagination ordered by newest saved first
+- `pagination.total` is intentionally `-1`
+- `search` matches exact numeric `item_id` or a case-insensitive item-name substring
+- `limit` is clamped to `1..200`
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+| --------- | ---- | -------- | ------- | ----------- |
+| `limit` | integer | No | 50 | Cursor page size, clamped to `1..200` |
+| `cursor` | string | No | - | Opaque next-page cursor from a previous response |
+| `search` | string | No | - | Exact numeric `item_id` match or case-insensitive item-name substring |
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_token" \
+  "https://api.cs2c.app/v1/account/watchlist?limit=2&search=redline"
+```
+
+**Example Response:**
+
+```json
+{
+  "items": [
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "item_id": 156,
+      "market_hash_name": "AK-47 | Redline (Field-Tested)",
+      "phase": null,
+      "created_at": "2026-03-18T13:00:00Z"
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "item_id": 157,
+      "market_hash_name": "AK-47 | Redline (Minimal Wear)",
+      "phase": null,
+      "created_at": "2026-03-18T12:58:00Z"
+    }
+  ],
+  "pagination": {
+    "limit": 2,
+    "offset": 0,
+    "total": -1,
+    "has_next": true,
+    "has_prev": false,
+    "next_cursor": "MjAyNi0wMy0xOFQxMjo1ODowMFo="
+  }
+}
+```
+
+---
+
+#### POST /v1/account/watchlist
+
+Save one normalized catalog item to the authenticated user's default watchlist.
+
+Available to: tiers with watchlist access
+
+Authentication: Bearer API key or session JWT.
+
+Rules:
+
+- `item_id` must be a valid normalized catalog item ID from `/v1/items`
+- duplicate saves return `409`
+- hitting the tier watchlist cap returns `409`
+
+**Request Body:**
+
+```json
+{
+  "item_id": 12345
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "id": "11111111-1111-1111-1111-111111111111",
+  "item_id": 12345,
+  "market_hash_name": "AK-47 | Redline (Field-Tested)",
+  "phase": null,
+  "created_at": "2026-03-18T13:05:00Z"
+}
+```
+
+---
+
+#### DELETE /v1/account/watchlist/{item_id}
+
+Delete one saved watchlist entry by normalized `item_id`.
+
+Available to: tiers with watchlist access
+
+Authentication: Bearer API key or session JWT.
+
+This path uses the catalog item ID, not the watchlist entry UUID.
+
+**Example Response:**
+
+```json
+{
+  "ok": true
+}
+```
+
+Returns `404` if that item is not currently saved by the authenticated user.
+
+---
+
+#### GET /v1/account/alerts
+
+List configured item alerts for the authenticated user.
+
+Available to: tiers with alert access
+
+Authentication: Bearer API key or session JWT.
+
+Each alert is item-scoped and includes threshold configuration, enabled state, timestamps, and item metadata.
+
+**Example Response:**
+
+```json
+{
+  "alerts": [
+    {
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "kind": "price_below",
+      "threshold_value": "12.50",
+      "threshold_currency": "USD",
+      "is_enabled": true,
+      "last_triggered_at": null,
+      "created_at": "2026-03-18T13:10:00Z",
+      "updated_at": "2026-03-18T13:10:00Z",
+      "item": {
+        "item_id": 156,
+        "market_hash_name": "AK-47 | Redline (Field-Tested)",
+        "phase": null
+      }
+    }
+  ]
+}
+```
+
+---
+
+#### POST /v1/account/alerts
+
+Create a new item-scoped alert.
+
+Available to: tiers with alert access
+
+Authentication: Bearer API key or session JWT.
+
+Supported kinds:
+
+- `price_below`
+- `price_above`
+- `spread_exceeds`
+
+Rules:
+
+- `price_below` and `price_above` compare against the current best ask
+- `spread_exceeds` compares percentage spread: `((best_ask - best_bid) / best_ask) * 100`
+- `spread_exceeds` ignores `threshold_currency`
+- price alerts default `threshold_currency` to the account preferred currency when omitted
+- verified email is required only when the alert is enabled
+- disabled alerts can be created first and enabled later
+- enabled-alert count is capped by the account tier
+- if alert emails are disabled in account preferences, enabled alerts cannot be created
+
+**Price Alert Request Body:**
+
+```json
+{
+  "item_id": 156,
+  "kind": "price_below",
+  "threshold_value": "12.50",
+  "threshold_currency": "USD",
+  "is_enabled": true
+}
+```
+
+**Spread Alert Request Body:**
+
+```json
+{
+  "item_id": 32,
+  "kind": "spread_exceeds",
+  "threshold_value": "8.00",
+  "is_enabled": true
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+  "kind": "price_below",
+  "threshold_value": "12.50",
+  "threshold_currency": "USD",
+  "is_enabled": true,
+  "last_triggered_at": null,
+  "created_at": "2026-03-18T13:10:00Z",
+  "updated_at": "2026-03-18T13:10:00Z",
+  "item": {
+    "item_id": 156,
+    "market_hash_name": "AK-47 | Redline (Field-Tested)",
+    "phase": null
+  }
+}
+```
+
+Common failures:
+
+- `400` for invalid thresholds, unsupported kinds, missing items, or enabling without verified email
+- `403` if the tier does not allow alerts
+- `409` if the enabled-alert cap is reached or alert emails are disabled
+
+---
+
+#### PATCH /v1/account/alerts/{alert_id}
+
+Update an existing alert.
+
+Available to: tiers with alert access
+
+Authentication: Bearer API key or session JWT.
+
+Patch semantics:
+
+- provide at least one of `threshold_value`, `threshold_currency`, or `is_enabled`
+- `threshold_value` must be greater than zero if supplied
+- `threshold_currency` applies only to price alerts
+- enabling an alert re-runs the same checks as creation
+
+**Example Request Body:**
+
+```json
+{
+  "threshold_value": "11.75",
+  "is_enabled": true
+}
+```
+
+Returns the full updated alert object on success.
+Returns `404` if the alert does not belong to the authenticated user.
+
+---
+
+#### DELETE /v1/account/alerts/{alert_id}
+
+Delete one alert definition.
+
+Available to: tiers with alert access
+
+Authentication: Bearer API key or session JWT.
+
+**Example Response:**
+
+```json
+{
+  "ok": true
+}
+```
+
+Returns `404` if the alert does not exist for the authenticated user.
+
+---
+
+#### GET /v1/account/alerts/events
+
+List recent alert trigger events and delivery attempts.
+
+Available to: tiers with alert access
+
+Authentication: Bearer API key or session JWT.
+
+Behavior:
+
+- cursor pagination ordered by newest first
+- `pagination.total` is intentionally `-1`
+- `limit` is clamped to `1..100`
+- delivery rows currently reflect email delivery attempts only
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+| --------- | ---- | -------- | ------- | ----------- |
+| `limit` | integer | No | 50 | Cursor page size, clamped to `1..100` |
+| `cursor` | string | No | - | Opaque next-page cursor from a previous response |
+
+**Example Response:**
+
+```json
+{
+  "events": [
+    {
+      "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+      "alert_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "kind": "price_below",
+      "item": {
+        "item_id": 156,
+        "market_hash_name": "AK-47 | Redline (Field-Tested)",
+        "phase": null
+      },
+      "triggered_value": "12.10",
+      "triggered_currency": "USD",
+      "reason": "best ask is at or below the configured threshold",
+      "created_at": "2026-03-18T13:20:00Z",
+      "deliveries": [
+        {
+          "channel": "email",
+          "status": "success",
+          "error": null,
+          "created_at": "2026-03-18T13:20:00Z"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "limit": 50,
+    "offset": 0,
+    "total": -1,
+    "has_next": false,
+    "has_prev": false,
+    "next_cursor": null
+  }
+}
+```
 
 ## Endpoints
 
@@ -481,10 +828,13 @@ Available to: `quant`
 
 Stream the full live prices snapshot as `application/x-ndjson`.
 
+- requires a real `sk_*` API key, not a session JWT
 - no request body
 - no filters, pagination, or alternate currencies
 - fixed `USD` output
+- `lowest_ask` is returned in minor units of USD
 - one `MarketItem` JSON object per line
+- the stream is backed by a stable snapshot captured at request start
 - per-API-key cooldown: 5 minutes
 
 **Response Headers:**
@@ -492,6 +842,12 @@ Stream the full live prices snapshot as `application/x-ndjson`.
 - `X-Snapshot-Timestamp`: UTC timestamp when stream generation started
 - `X-Snapshot-Currency`: always `USD`
 - `X-Snapshot-Total`: total indexed rows at stream start, when known
+
+**Possible Errors:**
+
+- `403` if the key is not on quant tier
+- `429` if the same API key already requested this snapshot within the last 5 minutes
+- `503` if indexed prices data is unavailable
 
 **Example Request:**
 
@@ -504,6 +860,7 @@ curl -X POST -H "Authorization: Bearer your_key" \
 
 ```text
 {"provider":"steam","item_id":1,"market_hash_name":"AK-47 | Redline (Field-Tested)","phase":null,"lowest_ask":2550,"quantity":3,"link":"https://cs2c.app/r/steam/1","url":"https://steamcommunity.com/market/listings/730/AK-47","timestamp":"2026-03-18T12:00:00Z","last_updated":"2026-03-18T12:01:00Z"}
+{"provider":"skinport","item_id":1,"market_hash_name":"AK-47 | Redline (Field-Tested)","phase":null,"lowest_ask":2490,"quantity":8,"link":"https://cs2c.app/r/skinport/1","url":"https://skinport.com/item/ak-47-redline-field-tested","timestamp":"2026-03-18T12:00:02Z","last_updated":"2026-03-18T12:01:05Z"}
 ```
 
 ---
@@ -785,10 +1142,13 @@ Available to: `quant`
 
 Stream the full live bids snapshot as `application/x-ndjson`.
 
+- requires a real `sk_*` API key, not a session JWT
 - no request body
 - no filters, pagination, or alternate currencies
 - fixed `USD` output
+- `highest_bid` is returned in minor units of USD
 - one `BuyOrderItem` JSON object per line
+- the stream is backed by a stable snapshot captured at request start
 - per-API-key cooldown: 5 minutes
 
 **Response Headers:**
@@ -796,6 +1156,12 @@ Stream the full live bids snapshot as `application/x-ndjson`.
 - `X-Snapshot-Timestamp`: UTC timestamp when stream generation started
 - `X-Snapshot-Currency`: always `USD`
 - `X-Snapshot-Total`: total indexed rows at stream start, when known
+
+**Possible Errors:**
+
+- `403` if the key is not on quant tier
+- `429` if the same API key already requested this snapshot within the last 5 minutes
+- `503` if indexed bids data is unavailable
 
 **Example Request:**
 
@@ -808,6 +1174,7 @@ curl -X POST -H "Authorization: Bearer your_key" \
 
 ```text
 {"provider":"buff163","item_id":120,"market_hash_name":"AK-47 | Redline (Field-Tested)","phase":null,"highest_bid":2450,"num_bids":5,"timestamp":"2026-03-18T12:00:00Z","last_updated":"2026-03-18T12:01:00Z"}
+{"provider":"csfloat","item_id":120,"market_hash_name":"AK-47 | Redline (Field-Tested)","phase":null,"highest_bid":2410,"num_bids":9,"timestamp":"2026-03-18T12:00:04Z","last_updated":"2026-03-18T12:01:06Z"}
 ```
 
 ---

@@ -362,7 +362,7 @@
           "Prices"
         ],
         "summary": "Stream Full Prices Snapshot",
-        "description": "Return the full live prices snapshot as an NDJSON stream.\n\nBehavior:\n- quant tier only\n- no request body or filters\n- fixed USD output\n- one JSON object per line using the `MarketItem` field set\n- per-API-key cooldown of 5 minutes for this POST operation",
+        "description": "Return the full live prices snapshot as an NDJSON stream.\n\nBehavior:\n- quant tier only\n- requires a real `sk_*` API key; session JWTs are not accepted\n- no request body or filters\n- fixed USD output\n- `lowest_ask` values are returned in USD minor units\n- one JSON object per line using the `MarketItem` field set\n- the live index is copied into temporary Redis keys so the export is stable for the duration of the stream\n- per-API-key cooldown of 5 minutes for this POST operation",
         "operationId": "stream_prices_snapshot_v1_prices_post",
         "security": [
           {
@@ -419,12 +419,12 @@
             }
           },
           "403": {
-            "description": "Authenticated but not permitted to access this resource.",
+            "description": "Bulk snapshot access requires quant tier.",
             "content": {
               "application/json": {
                 "example": {
                   "code": "FORBIDDEN",
-                  "detail": "Account is disabled"
+                  "detail": "Bulk snapshot access for /v1/prices requires quant tier."
                 },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
@@ -433,63 +433,24 @@
             }
           },
           "429": {
-            "description": "Rate limit exceeded (burst or monthly quota).",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "burstRateLimit": {
-                    "summary": "Per-window rate limit exceeded",
-                    "value": {
-                      "code": "RATE_LIMIT_EXCEEDED",
-                      "detail": "Too Many Requests"
-                    }
-                  },
-                  "monthlyQuotaExceeded": {
-                    "summary": "Monthly quota exhausted",
-                    "value": {
-                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
-                    }
-                  }
-                },
+            "description": "Bulk snapshot cooldown active for this API key.",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds until this API key may request another prices snapshot.",
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "type": "string",
+                  "example": "300"
                 }
               }
             },
-            "headers": {
-              "Retry-After": {
-                "description": "Seconds to wait before retrying when present.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "RATE_LIMIT_EXCEEDED",
+                  "detail": "Bulk snapshot cooldown active for /v1/prices. Retry after 300 seconds."
+                },
                 "schema": {
-                  "type": "integer",
-                  "minimum": 1
-                }
-              },
-              "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "X-RateLimit-Limit": {
-                "description": "Monthly request quota for this key (returned on quota 429).",
-                "schema": {
-                  "type": "integer",
-                  "minimum": 0
-                }
-              },
-              "X-RateLimit-Remaining": {
-                "description": "Remaining monthly requests (returned on quota 429).",
-                "schema": {
-                  "type": "integer",
-                  "minimum": 0
-                }
-              },
-              "X-RateLimit-Reset": {
-                "description": "Seconds until monthly quota reset (returned on quota 429).",
-                "schema": {
-                  "type": "integer",
-                  "minimum": 0
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1828,7 +1789,7 @@
           "Bids"
         ],
         "summary": "Stream Full Bids Snapshot",
-        "description": "Return the full live bids snapshot as an NDJSON stream.\n\nBehavior:\n- quant tier only\n- no request body or filters\n- fixed USD output\n- one JSON object per line using the `BuyOrderItem` field set\n- per-API-key cooldown of 5 minutes for this POST operation",
+        "description": "Return the full live bids snapshot as an NDJSON stream.\n\nBehavior:\n- quant tier only\n- requires a real `sk_*` API key; session JWTs are not accepted\n- no request body or filters\n- fixed USD output\n- `highest_bid` values are returned in USD minor units\n- one JSON object per line using the `BuyOrderItem` field set\n- the live index is copied into temporary Redis keys so the export is stable for the duration of the stream\n- per-API-key cooldown of 5 minutes for this POST operation",
         "operationId": "stream_bids_snapshot_v1_bids_post",
         "security": [
           {
@@ -1885,12 +1846,12 @@
             }
           },
           "403": {
-            "description": "Authenticated but not permitted to access this resource.",
+            "description": "Bulk snapshot access requires quant tier.",
             "content": {
               "application/json": {
                 "example": {
                   "code": "FORBIDDEN",
-                  "detail": "Account is disabled"
+                  "detail": "Bulk snapshot access for /v1/bids requires quant tier."
                 },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
@@ -1899,63 +1860,24 @@
             }
           },
           "429": {
-            "description": "Rate limit exceeded (burst or monthly quota).",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "burstRateLimit": {
-                    "summary": "Per-window rate limit exceeded",
-                    "value": {
-                      "code": "RATE_LIMIT_EXCEEDED",
-                      "detail": "Too Many Requests"
-                    }
-                  },
-                  "monthlyQuotaExceeded": {
-                    "summary": "Monthly quota exhausted",
-                    "value": {
-                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
-                    }
-                  }
-                },
+            "description": "Bulk snapshot cooldown active for this API key.",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds until this API key may request another bids snapshot.",
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "type": "string",
+                  "example": "300"
                 }
               }
             },
-            "headers": {
-              "Retry-After": {
-                "description": "Seconds to wait before retrying when present.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "RATE_LIMIT_EXCEEDED",
+                  "detail": "Bulk snapshot cooldown active for /v1/bids. Retry after 300 seconds."
+                },
                 "schema": {
-                  "type": "integer",
-                  "minimum": 1
-                }
-              },
-              "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "X-RateLimit-Limit": {
-                "description": "Monthly request quota for this key (returned on quota 429).",
-                "schema": {
-                  "type": "integer",
-                  "minimum": 0
-                }
-              },
-              "X-RateLimit-Remaining": {
-                "description": "Remaining monthly requests (returned on quota 429).",
-                "schema": {
-                  "type": "integer",
-                  "minimum": 0
-                }
-              },
-              "X-RateLimit-Reset": {
-                "description": "Seconds until monthly quota reset (returned on quota 429).",
-                "schema": {
-                  "type": "integer",
-                  "minimum": 0
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -3904,8 +3826,8 @@
         "tags": [
           "Account"
         ],
-        "summary": "Get Watchlist",
-        "description": "List saved watchlist items for the authenticated user.",
+        "summary": "List Watchlist",
+        "description": "List saved watchlist items for the authenticated user.\n\nBehavior:\n- accepts either a real API key or a session JWT bearer token\n- cursor pagination ordered by newest saved first\n- `search` matches exact numeric `item_id` or case-insensitive item-name substring\n- `pagination.total` is intentionally `-1` for this cursor endpoint",
         "operationId": "get_watchlist_v1_account_watchlist_get",
         "security": [
           {
@@ -3919,9 +3841,11 @@
             "required": false,
             "schema": {
               "type": "integer",
+              "description": "Requested cursor page size. Values are clamped to the range 1..200.",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "Requested cursor page size. Values are clamped to the range 1..200."
           },
           {
             "name": "cursor",
@@ -3936,8 +3860,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Opaque next-page cursor returned by a previous watchlist response.",
               "title": "Cursor"
-            }
+            },
+            "description": "Opaque next-page cursor returned by a previous watchlist response."
           },
           {
             "name": "search",
@@ -3952,8 +3878,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Exact numeric item_id match or case-insensitive market_hash_name substring.",
               "title": "Search"
-            }
+            },
+            "description": "Exact numeric item_id match or case-insensitive market_hash_name substring."
           }
         ],
         "responses": {
@@ -4125,7 +4053,7 @@
           "Account"
         ],
         "summary": "Create Watchlist Entry",
-        "description": "Save one item to the default account watchlist.",
+        "description": "Save one normalized catalog item to the authenticated user's default watchlist.\n\nRules:\n- accepts either a real API key or a session JWT bearer token\n- `item_id` must exist in the API item catalog\n- availability and max saved items are tier-controlled\n- duplicate saves return `409`",
         "operationId": "create_watchlist_entry_v1_account_watchlist_post",
         "security": [
           {
@@ -4313,7 +4241,7 @@
           "Account"
         ],
         "summary": "Delete Watchlist Entry",
-        "description": "Delete one item from the default account watchlist.",
+        "description": "Remove one saved watchlist entry by normalized `item_id`.\n\nThis path uses the catalog item ID, not the watchlist entry UUID.",
         "operationId": "delete_watchlist_entry_v1_account_watchlist__item_id__delete",
         "security": [
           {
@@ -4501,8 +4429,8 @@
         "tags": [
           "Account"
         ],
-        "summary": "Get Alerts",
-        "description": "List configured alerts for the authenticated user.",
+        "summary": "List Alerts",
+        "description": "List configured item alerts for the authenticated user.\n\nEach alert is item-scoped and includes the configured threshold, enabled state, timestamps, and item metadata.",
         "operationId": "get_alerts_v1_account_alerts_get",
         "responses": {
           "200": {
@@ -4677,8 +4605,8 @@
         "tags": [
           "Account"
         ],
-        "summary": "Create Alert Route",
-        "description": "Create a new account alert.",
+        "summary": "Create Alert",
+        "description": "Create a new item-scoped account alert.\n\nSupported kinds:\n- `price_below`: trigger when the current best ask is at or below the threshold\n- `price_above`: trigger when the current best ask is at or above the threshold\n- `spread_exceeds`: trigger when `((best_ask - best_bid) / best_ask) * 100` meets or exceeds the threshold\n\nRules:\n- accepts either a real API key or a session JWT bearer token\n- `spread_exceeds` ignores `threshold_currency`\n- price alerts default `threshold_currency` to the account preferred currency when omitted\n- email verification and alert-email opt-in are required only for enabled alerts\n- the active enabled-alert cap is tier-controlled",
         "operationId": "create_alert_route_v1_account_alerts_post",
         "requestBody": {
           "content": {
@@ -4865,8 +4793,8 @@
         "tags": [
           "Account"
         ],
-        "summary": "Patch Alert",
-        "description": "Update an existing account alert.",
+        "summary": "Update Alert",
+        "description": "Update threshold fields or enabled state for an existing alert.\n\nAt least one of `threshold_value`, `threshold_currency`, or `is_enabled` must be provided. Enabling an alert re-applies tier, email-verification, preference, and enabled-alert-limit checks.",
         "operationId": "patch_alert_v1_account_alerts__alert_id__patch",
         "security": [
           {
@@ -5063,8 +4991,8 @@
         "tags": [
           "Account"
         ],
-        "summary": "Delete Alert Route",
-        "description": "Delete an account alert.",
+        "summary": "Delete Alert",
+        "description": "Delete one alert definition owned by the authenticated user.",
         "operationId": "delete_alert_route_v1_account_alerts__alert_id__delete",
         "security": [
           {
@@ -5253,8 +5181,8 @@
         "tags": [
           "Account"
         ],
-        "summary": "Get Alert Event History",
-        "description": "List recent alert trigger events with delivery status.",
+        "summary": "List Alert Events",
+        "description": "List recent alert trigger events and delivery attempts for the authenticated user.\n\nBehavior:\n- accepts either a real API key or a session JWT bearer token\n- cursor pagination ordered by newest event first\n- `pagination.total` is intentionally `-1`\n- delivery rows currently reflect email delivery attempts",
         "operationId": "get_alert_event_history_v1_account_alerts_events_get",
         "security": [
           {
@@ -5268,9 +5196,11 @@
             "required": false,
             "schema": {
               "type": "integer",
+              "description": "Requested cursor page size. Values are clamped to the range 1..100.",
               "default": 50,
               "title": "Limit"
-            }
+            },
+            "description": "Requested cursor page size. Values are clamped to the range 1..100."
           },
           {
             "name": "cursor",
@@ -5285,8 +5215,10 @@
                   "type": "null"
                 }
               ],
+              "description": "Opaque next-page cursor returned by a previous alert-events response.",
               "title": "Cursor"
-            }
+            },
+            "description": "Opaque next-page cursor returned by a previous alert-events response."
           }
         ],
         "responses": {

@@ -1,6 +1,7 @@
 # Authentication
 
 Public market-data routes use API key authentication.
+Some account self-service routes also accept a session JWT as the bearer credential.
 
 ## Authorization Header
 
@@ -38,13 +39,31 @@ Use API keys for:
 - `GET /v1/items`
 - `GET /v1/providers`
 - `GET /v1/prices`
+- `POST /v1/prices`
 - `GET /v1/bids`
+- `POST /v1/bids`
 - `GET /v1/sales`
 - market analytics routes
+
+Use either an API key or a session JWT for:
+
+- `POST /v1/account/key/reset-ip`
+- `GET /v1/account/watchlist`
+- `POST /v1/account/watchlist`
+- `DELETE /v1/account/watchlist/{item_id}`
+- `GET /v1/account/alerts`
+- `POST /v1/account/alerts`
+- `PATCH /v1/account/alerts/{alert_id}`
+- `DELETE /v1/account/alerts/{alert_id}`
+- `GET /v1/account/alerts/events`
 
 Do not use API keys for:
 
 - internal operational surfaces
+
+Important:
+
+- `POST /v1/prices` and `POST /v1/bids` require a real `sk_*` API key. Session JWTs are rejected there.
 
 ## Rate-Limit Context
 
