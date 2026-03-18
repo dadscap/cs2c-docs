@@ -356,6 +356,220 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": [
+          "Prices"
+        ],
+        "summary": "Stream Full Prices Snapshot",
+        "description": "Return the full live prices snapshot as an NDJSON stream.\n\nBehavior:\n- quant tier only\n- no request body or filters\n- fixed USD output\n- one JSON object per line using the `MarketItem` field set\n- per-API-key cooldown of 5 minutes for this POST operation",
+        "operationId": "stream_prices_snapshot_v1_prices_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "NDJSON stream of the full live prices snapshot in USD.",
+            "headers": {
+              "X-Snapshot-Timestamp": {
+                "description": "UTC timestamp when the snapshot stream started.",
+                "schema": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "X-Snapshot-Currency": {
+                "description": "Fixed response currency for every streamed row.",
+                "schema": {
+                  "type": "string",
+                  "example": "USD"
+                }
+              },
+              "X-Snapshot-Total": {
+                "description": "Total indexed rows at stream start, when known.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\"provider\":\"steam\",\"item_id\":1,\"market_hash_name\":\"AK-47 | Redline (Field-Tested)\",\"phase\":null,\"lowest_ask\":2550,\"quantity\":3,\"link\":\"https://cs2c.app/r/steam/1\",\"url\":\"https://steamcommunity.com/market/listings/730/AK-47\",\"timestamp\":\"2026-03-18T12:00:00Z\",\"last_updated\":\"2026-03-18T12:01:00Z\"}\n"
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication credentials.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "detail": "Missing Authorization header"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted to access this resource.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "FORBIDDEN",
+                  "detail": "Account is disabled"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (burst or monthly quota).",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "burstRateLimit": {
+                    "summary": "Per-window rate limit exceeded",
+                    "value": {
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "detail": "Too Many Requests"
+                    }
+                  },
+                  "monthlyQuotaExceeded": {
+                    "summary": "Monthly quota exhausted",
+                    "value": {
+                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
+                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying when present.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant).",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Monthly request quota for this key (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining monthly requests (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until monthly quota reset (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed. The detail list contains field-specific validation errors.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalidProviderEnum": {
+                    "summary": "Empty providers query value",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "enum",
+                          "loc": [
+                            "query",
+                            "providers",
+                            0
+                          ],
+                          "msg": "Input should be one of the allowed provider keys",
+                          "input": "",
+                          "ctx": {
+                            "expected": "'steam', 'skinport', 'buff163', ..."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "limitTooHigh": {
+                    "summary": "Limit exceeds maximum",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "less_than_equal",
+                          "loc": [
+                            "query",
+                            "limit"
+                          ],
+                          "msg": "Input should be less than or equal to 1000",
+                          "input": 5000,
+                          "ctx": {
+                            "le": 1000
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Indexed prices data unavailable.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "PRICES_INDEX_UNAVAILABLE",
+                  "detail": "Indexed prices data unavailable. reason=index_missing. Try again shortly."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/prices/history": {
@@ -1599,6 +1813,220 @@
             "content": {
               "application/json": {
                 "example": {
+                  "detail": "Indexed bids data unavailable. reason=index_missing. Try again shortly."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Bids"
+        ],
+        "summary": "Stream Full Bids Snapshot",
+        "description": "Return the full live bids snapshot as an NDJSON stream.\n\nBehavior:\n- quant tier only\n- no request body or filters\n- fixed USD output\n- one JSON object per line using the `BuyOrderItem` field set\n- per-API-key cooldown of 5 minutes for this POST operation",
+        "operationId": "stream_bids_snapshot_v1_bids_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "NDJSON stream of the full live bids snapshot in USD.",
+            "headers": {
+              "X-Snapshot-Timestamp": {
+                "description": "UTC timestamp when the snapshot stream started.",
+                "schema": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "X-Snapshot-Currency": {
+                "description": "Fixed response currency for every streamed row.",
+                "schema": {
+                  "type": "string",
+                  "example": "USD"
+                }
+              },
+              "X-Snapshot-Total": {
+                "description": "Total indexed rows at stream start, when known.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\"provider\":\"buff163\",\"item_id\":120,\"market_hash_name\":\"AK-47 | Redline (Field-Tested)\",\"phase\":null,\"highest_bid\":2450,\"num_bids\":5,\"timestamp\":\"2026-03-18T12:00:00Z\",\"last_updated\":\"2026-03-18T12:01:00Z\"}\n"
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication credentials.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "detail": "Missing Authorization header"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted to access this resource.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "FORBIDDEN",
+                  "detail": "Account is disabled"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (burst or monthly quota).",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "burstRateLimit": {
+                    "summary": "Per-window rate limit exceeded",
+                    "value": {
+                      "code": "RATE_LIMIT_EXCEEDED",
+                      "detail": "Too Many Requests"
+                    }
+                  },
+                  "monthlyQuotaExceeded": {
+                    "summary": "Monthly quota exhausted",
+                    "value": {
+                      "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
+                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying when present.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant).",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Monthly request quota for this key (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining monthly requests (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until monthly quota reset (returned on quota 429).",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed. The detail list contains field-specific validation errors.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalidProviderEnum": {
+                    "summary": "Empty providers query value",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "enum",
+                          "loc": [
+                            "query",
+                            "providers",
+                            0
+                          ],
+                          "msg": "Input should be one of the allowed provider keys",
+                          "input": "",
+                          "ctx": {
+                            "expected": "'steam', 'skinport', 'buff163', ..."
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "limitTooHigh": {
+                    "summary": "Limit exceeds maximum",
+                    "value": {
+                      "code": "VALIDATION_ERROR",
+                      "detail": [
+                        {
+                          "type": "less_than_equal",
+                          "loc": [
+                            "query",
+                            "limit"
+                          ],
+                          "msg": "Input should be less than or equal to 1000",
+                          "input": 5000,
+                          "ctx": {
+                            "le": 1000
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "headers": {
+              "X-RateLimit-Tier": {
+                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Indexed bids data unavailable.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": "BIDS_INDEX_UNAVAILABLE",
                   "detail": "Indexed bids data unavailable. reason=index_missing. Try again shortly."
                 },
                 "schema": {

@@ -475,6 +475,39 @@ curl -H "Authorization: Bearer your_key" \
 
 ---
 
+#### POST /v1/prices
+
+Available to: `quant`
+
+Stream the full live prices snapshot as `application/x-ndjson`.
+
+- no request body
+- no filters, pagination, or alternate currencies
+- fixed `USD` output
+- one `MarketItem` JSON object per line
+- per-API-key cooldown: 5 minutes
+
+**Response Headers:**
+
+- `X-Snapshot-Timestamp`: UTC timestamp when stream generation started
+- `X-Snapshot-Currency`: always `USD`
+- `X-Snapshot-Total`: total indexed rows at stream start, when known
+
+**Example Request:**
+
+```bash
+curl -X POST -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/prices"
+```
+
+**Example Response Body (`application/x-ndjson`):**
+
+```text
+{"provider":"steam","item_id":1,"market_hash_name":"AK-47 | Redline (Field-Tested)","phase":null,"lowest_ask":2550,"quantity":3,"link":"https://cs2c.app/r/steam/1","url":"https://steamcommunity.com/market/listings/730/AK-47","timestamp":"2026-03-18T12:00:00Z","last_updated":"2026-03-18T12:01:00Z"}
+```
+
+---
+
 #### GET /v1/prices/history
 
 Available to: `pro`/`quant`
@@ -742,6 +775,39 @@ curl -H "Authorization: Bearer your_key" \
         "next_cursor": null
     }
 }
+```
+
+---
+
+#### POST /v1/bids
+
+Available to: `quant`
+
+Stream the full live bids snapshot as `application/x-ndjson`.
+
+- no request body
+- no filters, pagination, or alternate currencies
+- fixed `USD` output
+- one `BuyOrderItem` JSON object per line
+- per-API-key cooldown: 5 minutes
+
+**Response Headers:**
+
+- `X-Snapshot-Timestamp`: UTC timestamp when stream generation started
+- `X-Snapshot-Currency`: always `USD`
+- `X-Snapshot-Total`: total indexed rows at stream start, when known
+
+**Example Request:**
+
+```bash
+curl -X POST -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/bids"
+```
+
+**Example Response Body (`application/x-ndjson`):**
+
+```text
+{"provider":"buff163","item_id":120,"market_hash_name":"AK-47 | Redline (Field-Tested)","phase":null,"highest_bid":2450,"num_bids":5,"timestamp":"2026-03-18T12:00:00Z","last_updated":"2026-03-18T12:01:00Z"}
 ```
 
 ---
