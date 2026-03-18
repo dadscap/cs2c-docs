@@ -28,7 +28,7 @@ CS2C-API exposes normalized CS2 prices, bids, sales, and market analytics throug
 
 - Prices and bids use minor units: `2550 USD` means `$25.50`
 - `providers` is repeatable; `provider` is a single string
-- `/v1/prices` and `/v1/bids` are indexed-only and may return retryable `503`s
+- List endpoints use both offset and cursor pagination depending on the route
 </div>
 
 </div>
@@ -37,37 +37,39 @@ CS2C-API exposes normalized CS2 prices, bids, sales, and market analytics throug
 
 <div class="grid cards" markdown>
 
-- **Prices** · `GET /v1/prices`
+- **Prices** · `GET /prices`
 
     ---
 
     Best ask snapshots across providers.
 
-- **History** · `GET /v1/prices/history`
+- **History** · `GET /prices/history`
 
     ---
 
     Historical price records and candles.
 
-- **Bids** · `GET /v1/bids`
+- **Bids** · `GET /bids`
 
     ---
 
     Current buy orders for supported providers.
 
-- **Sales** · `GET /v1/sales`
+- **Sales** · `GET /sales`
 
     ---
 
     Recent transaction history with live fetch on cache miss.
 
-- **Market** · `GET /v1/market/arbitrage`
+- **Market** · `GET /market/arbitrage`
 
     Arbitrage and item-level market indicators.
 
-- **FX** · `GET /v1/fx`
+- **FX** · `GET /fx`
+ 
+    ---
 
-    Currency conversion rates used across responses.
+    Conversion rates across 160+ currencies used across responses.
 
 </div>
 

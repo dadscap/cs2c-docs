@@ -5,13 +5,12 @@ Reference for authentication, tiers, response conventions, and public endpoints.
 ## Base URL
 
 ```text
-https://api.cs2c.app
+https://api.cs2c.app/v1
 ```
 
 ## Authentication
 
-Market-data endpoints require an API key in the `Authorization` header. Some account
-self-service routes also accept a session JWT bearer token.
+Market-data endpoints require an API key in the `Authorization` header.
 
 ```http
 Authorization: Bearer your_api_key_here
@@ -37,7 +36,9 @@ Rate limits are enforced per API key based on the user's tier:
 | ------- | --------------- | -------------- | ----------------- |
 | `free`  | 20              | 1,000          | 100               |
 | `pro`   | 100             | 50,000         | 1,000             |
-| `quant` | 300             | 200,000        | 1,000             |
+| `quant` | 300             | 200,000        | None*             |
+
+* Unlimited streaming applies only to `POST /prices` and `POST /bids`. Most endpoints still use per-route caps.
 
 On quota or burst enforcement, inspect these headers:
 
@@ -105,37 +106,990 @@ Common codes:
 | `BIDS_INDEX_UNAVAILABLE` | Bids index is temporarily unavailable |
 | `VALIDATION_ERROR` | Request validation failed |
 
-## Endpoint Map
+## Endpoints
 
-| Area | Primary Routes | Notes |
-| ---- | -------------- | ----- |
-| Account | `/v1/account/*` | API key, watchlist, alerts, self-service flows |
-| Items | `/v1/items`, `/v1/items/market-ids` | Catalog lookup and provider-specific IDs |
-| Providers | `/v1/providers` | Health, fees, and market coverage |
-| Prices | `/v1/prices`, `/v1/prices/history`, `/v1/prices/candles` | Real-time prices, historical snapshots, OHLCV |
-| Market | `/v1/market/arbitrage`, `/v1/market/items/{item_id}`, `/v1/market/indicators` | Cross-market analytics |
-| Bids | `/v1/bids` | Indexed buy-order data |
-| Sales | `/v1/sales` | Live-query recent sales with cache mediation |
+Provider parameter naming:
+
+- `providers` / `providers_buy` / `providers_sell` (plural): repeatable query params with provider-key enum values (for example `&providers=steam&providers=skinport`).
+- `provider` (singular): one provider key as a single string (for example `&provider=steam`).
 
 ### Account
 
-#### POST /v1/account/key/reset-ip
+#### POST /account/key/reset-ip
 
 Rebind the active API key to the caller's current IP.
 
 - Free tier: immediately replaces the previous bound IP.
 - Pro/Quant: succeeds but does not change account state.
 - Cooldown: once every 24 hours per account.
-- Authentication: Bearer API key or session JWT.
+- Authentication: Bearer API key.
 - Monthly quota: exempt.
 
-#### GET /v1/account/watchlist
+### Prices
+
+#### GET /prices
+
+Available to: `free`/`pro`/`quant`
+
+Retrieve current lowest-ask listings across providers.
+
+`lowest_ask` is returned as minor units of the response currency (for example USD cents when `currency=USD`).
+
+**Query Parameters:**
+
+| Parameter          | Type                | Required | Default  | Description                                                                                                                  |
+| ------------------ | ------------------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `item_id`          | integer             | No       | -        | Exact item ID lookup (fast path)                                                                                             |
+| `market_hash_name` | string              | No       | -        | Exact item name lookup                                                                                                       |
+| `phase`            | string              | No       | -        | Doppler phase filter (empty strings treated as unset)                                                                        |
+| `providers`        | array[enum[string]] | No       | -        | Provider-key enum values to include (repeat `providers` for multiple providers)                                              |
+| `currency`         | string              | No       | USD      | Any ISO 4217 code supported by `/fx` (see `/fx` for the full list of available currencies). Invalid codes return `422`      |
+| `limit`            | integer             | No       | 100/1000 | Results per page (tier-capped: `free` = 100, `pro` = 1000, `quant` = 1000)                                                  |
+| `offset`           | integer             | No       | 0        | Pagination offset                                                                                                            |
+
+**Link Fields (`/prices` response):**
+
+- `link`: Branded redirect URL through this API domain (`/r/{provider}/{item_id}`), intended for tracked marketplace navigation and affiliate/referral attribution.
+- `url`: Raw direct marketplace listing URL (no API redirect). Returned only for paid tiers (`pro`, `quant`).
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/prices?providers=avanmarket&currency=USD&limit=1"
+```
+
+**Example Response:**
+
+```json
+{
+    "meta": {
+        "currency": "USD",
+        "filters": {
+            "market_hash_name": null,
+            "phase": null,
+            "requested_providers": null
+        },
+        "returned_providers": [
+            "avanmarket",
+            "bitskins",
+            "buff163",
+            "buffmarket",
+            "c5",
+            "csdeals",
+            "csfloat",
+            "csgo500",
+            "csgoempire",
+            "csmoney_m",
+            "csmoney_t",
+            "cstrade",
+            "dmarket",
+            "ecosteam",
+            "gamerpay",
+            "haloskins",
+            "itradegg",
+            "lisskins",
+            "lootfarm",
+            "mannco",
+            "marketcsgo",
+            "pirateswap",
+            "rapidskins",
+            "shadowpay",
+            "skinbaron",
+            "skinflow",
+            "skinout",
+            "skinplace",
+            "skinport",
+            "skinscom",
+            "skinsmonkey",
+            "skinswap",
+            "skinvault",
+            "steam",
+            "swapgg",
+            "tradeit",
+            "waxpeer",
+            "whitemarket",
+            "youpin"
+        ]
+    },
+    "items": [
+        {
+            "provider": "avanmarket",
+            "item_id": 2,
+            "market_hash_name": "'Blueberries' Buckshot | NSWC SEAL",
+            "phase": null,
+            "lowest_ask": 2327,
+            "quantity": 6,
+            "link": "https://cs2c.app/r/avanmarket/2",
+            "url": "https://avan.market/en/market/cs/blueberries-buckshot-nswc-seal",
+            "timestamp": "2026-03-07T23:26:20.956949Z",
+            "last_updated": "2026-03-08T21:41:03.792573Z"
+        }
+        ...
+    ],
+    "pagination": {
+        "limit": 1000,
+        "offset": 0,
+        "total": 592203,
+        "has_next": true,
+        "has_prev": false
+    }
+}
+```
+
+---
+
+#### POST /prices
+
+Available to: `quant`
+
+Stream the full live prices snapshot as `application/x-ndjson`.
+
+- requires a real `sk_*` API key
+- no request body
+- no filters, pagination, or alternate currencies
+- fixed `USD` output
+- `lowest_ask` is returned in minor units of USD
+- one `MarketItem` JSON object per line
+- the stream is backed by a stable snapshot captured at request start
+- per-API-key cooldown: 5 minutes
+
+**Response Headers:**
+
+- `X-Snapshot-Timestamp`: UTC timestamp when stream generation started
+- `X-Snapshot-Currency`: always `USD`
+- `X-Snapshot-Total`: total indexed rows at stream start, when known
+
+**Possible Errors:**
+
+- `403` if the key is not on quant tier
+- `429` if the same API key already requested this snapshot within the last 5 minutes
+- `503` if indexed prices data is unavailable
+
+**Example Request:**
+
+```bash
+curl -X POST -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/prices"
+```
+
+**Example Response Body (`application/x-ndjson`):**
+
+```text
+{"provider":"steam","item_id":1,"market_hash_name":"AK-47 | Redline (Field-Tested)","phase":null,"lowest_ask":2550,"quantity":3,"link":"https://cs2c.app/r/steam/1","url":"https://steamcommunity.com/market/listings/730/AK-47","timestamp":"2026-03-18T12:00:00Z","last_updated":"2026-03-18T12:01:00Z"}
+{"provider":"skinport","item_id":1,"market_hash_name":"AK-47 | Redline (Field-Tested)","phase":null,"lowest_ask":2490,"quantity":8,"link":"https://cs2c.app/r/skinport/1","url":"https://skinport.com/item/ak-47-redline-field-tested","timestamp":"2026-03-18T12:00:02Z","last_updated":"2026-03-18T12:01:05Z"}
+```
+
+---
+
+#### GET /prices/candles
+
+Available to: `free`/`pro`/`quant`
+
+Composite OHLCV candles for a single item across all providers.
+
+**Query Parameters:**
+
+| Parameter          | Type    | Required      | Default  | Description                                                                                                             |
+| ------------------ | ------- | ------------- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `item_id`          | integer | Conditionally | -        | Item ID (required if `market_hash_name` not provided)                                                                   |
+| `market_hash_name` | string  | Conditionally | -        | Item name (required if `item_id` not provided)                                                                          |
+| `phase`            | string  | No            | -        | Optional phase filter                                                                                                   |
+| `start`            | string  | No            | -        | ISO 8601 start timestamp                                                                                                |
+| `end`              | string  | No            | now      | ISO 8601 end timestamp                                                                                                  |
+| `lookback`         | string  | No            | -        | Duration shorthand (`7d`, `30d`); overrides `start`                                                                     |
+| `interval`         | string  | No            | `1h`     | One of: `5m`, `1h`, `1d`                                                                                                |
+| `fill`             | boolean | No            | `false`  | Forward-fill empty buckets                                                                                              |
+| `currency`         | string  | No            | USD      | Any ISO 4217 code supported by `/fx` (see `/fx` for the full list of available currencies). Invalid codes return `422` |
+| `limit`            | integer | No            | 100/1000 | Results per page (tier-capped: `free` = 100, `pro` = 1000, `quant` = 1000)                                             |
+| `cursor`           | string  | No            | -        | Opaque cursor from `next_cursor`                                                                                        |
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/prices/candles?item_id=156&interval=1h&lookback=7d"
+```
+
+**Example Response:**
+
+```json
+{
+  "meta": {
+    "item_id": 156,
+    "market_hash_name": "AWP | Dragon Lore (Factory New)",
+    "phase": null,
+    "provider": "All Providers",
+    "currency": "USD",
+    "interval": "1h",
+    "start": "2025-12-22T10:30:00+00:00",
+    "end": "2025-12-29T10:30:00+00:00"
+  },
+  "data": [
+    {
+      "t": 1766998800,
+      "o": 2247525,
+      "h": 2253500,
+      "l": 2240000,
+      "c": 2249100,
+      "v": 179
+    }
+  ],
+  "pagination": {
+    "limit": 500,
+    "offset": 0,
+    "total": -1,
+    "has_next": false,
+    "has_prev": false,
+    "next_cursor": null
+  }
+}
+```
+
+`o` and `c` are unweighted averages across provider snapshots in the response currency. `l` is the minimum provider low, `h` is capped at `median(provider_highs) * 1.5`, and `v` is the summed close-side listing count across providers. For `1d` windows starting more than 30 days back, `v` falls back to legacy depletion-derived `volume_qty`.
+
+---
+
+#### GET /prices/history
+
+Available to: `pro`/`quant`
+
+Historical price snapshots from `price_history` (cursor-based pagination).
+
+`price` is returned as minor units of the response currency (for example USD cents when `currency=USD`).
+
+**Query Parameters:**
+
+| Parameter          | Type    | Required | Default  | Description                                                                                                             |
+| ------------------ | ------- | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `item_id`          | integer | No       | -        | Filter by item ID                                                                                                       |
+| `market_hash_name` | string  | No       | -        | Filter by item name                                                                                                     |
+| `phase`            | string  | No       | -        | Filter by phase (empty strings treated as unset)                                                                        |
+| `provider`         | string  | No       | -        | Single provider key string (`provider=...`, one provider only)                                                          |
+| `start`            | string  | No       | -        | ISO 8601 start timestamp                                                                                                |
+| `end`              | string  | No       | -        | ISO 8601 end timestamp                                                                                                  |
+| `currency`         | string  | No       | USD      | Any ISO 4217 code supported by `/fx` (see `/fx` for the full list of available currencies). Invalid codes return `422` |
+| `limit`            | integer | No       | 100/1000 | Results per page (tier-capped: `free` = 100, `pro` = 1000, `quant` = 1000)                                             |
+| `cursor`           | string  | No       | -        | Opaque cursor from `next_cursor`                                                                                        |
+
+**Notes:**
+
+- `pagination.total` is intentionally `-1` to avoid expensive COUNT queries.
+- Cursor pagination state is returned in `pagination.has_next` and `pagination.next_cursor`.
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/prices/history?market_hash_name=AK-47+%7C+Redline+%28Field-Tested%29&provider=steam&limit=50"
+```
+
+**Example Response:**
+
+```json
+{
+  "meta": {
+    "currency": "USD",
+    "filters": {
+      "item_id": 156,
+      "market_hash_name": "AK-47 | Redline (Field-Tested)",
+      "phase": null,
+      "provider": "steam",
+      "start": "2025-12-29T00:00:00Z",
+      "end": "2025-12-30T00:00:00Z"
+    },
+    "result_count": 1
+  },
+  "items": [
+    {
+      "time": "2025-12-29T10:00:00Z",
+      "item_id": 156,
+      "market_hash_name": "AK-47 | Redline (Field-Tested)",
+      "phase": null,
+      "provider": "Steam Community Market",
+      "price": 2550,
+      "currency": "USD",
+      "quantity": 142
+    }
+  ],
+  "pagination": {
+    "limit": 50,
+    "offset": 0,
+    "total": -1,
+    "has_next": false,
+    "has_prev": false,
+    "next_cursor": null
+  }
+}
+```
+
+### Bids
+
+#### GET /bids
+
+Available to: `pro`/`quant`
+
+List buy orders/bids with filtering by item, provider, and phase.
+
+`highest_bid` is returned as minor units of the response currency (for example USD cents when `currency=USD`).
+
+**Query Parameters:**
+
+| Parameter          | Type                | Required | Default  | Description                                                                                                             |
+| ------------------ | ------------------- | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `item_id`          | integer             | No       | -        | Filter by item ID                                                                                                       |
+| `market_hash_name` | string              | No       | -        | Filter by item name                                                                                                     |
+| `phase`            | string              | No       | -        | Filter by Doppler phase (applies globally, not just with market_hash_name); empty strings treated as unset             |
+| `providers`        | array[enum[string]] | No       | -        | Provider-key enum values (repeat `providers` for multiple providers)                                                    |
+| `currency`         | string              | No       | USD      | Any ISO 4217 code supported by `/fx` (see `/fx` for the full list of available currencies). Invalid codes return `422` |
+| `limit`            | integer             | No       | 100/1000 | Results per page (tier-capped: `pro` = 1000, `quant` = 1000)                                                           |
+| `offset`           | integer             | No       | 0        | Pagination offset                                                                                                       |
+
+**Providers with Buy Orders:**
+
+- `buff163`, `buffmarket`, `csfloat`, `dmarket`, `ecosteam`,
+- `marketcsgo`, `steam`, `waxpeer`, `whitemarket`
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/bids?market_hash_name=★+Karambit+|+Gamma+Doppler+(Factory+New)&phase=Phase+2"
+```
+
+**Example Response:**
+
+```json
+{
+    "meta": {
+        "currency": "USD",
+        "filters": {
+            "item_id": null,
+            "market_hash_name": null,
+            "phase": null,
+            "requested_providers": null
+        },
+        "providers_queried": [
+            "buff163",
+            "buffmarket",
+            "csfloat",
+            "dmarket",
+            "ecosteam",
+            "marketcsgo",
+            "steam",
+            "waxpeer",
+            "whitemarket"
+        ]
+    },
+    "items": [
+        {
+            "item_id": 60,
+            "market_hash_name": "'The Doctor' Romanov | Sabre",
+            "phase": null,
+            "provider": "buff163",
+            "highest_bid": 1663,
+            "num_bids": 224,
+            "timestamp": "2026-03-08T21:07:34.278922Z",
+            "last_updated": "2026-03-08T21:07:49.422001Z"
+        },
+        {
+            "item_id": 60,
+            "market_hash_name": "'The Doctor' Romanov | Sabre",
+            "phase": null,
+            "provider": "csfloat",
+            "highest_bid": 1620,
+            "num_bids": 1,
+            "timestamp": "2026-03-08T21:24:52.084750Z",
+            "last_updated": "2026-03-08T21:26:14.308082Z"
+        }
+        ...
+    ],
+    "pagination": {
+        "limit": 1000,
+        "offset": 0,
+        "total": 132020,
+        "has_next": true,
+        "has_prev": false,
+        "next_cursor": null
+    }
+}
+```
+
+---
+
+#### POST /bids
+
+Available to: `quant`
+
+Stream the full live bids snapshot as `application/x-ndjson`.
+
+- requires a real `sk_*` API key
+- no request body
+- no filters, pagination, or alternate currencies
+- fixed `USD` output
+- `highest_bid` is returned in minor units of USD
+- one `BuyOrderItem` JSON object per line
+- the stream is backed by a stable snapshot captured at request start
+- per-API-key cooldown: 5 minutes
+
+**Response Headers:**
+
+- `X-Snapshot-Timestamp`: UTC timestamp when stream generation started
+- `X-Snapshot-Currency`: always `USD`
+- `X-Snapshot-Total`: total indexed rows at stream start, when known
+
+**Possible Errors:**
+
+- `403` if the key is not on quant tier
+- `429` if the same API key already requested this snapshot within the last 5 minutes
+- `503` if indexed bids data is unavailable
+
+**Example Request:**
+
+```bash
+curl -X POST -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/bids"
+```
+
+**Example Response Body (`application/x-ndjson`):**
+
+```text
+{"provider":"buff163","item_id":120,"market_hash_name":"AK-47 | Redline (Field-Tested)","phase":null,"highest_bid":2450,"num_bids":5,"timestamp":"2026-03-18T12:00:00Z","last_updated":"2026-03-18T12:01:00Z"}
+{"provider":"csfloat","item_id":120,"market_hash_name":"AK-47 | Redline (Field-Tested)","phase":null,"highest_bid":2410,"num_bids":9,"timestamp":"2026-03-18T12:00:04Z","last_updated":"2026-03-18T12:01:06Z"}
+```
+
+### Recent Sales
+
+#### GET /sales
+
+Available to: `pro`/`quant`
+
+Retrieve sales transaction history with on-demand provider fetching.
+
+`price` is returned as minor units of the response currency (for example USD cents when `currency=USD`). Divide by 100 for display.
+
+**This is a live-query endpoint (not pre-ingested): cache misses trigger synchronous provider API calls, so response times vary by provider/network conditions.**
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+| --------- | ---- | -------- | ------- | ----------- |
+| `item_id` | integer | No | - | Filter by item ID |
+| `market_hash_name` | string | No | - | Filter by item name (`item_id` or `market_hash_name` required) |
+| `phase` | string | No | - | Filter by Doppler phase; empty strings treated as unset |
+| `providers` | array[enum[string]] | No | - | Provider-key enum values to query (repeat `providers` for multiple providers) |
+| `currency` | string | No | USD | Any ISO 4217 code supported by `/fx` (see `/fx` for the full list of available currencies). Invalid codes return `422` |
+| `limit` | integer | No | 25 | Results per page (tier-capped, endpoint max 50) |
+
+**Cache Behavior (`cache_status`):**
+
+- `cache_status` is a map keyed by provider key: `{ [provider_key]: status }`.
+- Status values:
+  - `hit`: served from Redis sales cache
+  - `miss`: cache miss, fetched live during this request
+  - `error`: live fetch attempted but failed
+  - `unavailable`: provider was requested but is not available in the active runtime registry
+- Sales cache TTL for a hit is currently **1 hour** per `item_id + provider`.
+
+**Providers with Recent Sales:**
+
+- `bitskins`, `buff163`, `buffmarket`, `c5`, `csfloat`, `csgo500`
+- `csgoempire`, `dmarket`, `skinbaron`, `youpin`
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/sales?market_hash_name=AK-47+%7C+Redline+%28Field-Tested%29&providers=csfloat&providers=buff163"
+```
+
+**Example Response:**
+
+```json
+{
+    "meta": {
+        "currency": "USD",
+        "filters": {
+            "item_id": 12635,
+            "market_hash_name": "StatTrak™ AK-47 | Redline (Well-Worn)",
+            "phase": null,
+            "requested_providers": null,
+            "limit": 50
+        },
+        "providers_queried": [
+            "c5",
+            "skinbaron",
+            "bitskins",
+            "buffmarket",
+            "dmarket",
+            "buff163",
+            "csgo500",
+            "csfloat",
+            "csgoempire",
+            "youpin"
+        ],
+        "result_count": 50
+    },
+    "items": [
+        {
+            "date": "2026-02-20T16:00:00+00:00",
+            "provider": "buff163",
+            "price": 7054,
+            "currency": "USD",
+            "item_id": 12635,
+            "market_hash_name": "StatTrak™ AK-47 | Redline (Well-Worn)",
+            "phase": null,
+            "float": 0.3843424618244171,
+            "paint_seed": 896,
+            "stickers": [
+                {
+                    "name": "Sticker | Cloud9 (Foil) | Krakow 2017",
+                    "slot": 0,
+                    "wear": null
+                },
+                {
+                    "name": "Sticker | Virtus.Pro (Holo) | Krakow 2017",
+                    "slot": 1,
+                    "wear": null
+                },
+                {
+                    "name": "Sticker | ELEAGUE (Holo) | Atlanta 2017",
+                    "slot": 3,
+                    "wear": null
+                },
+                {
+                    "name": "Sticker | NiKo (Glitter) | Shanghai 2024",
+                    "slot": 2,
+                    "wear": null
+                },
+                {
+                    "name": "Sticker | MAJ3R | Austin 2025",
+                    "slot": 2,
+                    "wear": 0.6200000047683716
+                }
+            ],
+            "charms": [
+                {
+                    "name": "Charm | Lil' Crass",
+                    "pattern_id": 42531
+                }
+            ],
+            "inspect": {
+                "in_game": "steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20001807209A02280538899193F6034080079AD9F0F9",
+                "screenshot_front": "https://spect.fp.ps.netease.com/file/6999dec15bf7f4fc0db4f14a8Mb3yhGR07",
+                "screenshot_back": "https://spect.fp.ps.netease.com/file/6999dec15bf7f4fc0db4f14a8Mb3yhGR07"
+            }
+        }
+        ...
+    ],
+    "cache_status": {
+        "c5": "hit",
+        "skinbaron": "hit",
+        "bitskins": "miss",
+        "buffmarket": "miss",
+        "dmarket": "miss",
+        "buff163": "hit",
+        "csgo500": "miss",
+        "csfloat": "hit",
+        "csgoempire": "hit",
+        "youpin": "hit"
+    }
+}
+```
+
+**Error Codes:**
+
+| Code | Description |
+| ---- | ----------- |
+| 400 | Missing item filter (`item_id` or `market_hash_name`) or invalid provider selection |
+| 404 | Item could not be resolved |
+
+**400 Example (Missing Required Item Filter):**
+
+```json
+{
+  "code": "BAD_REQUEST",
+  "detail": "Either item_id or market_hash_name must be provided"
+}
+```
+
+### Items
+
+#### GET /items
+
+Available to: `free`/`pro`/`quant`
+
+Search and retrieve items from the catalog.
+
+If `limit` is omitted, `/items` returns all matched items from `offset` onward in a single response for any tier.
+
+**Query Parameters:**
+
+| Parameter          | Type          | Required | Default     | Description                                                                                  |
+| ------------------ | ------------- | -------- | ----------- | -------------------------------------------------------------------------------------------- |
+| `q`                | string        | No       | -           | Search by market hash name substring (case-insensitive)                                      |
+| `item_id`          | integer       | No       | -           | Exact item ID match                                                                          |
+| `market_hash_name` | string        | No       | -           | Exact market hash name match (case-insensitive)                                              |
+| `item_type`        | string        | No       | -           | Exact item type match (case-insensitive)                                                     |
+| `item_subtype`     | string        | No       | -           | Exact item subtype match (case-insensitive)                                                  |
+| `weapon_type`      | string        | No       | -           | Exact weapon type match (case-insensitive)                                                   |
+| `base_name`        | string        | No       | -           | Exact base name match (case-insensitive)                                                     |
+| `skin_name`        | string        | No       | -           | Exact skin name match (case-insensitive)                                                     |
+| `wear_name`        | string        | No       | -           | Exact wear name match (case-insensitive)                                                     |
+| `phase`            | string        | No       | -           | Exact phase match (case-insensitive)                                                         |
+| `collection`       | string        | No       | -           | Exact collection match (case-insensitive)                                                    |
+| `crates`           | array[string] | No       | -           | Filter by crate names (matches any value)                                                    |
+| `rarity_name`      | string        | No       | -           | Exact rarity name match (case-insensitive)                                                   |
+| `rarity_color`     | string        | No       | -           | Exact rarity color match (case-insensitive)                                                  |
+| `style_name`       | string        | No       | -           | Exact style name match (case-insensitive)                                                    |
+| `is_stattrak`      | boolean       | No       | -           | Filter by StatTrak items                                                                     |
+| `is_souvenir`      | boolean       | No       | -           | Filter by Souvenir items                                                                     |
+| `limit`            | integer       | No       | all matches | Results per page when provided. Omit to return the full matched payload from `offset` onward |
+| `offset`           | integer       | No       | 0           | Pagination offset                                                                            |
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/items?item_type=Agent&collection=Operation%20Riptide%20Agents&limit=10"
+```
+
+**Example Response:**
+
+```json
+{
+    "items": [
+        {
+            "item_id": 1,
+            "market_hash_name": "Bloody Darryl The Strapped | The Professionals",
+            "phase": null,
+            "item_type": "Agent",
+            "item_subtype": "Terrorist",
+            "weapon_type": null,
+            "base_name": "Bloody Darryl The Strapped",
+            "skin_name": "The Professionals",
+            "wear_name": null,
+            "def_index": "4613",
+            "paint_index": null,
+            "collection": "Operation Riptide Agents",
+            "crates": [
+                ""
+            ],
+            "rarity_name": "Superior",
+            "rarity_color": "d32ce6",
+            "style_name": null,
+            "is_stattrak": false,
+            "is_souvenir": false,
+            "min_float": null,
+            "max_float": null,
+            "image_url": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3WWlKAhtLhqHXDilxgm4z7dztesJH2SbgApCMchFrQNsRSxw4XhYeK0swbYlcsbmucxTysR",
+            "supply": null
+        }
+  ...
+    ],
+    "pagination": {
+        "limit": 1000,
+        "offset": 0,
+        "total": 37340,
+        "has_next": true,
+        "has_prev": false,
+        "next_cursor": null
+    }
+}
+```
+
+---
+
+#### GET /items/market-ids
+
+Available to: `free`/`pro`/`quant`
+
+Return a mapping of every `market_hash_name` to its provider-specific IDs (e.g. `buff163_goods_id`, `csfloat_id`, `steam_nameid`). Useful for translating catalog items to marketplace-native identifiers without doing the lookup yourself.
+
+No query parameters.
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/items/market-ids"
+```
+
+**Example Response:**
+
+```json
+{
+    "items": {
+        "Bloody Darryl The Strapped | The Professionals": {
+            "c5game_id": 914665027831566336,
+            "youpin_id": 101006,
+            "buff163_goods_id": 871457,
+            "haloskins_id": 914665027831566336,
+            "steam_nameid": 176262928,
+            "csfloat_id": 4613,
+            "marketcsgo_id": 45234,
+            "bitskins_id": 4138,
+            "buffmarket_goods_id": 20030,
+            "ecosteam_classid": 4738189084,
+            "pirateswap_mhnc": -1747201319,
+            "csmoney_nameid": 1087079,
+            "shadowpay_item_id": 40283
+        }
+        ...
+    }
+}
+```
+
+### Market Intelligence
+
+Market intelligence endpoints provide quant-focused analytics with consistent `meta` + `data` envelopes.
+`/market/arbitrage` and `/market/items/{item_id}` are USD-only. `/market/indicators` also accepts a `currency` parameter for price-level output conversion.
+Access is tiered by endpoint: `pro` can access `/market/items/{item_id}`, while `quant` can access all `/market/*` endpoints.
+
+#### GET /market/arbitrage
+
+Available to: `quant`
+
+Find arbitrage opportunities across providers.
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+| --------- | ---- | -------- | ------- | ----------- |
+| `min_spread_pct` | number | No | 1.0 | Minimum spread percentage to filter by |
+| `limit` | integer | No | tier cap | Number of opportunities to return (effective default is the tier cap; quant currently resolves to 100, capped at 100) |
+| `cursor` | string | No | — | Opaque cursor from previous page |
+| `providers_buy` | array[enum[string]] | No | — | Buy-side provider-key enum values (repeat `providers_buy` for multiple providers) |
+| `providers_sell` | array[enum[string]] | No | — | Sell-side provider-key enum values (repeat `providers_sell` for multiple providers) |
+
+**Cursor behavior:**
+
+- pagination is cursor-only
+- `pagination.total` is intentionally `-1`
+- cursor tokens are tied to endpoint, sort context, and filter hash
+- changing filters or reusing a mismatched cursor returns `400`
+- malformed cursor tokens also return `400`
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/market/arbitrage?min_spread_pct=5.0&limit=20"
+```
+
+---
+
+#### GET /market/indicators
+
+Available to: `quant`
+
+Compute technical indicators for one item from live OHLCV candle data.
+
+For this endpoint, the volume-dependent indicators still use depletion-based candle `volume_qty` internally. They do not use the public `/prices/candles` `v` field.
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+| --------- | ---- | -------- | ------- | ----------- |
+| `item_id` | integer | No | — | Item ID for indicator computation |
+| `market_hash_name` | string | No | — | Alternate item selector for indicator computation |
+| `phase` | string | No | — | Optional phase filter; primarily relevant when resolving by `market_hash_name` |
+| `provider` | string | Yes | — | Single provider key string (`provider=...`) |
+| `interval` | string | No | 1d | Candle interval (`1h`, `1d`) |
+| `currency` | string | No | USD | Output currency for price-level indicators (response field name `close_price_usd` is retained for compatibility) |
+
+**Required selector:** provide `item_id` or `market_hash_name` together with `provider`.
+
+**Error behavior:**
+
+| Status | Condition |
+| --- | --- |
+| `400` | `provider` missing |
+| `400` | both `item_id` and `market_hash_name` missing |
+| `400` | unknown provider |
+| `404` | unknown item |
+| `422` | insufficient candle history for indicator computation |
+| `503` | FX rate unavailable for requested output currency |
+
+---
+
+#### GET /market/items/{item_id}
+
+Available to: `pro`/`quant`
+
+Get detailed analytics for a specific item.
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+| --------- | ---- | -------- | ----------- |
+| `item_id` | integer | Yes | Item ID to analyze |
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+| --------- | ---- | -------- | ------- | ----------- |
+| `timeframe` | string | No | 24h | Time window (1h, 24h, 7d, 30d) |
+
+**Response shape notes:**
+
+- `meta.window` contains preset-only metadata: `timeframe`
+- `timeframe` selects the liquidity horizon used for `data.summary.liquidity_*`
+- item-level liquidity fields live in `data.summary`
+- `timeframe=1h` reuses the `24h` liquidity horizon
+- provider rows keep pricing, bid-side, spread, depth, volume, and `bid_anomaly`
+- provider rows no longer include liquidity component metrics
+- `data.providers[].volume_24h` is always trailing 24h depletion activity
+- `data.providers[].volume_7d` is always trailing 7d depletion activity
+- `data.summary.total_volume_24h` is always the sum of trailing 24h provider volume
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/market/items/156?timeframe=24h"
+```
+
+### Informational
+
+#### GET /providers
+
+Available to: `free`/`pro`/`quant`
+
+List all providers with health status, fees, and market coverage.
+
+`health.total_value` is the estimated aggregate listing value in each provider's native currency
+(`default_currency`), while `health.total_value_usd` is the same value normalized to USD using current FX rates.
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+| --------- | ---- | -------- | ------- | ----------- |
+| `provider` | string | No | - | Filter to a single provider key (e.g., `skinport`) |
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/providers"
+```
+
+**Example Response:**
+
+```json
+{
+    "Youpin898": {
+        "key": "youpin",
+        "code": "YOUP",
+        "market_type": "P2P",
+        "default_currency": "CNY",
+        "fees": {
+            "sell_fee": 0.01,
+            "insta_sell_fee": null,
+            "trading_spread_fee": null
+        },
+        "features": {
+            "has_buy_orders": false,
+            "has_recent_sales": true
+        },
+        "health": {
+            "status": "up",
+            "last_checked_at": "2026-03-08T21:16:03.377733+00:00",
+            "total_offers": 3081980,
+            "unique_items": 25863,
+            "market_coverage": 69.26,
+            "total_value": 132256661633,
+            "total_value_usd": 19116472009
+        }
+    }
+}
+```
+
+**Error Codes:**
+
+| Code | Description |
+| ---- | ----------- |
+| 404 | Provider key not found (when `provider` filter is specified) |
+
+---
+
+#### GET /fx
+
+Available to: `free`/`pro`/`quant`
+
+Current foreign exchange rates (167 currencies total).
+
+Base currency: `USD`
+
+**Example Request:**
+
+```bash
+curl -H "Authorization: Bearer your_key" \
+  "https://api.cs2c.app/v1/fx"
+```
+
+**Example Response:**
+
+```json
+{
+ "timestamp": "2026-03-08T20:24:54.886213+00:00",
+ "rates": {
+  "USD": 1.0,
+  "EUR": 0.92,
+  "GBP": 0.79,
+  "CNY": 7.25,
+  "RUB": 92.5,
+  "BRL": 5.15,
+  ...
+ }
+}
+```
+
+### Watchlist
+
+#### POST /account/watchlist
+
+Save one normalized catalog item to the authenticated user's default watchlist.
+
+Available to: tiers with watchlist access
+
+Authentication: Bearer API key.
+
+Rules:
+
+- `item_id` must be a valid normalized catalog item ID from `/items`
+- duplicate saves return `409`
+- hitting the tier watchlist cap returns `409`
+
+**Request Body:**
+
+```json
+{
+  "item_id": 12345
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "id": "11111111-1111-1111-1111-111111111111",
+  "item_id": 12345,
+  "market_hash_name": "AK-47 | Redline (Field-Tested)",
+  "phase": null,
+  "created_at": "2026-03-18T13:05:00Z"
+}
+```
+
+---
+
+#### GET /account/watchlist
 
 List the authenticated user's saved watchlist items.
 
 Available to: tiers with watchlist access
 
-Authentication: Bearer API key or session JWT.
+Authentication: Bearer API key.
 
 Behavior:
 
@@ -192,49 +1146,13 @@ curl -H "Authorization: Bearer your_token" \
 
 ---
 
-#### POST /v1/account/watchlist
-
-Save one normalized catalog item to the authenticated user's default watchlist.
-
-Available to: tiers with watchlist access
-
-Authentication: Bearer API key or session JWT.
-
-Rules:
-
-- `item_id` must be a valid normalized catalog item ID from `/v1/items`
-- duplicate saves return `409`
-- hitting the tier watchlist cap returns `409`
-
-**Request Body:**
-
-```json
-{
-  "item_id": 12345
-}
-```
-
-**Example Response:**
-
-```json
-{
-  "id": "11111111-1111-1111-1111-111111111111",
-  "item_id": 12345,
-  "market_hash_name": "AK-47 | Redline (Field-Tested)",
-  "phase": null,
-  "created_at": "2026-03-18T13:05:00Z"
-}
-```
-
----
-
-#### DELETE /v1/account/watchlist/{item_id}
+#### DELETE /account/watchlist/{item_id}
 
 Delete one saved watchlist entry by normalized `item_id`.
 
 Available to: tiers with watchlist access
 
-Authentication: Bearer API key or session JWT.
+Authentication: Bearer API key.
 
 This path uses the catalog item ID, not the watchlist entry UUID.
 
@@ -248,15 +1166,91 @@ This path uses the catalog item ID, not the watchlist entry UUID.
 
 Returns `404` if that item is not currently saved by the authenticated user.
 
+### Alerts
+
+#### POST /account/alerts
+
+Create a new item-scoped alert.
+
+Available to: tiers with alert access
+
+Authentication: Bearer API key.
+
+Supported kinds:
+
+- `price_below`
+- `price_above`
+- `spread_exceeds`
+
+Rules:
+
+- `price_below` and `price_above` compare against the current best ask
+- `spread_exceeds` compares percentage spread: `((best_ask - best_bid) / best_ask) * 100`
+- `spread_exceeds` ignores `threshold_currency`
+- price alerts default `threshold_currency` to the account preferred currency when omitted
+- verified email is required only when the alert is enabled
+- disabled alerts can be created first and enabled later
+- enabled-alert count is capped by the account tier
+- if alert emails are disabled in account preferences, enabled alerts cannot be created
+
+**Price Alert Request Body:**
+
+```json
+{
+  "item_id": 156,
+  "kind": "price_below",
+  "threshold_value": "12.50",
+  "threshold_currency": "USD",
+  "is_enabled": true
+}
+```
+
+**Spread Alert Request Body:**
+
+```json
+{
+  "item_id": 32,
+  "kind": "spread_exceeds",
+  "threshold_value": "8.00",
+  "is_enabled": true
+}
+```
+
+**Example Response:**
+
+```json
+{
+  "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+  "kind": "price_below",
+  "threshold_value": "12.50",
+  "threshold_currency": "USD",
+  "is_enabled": true,
+  "last_triggered_at": null,
+  "created_at": "2026-03-18T13:10:00Z",
+  "updated_at": "2026-03-18T13:10:00Z",
+  "item": {
+    "item_id": 156,
+    "market_hash_name": "AK-47 | Redline (Field-Tested)",
+    "phase": null
+  }
+}
+```
+
+Common failures:
+
+- `400` for invalid thresholds, unsupported kinds, missing items, or enabling without verified email
+- `403` if the tier does not allow alerts
+- `409` if the enabled-alert cap is reached or alert emails are disabled
+
 ---
 
-#### GET /v1/account/alerts
+#### GET /account/alerts
 
 List configured item alerts for the authenticated user.
 
 Available to: tiers with alert access
 
-Authentication: Bearer API key or session JWT.
+Authentication: Bearer API key.
 
 Each alert is item-scoped and includes threshold configuration, enabled state, timestamps, and item metadata.
 
@@ -286,6 +1280,145 @@ Each alert is item-scoped and includes threshold configuration, enabled state, t
 
 ---
 
+#### PATCH /account/alerts/{alert_id}
+
+Update an existing alert.
+
+Available to: tiers with alert access
+
+Authentication: Bearer API key.
+
+Patch semantics:
+
+- provide at least one of `threshold_value`, `threshold_currency`, or `is_enabled`
+- `threshold_value` must be greater than zero if supplied
+- `threshold_currency` applies only to price alerts
+- enabling an alert re-runs the same checks as creation
+
+**Example Request Body:**
+
+```json
+{
+  "threshold_value": "11.75",
+  "is_enabled": true
+}
+```
+
+Returns the full updated alert object on success.
+Returns `404` if the alert does not belong to the authenticated user.
+
+---
+
+#### DELETE /account/alerts/{alert_id}
+
+Delete one alert definition.
+
+Available to: tiers with alert access
+
+Authentication: Bearer API key.
+
+**Example Response:**
+
+```json
+{
+  "ok": true
+}
+```
+
+Returns `404` if the alert does not exist for the authenticated user.
+
+---
+
+#### GET /account/alerts/events
+
+List recent alert trigger events and delivery attempts.
+
+Available to: tiers with alert access
+
+Authentication: Bearer API key.
+
+Behavior:
+
+- cursor pagination ordered by newest first
+- `pagination.total` is intentionally `-1`
+- `limit` is clamped to `1..100`
+- delivery rows currently reflect email delivery attempts only
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+| --------- | ---- | -------- | ------- | ----------- |
+| `limit` | integer | No | 50 | Cursor page size, clamped to `1..100` |
+| `cursor` | string | No | - | Opaque next-page cursor from a previous response |
+
+**Example Response:**
+
+```json
+{
+  "events": [
+    {
+      "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+      "alert_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "kind": "price_below",
+      "item": {
+        "item_id": 156,
+        "market_hash_name": "AK-47 | Redline (Field-Tested)",
+        "phase": null
+      },
+      "triggered_value": "12.10",
+      "triggered_currency": "USD",
+      "reason": "best ask is at or below the configured threshold",
+      "created_at": "2026-03-18T13:20:00Z",
+      "deliveries": [
+        {
+          "channel": "email",
+          "status": "success",
+          "error": null,
+          "created_at": "2026-03-18T13:20:00Z"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "limit": 50,
+    "offset": 0,
+    "total": -1,
+    "has_next": false,
+    "has_prev": false,
+    "next_cursor": null
+  }
+}
+```
+
+Each alert is item-scoped and includes threshold configuration, enabled state, timestamps, and item metadata.
+
+**Example Response:**
+
+```json
+{
+  "alerts": [
+    {
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "kind": "price_below",
+      "threshold_value": "12.50",
+      "threshold_currency": "USD",
+      "is_enabled": true,
+      "last_triggered_at": null,
+      "created_at": "2026-03-18T13:10:00Z",
+      "updated_at": "2026-03-18T13:10:00Z",
+      "item": {
+        "item_id": 156,
+        "market_hash_name": "AK-47 | Redline (Field-Tested)",
+        "phase": null
+      }
+    }
+  ]
+}
+```
+
+---
+
+<script type="text/plain">
 #### POST /v1/account/alerts
 
 Create a new item-scoped alert.
@@ -472,6 +1605,7 @@ Behavior:
 }
 ```
 
+<div style="display:none">
 ## Endpoints
 
 Provider parameter naming:
@@ -1419,6 +2553,8 @@ For this endpoint, the volume-dependent indicators still use depletion-based can
 
 ---
 
+</script>
+
 ## Schemas
 
 ### Item Schema
@@ -1638,7 +2774,7 @@ For this endpoint, the volume-dependent indicators still use depletion-based can
 import requests
 
 API_KEY = "your_api_key"
-BASE_URL = "https://api.cs2c.app"
+BASE_URL = "https://api.cs2c.app/v1"
 
 def get_item_prices(market_hash_name: str):
     """Get prices for an item across all providers."""
@@ -1649,7 +2785,7 @@ def get_item_prices(market_hash_name: str):
     }
 
     response = requests.get(
-        f"{BASE_URL}/v1/prices",
+        f"{BASE_URL}/prices",
         headers=headers,
         params=params
     )
@@ -1670,7 +2806,7 @@ import asyncio
 import aiohttp
 
 API_KEY = "your_api_key"
-BASE_URL = "https://api.cs2c.app"
+BASE_URL = "https://api.cs2c.app/v1"
 
 async def get_item_prices(session: aiohttp.ClientSession, item_id: int):
     """Async fetch prices for an item."""
@@ -1678,7 +2814,7 @@ async def get_item_prices(session: aiohttp.ClientSession, item_id: int):
     params = {"item_id": item_id}
 
     async with session.get(
-        f"{BASE_URL}/v1/prices",
+        f"{BASE_URL}/prices",
         headers=headers,
         params=params
     ) as response:
@@ -1701,7 +2837,7 @@ results = asyncio.run(batch_price_lookup(item_ids))
 
 ```typescript
 const API_KEY = "your_api_key";
-const BASE_URL = "https://api.cs2c.app";
+const BASE_URL = "https://api.cs2c.app/v1";
 
 async function getItemPrices(marketHashName: string) {
   const params = new URLSearchParams({
@@ -1710,7 +2846,7 @@ async function getItemPrices(marketHashName: string) {
   });
 
   const response = await fetch(
-    `${BASE_URL}/v1/prices?${params}`,
+    `${BASE_URL}/prices?${params}`,
     {
       headers: {
         "Authorization": `Bearer ${API_KEY}`
@@ -1743,7 +2879,7 @@ class CS2CAPI {
   private baseUrl: string;
   private requestQueue: Promise<any>[] = [];
 
-  constructor(apiKey: string, baseUrl: string = "https://api.cs2c.app") {
+  constructor(apiKey: string, baseUrl: string = "https://api.cs2c.app/v1") {
     this.apiKey = apiKey;
     this.baseUrl = baseUrl;
   }
@@ -1786,7 +2922,7 @@ class CS2CAPI {
     providers?: string[];
     currency?: string;
   }) {
-    return this.request("/v1/prices", params);
+    return this.request("/prices", params);
   }
 }
 

@@ -5,7 +5,7 @@ Get from zero to a successful request with one API key and one endpoint.
 ## 1. Set Environment Variables
 
 ```bash
-export CS2C_API_BASE="https://api.cs2c.app"
+export CS2C_API_BASE="https://api.cs2c.app/v1"
 export CS2C_API_KEY="your_api_key_here"
 ```
 
@@ -16,7 +16,7 @@ export CS2C_API_KEY="your_api_key_here"
     ```bash
     curl -sS \
       -H "Authorization: Bearer $CS2C_API_KEY" \
-      "$CS2C_API_BASE/v1/prices?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=steam&currency=USD&limit=5"
+      "$CS2C_API_BASE/prices?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=steam&currency=USD&limit=5"
     ```
 
 === "Python"
@@ -29,7 +29,7 @@ export CS2C_API_KEY="your_api_key_here"
     key = os.environ["CS2C_API_KEY"]
 
     response = requests.get(
-        f"{base}/v1/prices",
+        f"{base}/prices",
         headers={"Authorization": f"Bearer {key}"},
         params={
             "market_hash_name": "AK-47 | Redline (Field-Tested)",
@@ -49,7 +49,7 @@ export CS2C_API_KEY="your_api_key_here"
     const base = process.env.CS2C_API_BASE;
     const key = process.env.CS2C_API_KEY;
 
-    const url = new URL(`${base}/v1/prices`);
+    const url = new URL(`${base}/prices`);
     url.searchParams.set('market_hash_name', 'AK-47 | Redline (Field-Tested)');
     url.searchParams.set('providers', 'steam');
     url.searchParams.set('currency', 'USD');
@@ -121,30 +121,30 @@ List endpoints generally return:
 ```bash
 # Get an item's `item_id`
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
-  "$CS2C_API_BASE/v1/items?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&limit=1"
+  "$CS2C_API_BASE/items?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&limit=1"
 
 # Get all marketplace-specific IDs
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
-  "$CS2C_API_BASE/v1/items/market-ids"
+  "$CS2C_API_BASE/items/market-ids"
 
 # Get current buy orders (`pro`/`quant`)
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
-  "$CS2C_API_BASE/v1/bids?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=steam&limit=5"
+  "$CS2C_API_BASE/bids?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=steam&limit=5"
 
 # Get recent sales (`pro`/`quant`)
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
-  "$CS2C_API_BASE/v1/sales?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=csfloat&limit=10"
+  "$CS2C_API_BASE/sales?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=csfloat&limit=10"
 
 # Get historical prices (`pro`/`quant`)
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
-  "$CS2C_API_BASE/v1/prices/history?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&provider=steam&limit=50"
+  "$CS2C_API_BASE/prices/history?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&provider=steam&limit=50"
 ```
 
 ## 5. Common Failures
 
 - `401` with `AUTH_INVALID_API_KEY`: missing or invalid Bearer token
 - `403` with `AUTH_FREE_TIER_IP_RESTRICTED`: free-tier key is being used from a different source IP
-- If that happens on free tier, call `POST /v1/account/key/reset-ip` from the new IP to rebind the
+- If that happens on free tier, call `POST /account/key/reset-ip` from the new IP to rebind the
   key. The endpoint is limited to once every 24 hours.
 - `429` with `RATE_LIMIT_EXCEEDED`: slow down and respect `Retry-After`
 - `429` with `RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED`: tier quota exhausted

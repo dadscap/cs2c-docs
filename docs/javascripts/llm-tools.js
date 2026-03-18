@@ -109,7 +109,58 @@
     return blocks.trim();
   }
 
+  function removeDuplicateApiReferenceBlock() {
+    const duplicateStartHeading = document.getElementById("post-v1accountalerts");
+    const schemasHeading = document.getElementById("schemas");
+    if (!duplicateStartHeading || !schemasHeading) {
+      return;
+    }
+
+    let startNode = duplicateStartHeading;
+    while (startNode.previousElementSibling) {
+      const prev = startNode.previousElementSibling;
+      if (
+        (prev.tagName === "H4" && prev.id === "get-accountalertsevents") ||
+        prev.tagName === "H3" ||
+        prev.tagName === "H2"
+      ) {
+        break;
+      }
+      startNode = prev;
+    }
+
+    const removedIds = new Set();
+    let node = startNode;
+    while (node && node !== schemasHeading) {
+      if (/^H[1-6]$/.test(node.tagName || "") && node.id) {
+        removedIds.add(node.id);
+      }
+      const next = node.nextElementSibling;
+      node.remove();
+      node = next;
+    }
+
+    document.querySelectorAll('.md-nav__link[href^="#"]').forEach((link) => {
+      const href = link.getAttribute("href");
+      if (!href) {
+        return;
+      }
+      const targetId = href.slice(1);
+      if (!removedIds.has(targetId)) {
+        return;
+      }
+      const item = link.closest(".md-nav__item");
+      if (item) {
+        item.remove();
+      } else {
+        link.remove();
+      }
+    });
+  }
+
   function installTools() {
+    removeDuplicateApiReferenceBlock();
+
     const typeset = document.querySelector(".md-content .md-typeset");
     const title = typeset ? typeset.querySelector("h1") : null;
     if (!typeset || !title || typeset.querySelector(".cs2c-page-tools")) {
