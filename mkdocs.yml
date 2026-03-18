@@ -5,20 +5,20 @@ site_description: Real-time CS2 market data API — prices, bids, sales, and ana
 theme:
   name: material
   font:
-    text: Inter
+    text: Outfit
     code: JetBrains Mono
   palette:
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: black
-      accent: cyan
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
-      accent: cyan
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
@@ -29,6 +29,8 @@ theme:
     - navigation.instant
     - navigation.instant.progress
     - navigation.sections
+    - navigation.path
+    - header.autohide
     - toc.follow
     - toc.integrate
     - search.suggest
