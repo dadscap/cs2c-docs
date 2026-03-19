@@ -334,7 +334,7 @@
   function installTocBehavior() {
     relabelTocTitles();
 
-    document.querySelectorAll(".md-sidebar--primary .md-nav--secondary").forEach((nav) => {
+    document.querySelectorAll(".md-sidebar--secondary .md-nav--secondary").forEach((nav) => {
       installCollapsibleToc(nav, 0);
       nav.querySelectorAll('a[href^="#"]').forEach((link) => {
         if (link.dataset.cs2cTocBound === "true") {
