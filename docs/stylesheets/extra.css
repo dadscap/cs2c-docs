@@ -242,6 +242,8 @@ body {
 }
 
 .md-sidebar--primary .md-nav--secondary {
+  display: block !important;
+  visibility: visible !important;
   margin-top: 0.95rem;
   padding-top: 0.95rem;
 }
@@ -662,13 +664,15 @@ body {
     position: sticky;
     top: calc(var(--md-header-height) + 1rem);
     flex: 0 0 18rem;
+    height: calc(100vh - var(--md-header-height) - 1.5rem);
     max-height: calc(100vh - var(--md-header-height) - 1.5rem);
     margin-right: 1rem;
     overflow: hidden;
   }
 
   .md-sidebar--primary .md-sidebar__scrollwrap {
-    max-height: calc(100vh - var(--md-header-height) - 1.5rem);
+    height: 100%;
+    max-height: none;
     overflow-y: auto;
     padding-right: 0.1rem;
   }
@@ -679,6 +683,13 @@ body {
 
   body.cs2c-page--home .md-sidebar--primary {
     display: none;
+  }
+
+  .md-sidebar--primary .md-nav__item--active > .md-nav__toggle ~ .md-nav--secondary {
+    display: block !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none;
   }
 
   .md-sidebar--secondary {

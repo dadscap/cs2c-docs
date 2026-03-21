@@ -173,7 +173,7 @@
     return "";
   }
 
-  function copyPageForLlm() {
+  function copyPageMarkdown() {
     const container = document.querySelector(".md-content .md-typeset");
     if (!container) {
       return "";
@@ -183,6 +183,17 @@
     clone.querySelectorAll(".headerlink, .cs2c-page-tools, .md-button").forEach((node) => node.remove());
     const blocks = Array.from(clone.children).map((child) => blockToMarkdown(child, 0)).join("");
     return blocks.trim();
+  }
+
+  function copyPageForLlm() {
+    const markdown = copyPageMarkdown();
+    if (!markdown) {
+      return "";
+    }
+
+    const heading = document.querySelector(".md-content .md-typeset h1");
+    const title = heading ? text(heading) : document.title;
+    return [`Page: ${title}`, `URL: ${window.location.href}`, "", markdown].join("\n").trim();
   }
 
   function removeDuplicateApiReferenceBlock() {
@@ -401,6 +412,11 @@
     copyButton.type = "button";
     copyButton.textContent = "Copy Markdown";
 
+    const copyLlmButton = document.createElement("button");
+    copyLlmButton.className = "cs2c-page-tools__button";
+    copyLlmButton.type = "button";
+    copyLlmButton.textContent = "Copy to LLM";
+
     const shareButton = document.createElement("button");
     shareButton.className = "cs2c-page-tools__button";
     shareButton.type = "button";
@@ -425,6 +441,21 @@
       }
     });
 
+    copyLlmButton.addEventListener("click", async () => {
+      const payload = copyPageForLlm();
+      if (!payload) {
+        setStatus(status, "Nothing to copy");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(payload);
+        setStatus(status, "LLM copy ready");
+      } catch (error) {
+        setStatus(status, "Clipboard blocked");
+      }
+    });
+
     shareButton.addEventListener("click", async () => {
       try {
         if (navigator.share) {
@@ -444,6 +475,7 @@
     });
 
     tools.appendChild(copyButton);
+    tools.appendChild(copyLlmButton);
     tools.appendChild(shareButton);
     tools.appendChild(status);
     title.insertAdjacentElement("afterend", tools);
