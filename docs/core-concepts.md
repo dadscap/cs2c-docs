@@ -14,6 +14,7 @@ Canonical public terminology used across CS2C-API endpoints.
 | **Wear** | Condition bucket from Factory New to Battle-Scarred. | item naming and float context | `/v1/items`, `/v1/sales` |
 | **Liquidity Score** | Composite tradability score based on activity and supply. | liquidity metrics | `/v1/market/items/{item_id}` |
 | **Arbitrage** | Cross-provider net edge after fee-aware comparison. | buy provider, sell provider, edge metrics | `/v1/market/arbitrage` |
+| **Technical Indicators** | Live signals computed from composite candle data across providers. | RSI, MACD, SMA/EMA, Bollinger Bands, ATR, VWAP, OBV | `/v1/market/indicators` |
 | **FX Conversion** | Currency normalization or response-time conversion of returned values. | `currency` query parameter | most market-data endpoints, `/v1/fx` |
 
 ## Data Semantics

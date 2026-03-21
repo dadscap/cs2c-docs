@@ -387,6 +387,7 @@ No parameters
 - Available to: `quant`
 - Authentication: Bearer API key
 - Provide either `item_id` or `market_hash_name`, together with `provider`
+- This endpoint computes indicators from composite candle data across all providers
 - Volume-dependent indicators use depletion-based candle volume internally
 - Response field name `close_price_usd` is retained for compatibility even when `currency` is not `USD`
 
@@ -572,3 +573,22 @@ No parameters
 - Ordered by newest first
 - Cursor endpoint with `pagination.total = -1`
 - Delivery rows currently reflect email delivery attempts only
+
+## Recent Updates (March 2026)
+
+### API contract updates
+
+- Added batch watchlist creates and paginated alert listings on the account surface.
+- Simplified `/v1/items` pagination so omitting `limit` returns the full matched payload instead of the older offset-style behavior.
+- Added support for additional date formats and cleaned up StatTrak item references in item filtering and history flows.
+
+### Market analytics behavior
+
+- Market indicators now compute from composite candle data across providers.
+- Volume-dependent indicators still use depletion-based candle volume internally.
+- `/v1/market/arbitrage` and `/v1/market/items/{item_id}` remain USD-only, while `/v1/market/indicators` still accepts `currency` for price-level output conversion.
+
+### Account onboarding behavior
+
+- Initial API keys are still issued only after successful email verification.
+- Free-tier API keys still bind to the caller IP on first use, with `/account/key/reset-ip` available for rebinds on a 24-hour cooldown.

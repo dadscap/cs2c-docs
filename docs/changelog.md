@@ -26,6 +26,29 @@ Skim this page first, then verify details in the [API Reference](api-reference.m
 
 </div>
 
+## March 21, 2026
+
+<div class="docs-release" markdown>
+<div class="docs-release-eyebrow">Account and analytics</div>
+
+### Watchlists, alerts, and indicators
+
+- Added batch watchlist creates and paginated alert listings on the account surface.
+- Added composite indicators computed from live composite candle data across providers.
+- Kept alert event history cursor-based and aligned the public account contract with the latest market behavior.
+</div>
+
+## March 19, 2026
+
+<div class="docs-release" markdown>
+<div class="docs-release-eyebrow">Items and parsing</div>
+
+### Catalog and item filtering
+
+- Simplified `/v1/items` pagination so omitting `limit` returns the full matched payload.
+- Added support for additional date formats and cleaned up StatTrak references in item filtering and history flows.
+</div>
+
 ## March 18, 2026
 
 <div class="docs-release" markdown>
