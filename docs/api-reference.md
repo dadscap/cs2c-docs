@@ -419,12 +419,15 @@ No parameters
 
 **Request Body:**
 
-- `item_id` | `integer` | Normalized catalog item ID to save to the default watchlist.
+- `item_id` | `integer` | Use this for a single-item add.
+- `item_ids` | `integer[]` | Use this for a batch add.
 
 **Notes:**
 
 - Available to: tiers with watchlist access
 - Authentication: Bearer API key or session JWT
+- Every submitted item ID must exist in `/v1/items`
+- Batch creates are all-or-nothing
 - Duplicate saves return `409`
 - Hitting the tier watchlist cap returns `409`
 
@@ -434,8 +437,8 @@ No parameters
 
 **Parameters:**
 
-- `limit` | `integer` | `default: 50` | Cursor page size. Clamped to `1..200`.
-- `cursor` | `string` | Opaque next-page cursor from a previous response.
+- `limit` | `integer` | `default: 50` | Page size. Clamped to `1..200`.
+- `offset` | `integer` | `default: 0` | Zero-based starting position.
 - `search` | `string` | Exact numeric `item_id` match or case-insensitive item-name substring.
 
 **Notes:**
@@ -443,7 +446,7 @@ No parameters
 - Available to: tiers with watchlist access
 - Authentication: Bearer API key or session JWT
 - Ordered by newest saved first
-- Cursor endpoint with `pagination.total = -1`
+- Offset pagination with a real `pagination.total`
 
 ---
 
@@ -486,8 +489,9 @@ No parameters
 - Authentication: Bearer API key or session JWT
 - `price_below` and `price_above` compare against the current best ask
 - `spread_exceeds` compares percentage spread: `((best_ask - best_bid) / best_ask) * 100`
-- `threshold_currency` defaults to the account preferred currency for price alerts when omitted
-- Verified email and alert-email opt-in are required only for enabled alerts
+- `threshold_currency` defaults to the account preferred currency for price alerts when omitted. Accounts that have not changed it use USD
+- alert emails are enabled by default and can be disabled in account preferences
+- verified email is required only for enabled alerts
 - Disabled alerts can be created first and enabled later
 - Enabled-alert count is tier-capped
 
@@ -497,13 +501,16 @@ No parameters
 
 **Parameters:**
 
-No parameters
+- `limit` | `integer` | `default: 50` | Page size. Clamped to `1..200`.
+- `offset` | `integer` | `default: 0` | Zero-based starting position.
+- `search` | `string` | Exact numeric `item_id` match or case-insensitive item-name substring.
 
 **Notes:**
 
 - Available to: tiers with alert access
 - Authentication: Bearer API key or session JWT
-- Returns item-scoped alert definitions with thresholds, enabled state, and timestamps
+- Ordered by newest created first
+- Offset pagination with a real `pagination.total`
 
 ---
 
