@@ -62,7 +62,7 @@ Skim this page first, then verify details in the [API Reference](api-reference.m
 
 ### Navigation and reading tools
 
-- Added page-level `Copy for LLM` and `Share` actions for quicker handoff into AI tools and internal team workflows.
+- Added page-level `Copy Markdown` and `Share` actions for quicker handoff into AI tools and internal team workflows.
 - Improved sidebar accessibility and navigation behavior for longer reference pages.
 - Versioned the custom CSS and JavaScript assets to reduce stale cached UI after deploys.
 

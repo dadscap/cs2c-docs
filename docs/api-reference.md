@@ -105,24 +105,9 @@ Common codes:
 - `BIDS_INDEX_UNAVAILABLE`
 - `VALIDATION_ERROR`
 
-## POST `/account/key/reset-ip`
+## Prices
 
-**Parameters:**
-
-No parameters
-
-**Notes:**
-
-- Available to: all tiers
-- Authentication: Bearer API key
-- Free tier: rebinds the active API key to the caller's current IP
-- Pro/Quant: succeeds but does not change account state
-- Cooldown: once every 24 hours per account
-- Monthly quota: exempt
-
----
-
-## GET `/prices`
+### GET `/prices`
 
 **Parameters:**
 
@@ -144,7 +129,7 @@ No parameters
 
 ---
 
-## POST `/prices`
+### POST `/prices`
 
 **Parameters:**
 
@@ -164,7 +149,7 @@ No parameters
 
 ---
 
-## GET `/prices/history`
+### GET `/prices/history`
 
 **Parameters:**
 
@@ -187,7 +172,7 @@ No parameters
 
 ---
 
-## GET `/prices/candles`
+### GET `/prices/candles`
 
 **Parameters:**
 
@@ -213,9 +198,9 @@ No parameters
 - `h` is capped at `median(provider_highs) * 1.5`
 - `v` is the summed close-side listing count across providers
 
----
+## Bids
 
-## GET `/bids`
+### GET `/bids`
 
 **Parameters:**
 
@@ -236,7 +221,7 @@ No parameters
 
 ---
 
-## POST `/bids`
+### POST `/bids`
 
 **Parameters:**
 
@@ -254,9 +239,9 @@ No parameters
 - Stable snapshot captured at request start
 - Per-API-key cooldown: 5 minutes
 
----
+## Sales
 
-## GET `/sales`
+### GET `/sales`
 
 **Parameters:**
 
@@ -275,9 +260,9 @@ No parameters
 - Sales cache TTL is 1 hour per `item_id + provider`
 - `price` is returned in minor units of the response currency
 
----
+## Catalog
 
-## GET `/items`
+### GET `/items`
 
 **Parameters:**
 
@@ -309,7 +294,7 @@ No parameters
 
 ---
 
-## GET `/items/market-ids`
+### GET `/items/market-ids`
 
 **Parameters:**
 
@@ -323,7 +308,7 @@ No parameters
 
 ---
 
-## GET `/providers`
+### GET `/providers`
 
 **Parameters:**
 
@@ -338,7 +323,7 @@ No parameters
 
 ---
 
-## GET `/fx`
+### GET `/fx`
 
 **Parameters:**
 
@@ -350,9 +335,9 @@ No parameters
 - Authentication: Bearer API key
 - Returns the current FX table with base currency `USD`
 
----
+## Market Analytics
 
-## GET `/market/arbitrage`
+### GET `/market/arbitrage`
 
 **Parameters:**
 
@@ -371,7 +356,7 @@ No parameters
 
 ---
 
-## GET `/market/indicators`
+### GET `/market/indicators`
 
 **Parameters:**
 
@@ -393,7 +378,7 @@ No parameters
 
 ---
 
-## GET `/market/items/{item_id}`
+### GET `/market/items/{item_id}`
 
 **Path Variables:**
 
@@ -410,9 +395,26 @@ No parameters
 - Returns item-level analytics and liquidity summary data
 - `timeframe=1h` reuses the `24h` liquidity horizon
 
+## Account
+
+### POST `/account/key/reset-ip`
+
+**Parameters:**
+
+No parameters
+
+**Notes:**
+
+- Available to: all tiers
+- Authentication: Bearer API key
+- Free tier: rebinds the active API key to the caller's current IP
+- Pro/Quant: succeeds but does not change account state
+- Cooldown: once every 24 hours per account
+- Monthly quota: exempt
+
 ---
 
-## POST `/account/watchlist`
+### POST `/account/watchlist`
 
 **Parameters:**
 
@@ -434,7 +436,7 @@ No parameters
 
 ---
 
-## GET `/account/watchlist`
+### GET `/account/watchlist`
 
 **Parameters:**
 
@@ -451,7 +453,7 @@ No parameters
 
 ---
 
-## DELETE `/account/watchlist/{item_id}`
+### DELETE `/account/watchlist/{item_id}`
 
 **Path Variables:**
 
@@ -470,7 +472,7 @@ No parameters
 
 ---
 
-## POST `/account/alerts`
+### POST `/account/alerts`
 
 **Parameters:**
 
@@ -498,7 +500,7 @@ No parameters
 
 ---
 
-## GET `/account/alerts`
+### GET `/account/alerts`
 
 **Parameters:**
 
@@ -515,7 +517,7 @@ No parameters
 
 ---
 
-## PATCH `/account/alerts/{alert_id}`
+### PATCH `/account/alerts/{alert_id}`
 
 **Path Variables:**
 
@@ -541,7 +543,7 @@ No parameters
 
 ---
 
-## DELETE `/account/alerts/{alert_id}`
+### DELETE `/account/alerts/{alert_id}`
 
 **Path Variables:**
 
@@ -559,7 +561,7 @@ No parameters
 
 ---
 
-## GET `/account/alerts/events`
+### GET `/account/alerts/events`
 
 **Parameters:**
 
@@ -573,22 +575,3 @@ No parameters
 - Ordered by newest first
 - Cursor endpoint with `pagination.total = -1`
 - Delivery rows currently reflect email delivery attempts only
-
-## Recent Updates (March 2026)
-
-### API contract updates
-
-- Added batch watchlist creates and paginated alert listings on the account surface.
-- Simplified `/v1/items` pagination so omitting `limit` returns the full matched payload instead of the older offset-style behavior.
-- Added support for additional date formats and cleaned up StatTrak item references in item filtering and history flows.
-
-### Market analytics behavior
-
-- Market indicators now compute from composite candle data across providers.
-- Volume-dependent indicators still use depletion-based candle volume internally.
-- `/v1/market/arbitrage` and `/v1/market/items/{item_id}` remain USD-only, while `/v1/market/indicators` still accepts `currency` for price-level output conversion.
-
-### Account onboarding behavior
-
-- Initial API keys are still issued only after successful email verification.
-- Free-tier API keys still bind to the caller IP on first use, with `/account/key/reset-ip` available for rebinds on a 24-hour cooldown.

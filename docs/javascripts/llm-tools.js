@@ -242,19 +242,13 @@
     }, 2200);
   }
 
-  function relabelTocTitles() {
-    document.querySelectorAll(".md-nav--secondary > .md-nav__title").forEach((navTitle) => {
-      navTitle.childNodes.forEach((child) => {
-        if (child.nodeType === Node.TEXT_NODE) {
-          child.textContent = "";
-        }
-      });
+  function isHomePage() {
+    const path = window.location.pathname.replace(/\/+$/, "");
+    return path === "" || path === "/" || path.endsWith("/index.html");
+  }
 
-      if (!navTitle.dataset.cs2cRelabeled) {
-        navTitle.append(document.createTextNode("On this page"));
-        navTitle.dataset.cs2cRelabeled = "true";
-      }
-    });
+  function applyPageContext() {
+    document.body.classList.toggle("cs2c-page--home", isHomePage());
   }
 
   function setCollapsed(item, collapsed) {
@@ -284,6 +278,10 @@
   }
 
   function installCollapsibleToc(nav, depth) {
+    if (!nav) {
+      return;
+    }
+
     const list = nav.querySelector(":scope > .md-nav__list");
     if (!list) {
       return;
@@ -331,24 +329,61 @@
       });
   }
 
-  function installTocBehavior() {
-    relabelTocTitles();
+  function bindHashLinks(root) {
+    if (!root) {
+      return;
+    }
 
-    document.querySelectorAll(".md-sidebar--secondary .md-nav--secondary").forEach((nav) => {
-      installCollapsibleToc(nav, 0);
-      nav.querySelectorAll('a[href^="#"]').forEach((link) => {
-        if (link.dataset.cs2cTocBound === "true") {
-          return;
+    root.querySelectorAll('a[href^="#"]').forEach((link) => {
+      if (link.dataset.cs2cTocBound === "true") {
+        return;
+      }
+      link.dataset.cs2cTocBound = "true";
+      link.addEventListener("click", () => {
+        const item = link.closest(".md-nav__item");
+        if (item) {
+          expandAncestorItems(item);
         }
-        link.dataset.cs2cTocBound = "true";
-        link.addEventListener("click", () => {
-          const item = link.closest(".md-nav__item");
-          if (item) {
-            expandAncestorItems(item);
-          }
-        });
       });
     });
+  }
+
+  function installTocBehavior() {
+    const nav = document.querySelector(".md-sidebar--primary .md-nav__item--active > .md-nav--secondary");
+    installCollapsibleToc(nav, 0);
+    bindHashLinks(nav);
+  }
+
+  function installSidebarTools() {
+    const sidebarInner = document.querySelector(".md-sidebar--primary .md-sidebar__inner");
+    if (!sidebarInner || sidebarInner.querySelector(".cs2c-sidebar-tools")) {
+      return;
+    }
+
+    const tools = document.createElement("div");
+    tools.className = "cs2c-sidebar-tools cs2c-sidebar-tools--sticky";
+
+    const label = document.createElement("p");
+    label.className = "cs2c-sidebar-tools__label";
+    label.textContent = "Quick actions";
+
+    const topButton = document.createElement("button");
+    topButton.className = "cs2c-sidebar-tools__button";
+    topButton.type = "button";
+    topButton.innerHTML =
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m12 5 7 7-1.41 1.41L13 8.83V20h-2V8.83l-4.59 4.58L5 12z"/></svg><span>Back to top</span>';
+
+    topButton.addEventListener("click", () => {
+      const scrollwrap = document.querySelector(".md-sidebar--primary .md-sidebar__scrollwrap");
+      if (scrollwrap) {
+        scrollwrap.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    tools.appendChild(label);
+    tools.appendChild(topButton);
+    sidebarInner.insertBefore(tools, sidebarInner.firstChild);
   }
 
   function installPageTools() {
@@ -364,7 +399,7 @@
     const copyButton = document.createElement("button");
     copyButton.className = "cs2c-page-tools__button";
     copyButton.type = "button";
-    copyButton.textContent = "Copy for LLM";
+    copyButton.textContent = "Copy Markdown";
 
     const shareButton = document.createElement("button");
     shareButton.className = "cs2c-page-tools__button";
@@ -415,8 +450,10 @@
   }
 
   function installTools() {
+    applyPageContext();
     removeDuplicateApiReferenceBlock();
     installTocBehavior();
+    installSidebarTools();
     installPageTools();
   }
 

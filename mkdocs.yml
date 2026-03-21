@@ -25,6 +25,7 @@ theme:
   features:
     - navigation.tabs
     - navigation.tabs.sticky
+    - navigation.top
     - navigation.sections
     - navigation.instant
     - navigation.instant.progress
@@ -35,10 +36,10 @@ theme:
     - content.code.annotate
 
 extra_css:
-  - stylesheets/extra.css?v=20260318d
+  - stylesheets/extra.css?v=20260321a
 
 extra_javascript:
-  - javascripts/llm-tools.js?v=20260318d
+  - javascripts/llm-tools.js?v=20260321a
 
 extra:
   social:
