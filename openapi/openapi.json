@@ -6744,14 +6744,14 @@
         }
       }
     },
-    "/v1/market/portfolio/value": {
+    "/v1/portfolio/value": {
       "post": {
         "tags": [
-          "Market Intelligence"
+          "Portfolio"
         ],
         "summary": "Portfolio Valuation",
         "description": "Value an inventory of CS2 items at live market prices.\n\nSend a list of `{item_id, quantity}` pairs and receive per-item valuation based on the best ask price across queried providers, plus a rolled-up total.\n\nMaximum 100 distinct items per request.\n\nAll money values are in minor units of the requested currency (e.g. USD cents when `currency=USD`). Divide by 100 for display.",
-        "operationId": "portfolio_value_v1_market_portfolio_value_post",
+        "operationId": "portfolio_value_v1_portfolio_value_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6821,7 +6821,7 @@
             }
           },
           "403": {
-            "description": "Analytics tier required to access this endpoint.",
+            "description": "Authenticated but not permitted to access this resource.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6829,7 +6829,7 @@
                 },
                 "example": {
                   "code": "FORBIDDEN",
-                  "detail": "Analytics access requires indie tier or higher"
+                  "detail": "Account is disabled"
                 }
               }
             }
@@ -10016,7 +10016,7 @@
           "items"
         ],
         "title": "PortfolioRequest",
-        "description": "Request body for POST /v1/market/portfolio/value."
+        "description": "Request body for POST /v1/portfolio/value."
       },
       "PortfolioRequestItem": {
         "properties": {
@@ -10057,7 +10057,7 @@
           "data"
         ],
         "title": "PortfolioResponse",
-        "description": "Response envelope for POST /v1/market/portfolio/value."
+        "description": "Response envelope for POST /v1/portfolio/value."
       },
       "PriceCandleItem": {
         "properties": {

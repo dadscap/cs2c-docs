@@ -42,3 +42,36 @@ No parameters
 - One `BuyOrderItem` JSON object per line
 - Stable snapshot captured at request start
 - Per-API-key cooldown: 5 minutes
+
+---
+
+## POST /bids/batch
+
+**Parameters:**
+
+- `item_ids` | `array[integer]` | Required. Array of item IDs to fetch. Must contain 1–100 items.
+- `providers` | `array[Enum[provider key]]` | Optional. Provider keys to include. If omitted, queries all providers.
+- `currency` | `string` | `default: USD` | Target currency. Use `/fx` for the supported ISO 4217 codes.
+
+**Request Body Example:**
+
+```json
+{
+  "item_ids": [1, 2, 3],
+  "providers": ["steam", "buff163"],
+  "currency": "USD"
+}
+```
+
+**Response:**
+
+Returns per-item bid quotes from each queried provider, grouped by item_id.
+
+**Notes:**
+
+- Available to: `quant`
+- Authentication: Bearer API key
+- `highest_bid` is returned in minor units of the response currency
+- No `url` or `link` fields in batch responses (data-only)
+- Items not found in any provider are listed in `items_not_found` array
+- Max batch size: 100 items per request

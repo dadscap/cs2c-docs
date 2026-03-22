@@ -46,6 +46,39 @@ No parameters
 
 ---
 
+## POST /prices/batch
+
+**Parameters:**
+
+- `item_ids` | `array[integer]` | Required. Array of item IDs to fetch. Must contain 1–100 items.
+- `providers` | `array[Enum[provider key]]` | Optional. Provider keys to include. If omitted, queries all providers.
+- `currency` | `string` | `default: USD` | Target currency. Use `/fx` for the supported ISO 4217 codes.
+
+**Request Body Example:**
+
+```json
+{
+  "item_ids": [1, 2, 3],
+  "providers": ["steam", "buff163"],
+  "currency": "USD"
+}
+```
+
+**Response:**
+
+Returns per-item price quotes from each queried provider, grouped by item_id.
+
+**Notes:**
+
+- Available to: `quant`
+- Authentication: Bearer API key
+- `lowest_ask` is returned in minor units of the response currency
+- No `url` or `link` fields in batch responses (data-only)
+- Items not found in any provider are listed in `items_not_found` array
+- Max batch size: 100 items per request
+
+---
+
 ## GET /prices/history
 
 **Parameters:**
