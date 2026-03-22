@@ -103,6 +103,7 @@ No parameters
 - Alert emails are enabled by default and can be disabled in account preferences
 - Verified email is required only for enabled alerts
 - Disabled alerts can be created first and enabled later
+- After a successful alert email delivery, the alert automatically disables itself until you re-enable it
 - Enabled-alert count is tier-capped
 
 ---
