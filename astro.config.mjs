@@ -6,7 +6,7 @@ export default defineConfig({
     shikiConfig: {
       themes: {
         light: "github-light-default",
-        dark: "github-dark",
+        dark: "one-dark-pro",
       },
     },
   },

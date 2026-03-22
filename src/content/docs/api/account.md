@@ -4,182 +4,402 @@ description: API key management, watchlists, and price alerts.
 order: 16
 ---
 
-## POST /account/key/reset-ip
+## IP Address
 
-**Parameters:**
+### Reset IP Binding
+>
+> Rebinds the active API key to the caller's current source IP. For Pro/Quant tiers this succeeds but has no effect since those keys are not IP-bound.
 
-No parameters
+- Endpoint: POST `/account/key/reset-ip`
+- Tiers: `free` · `pro` · `quant`
+- Rate Limit: 1 per 24 hours per account
 
-**Notes:**
+**Response Example:**
 
-- Available to: all tiers
-- Authentication: Bearer API key
-- Free tier: rebinds the active API key to the caller's current IP
-- Pro/Quant: succeeds but does not change account state
-- Cooldown: once every 24 hours per account
-- Monthly quota: exempt
+```json
+{
+    "ok": true,
+    "key_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "cooldown_sec": 86400
+}
+```
 
----
-
-## POST /account/watchlist
-
-**Parameters:**
-
-No parameters
-
-**Request Body:**
-
-- `item_id` | `integer` | Use this for a single-item add.
-- `item_ids` | `integer[]` | Use this for a batch add.
-
-**Notes:**
-
-- Available to: tiers with watchlist access
-- Authentication: Bearer API key or session JWT
-- Every submitted item ID must exist in `/v1/items`
-- Batch creates are all-or-nothing
-- Duplicate saves return `409`
-- Hitting the tier watchlist cap returns `409`
+- Free tier: rebinds the key to the caller's current IP. Required when calling from a new IP.
+- Pro/Quant: succeeds but does not change account state.
+- Monthly quota: exempt.
 
 ---
 
-## GET /account/watchlist
+## Items Watchlist
 
-**Parameters:**
+### Create Watchlist Entry
+>
+> Adds one or multiple catalog items to the authenticated user's watchlist in a single all-or-nothing batch operation.
 
-- `limit` | `integer` | `default: 50` | Page size. Clamped to `1..200`.
-- `offset` | `integer` | `default: 0` | Zero-based starting position.
-- `search` | `string` | Exact numeric `item_id` match or case-insensitive item-name substring.
+- Endpoint: POST `/account/watchlist`
+- Tiers: all tiers with watchlist access
+- Rate Limit: Standard per-tier RPM (exempt from monthly quota)
 
-**Notes:**
+**Payload:**
 
-- Available to: tiers with watchlist access
-- Authentication: Bearer API key or session JWT
-- Ordered by newest saved first
-- Offset pagination with a real `pagination.total`
+Use `item_ids` for a batch add or `item_id` for a single item:
+
+```json
+{
+  "item_ids": [21325, 9153, 821]
+}
+```
+
+**Response Example:**
+
+```json
+{
+    "items": [
+        {
+            "id": "11ac91b1-4a76-410a-8f95-3f069bbf195d",
+            "item_id": 21325,
+            "market_hash_name": "Sticker | Summer (Foil) | Boston 2018",
+            "phase": null,
+            "created_at": "2026-03-21T06:15:13.942677Z"
+        },
+        {
+            "id": "f15c5e58-0bc8-4303-9ea4-239dae8b1322",
+            "item_id": 9153,
+            "market_hash_name": "★ StatTrak™ Huntsman Knife | Boreal Forest (Factory New)",
+            "phase": null,
+            "created_at": "2026-03-21T06:15:13.942677Z"
+        }
+    ],
+    "created_count": 3
+}
+```
+
+- Every submitted item ID must exist in `/v1/items`.
+- Batch creates are all-or-nothing.
+- Duplicates return `409`. Hitting the tier watchlist cap also returns `409`.
 
 ---
 
-## DELETE /account/watchlist/{item_id}
+### Get Watchlist
+>
+> Returns the authenticated user's saved watchlist entries, ordered newest first, with optional item name or ID search filter.
+
+- Endpoint: GET `/account/watchlist`
+- Tiers: all tiers with watchlist access
+- Rate Limit: Standard per-tier RPM (exempt from monthly quota)
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| limit | integer | Page size, clamped to `1–200`. Default: `50`. |
+| offset | integer | Zero-based starting position. Default: `0`. |
+| search | string | Exact numeric `item_id` match or case-insensitive item-name substring. |
+
+**Response Example:**
+
+```json
+{
+    "items": [
+        {
+            "id": "11ac91b1-4a76-410a-8f95-3f069bbf195d",
+            "item_id": 21325,
+            "market_hash_name": "Sticker | Summer (Foil) | Boston 2018",
+            "phase": null,
+            "created_at": "2026-03-21T06:15:13.942677Z"
+        },
+        {
+            "id": "b9ec2101-33ec-4755-bcfb-ce02be757e89",
+            "item_id": 12632,
+            "market_hash_name": "AK-47 | Redline (Field-Tested)",
+            "phase": null,
+            "created_at": "2026-03-21T06:11:00.556965Z"
+        }
+    ],
+    "pagination": {
+        "limit": 50,
+        "offset": 0,
+        "total": 5,
+        "has_next": false,
+        "has_prev": false,
+        "next_cursor": null
+    }
+}
+```
+
+---
+
+### Delete Watchlist Entry
+>
+> Removes a single item from the authenticated user's watchlist by its catalog item ID.
+
+- Endpoint: DELETE `/account/watchlist/:item_id`
+- Tiers: all tiers with watchlist access
+- Rate Limit: Standard per-tier RPM (exempt from monthly quota)
 
 **Path Variables:**
 
-- `item_id` | `integer` | Normalized catalog item ID to remove from the default watchlist.
+| Variable | Type | Description |
+|----------|------|-------------|
+| item_id | integer | Normalized catalog item ID to remove. |
 
-**Parameters:**
+**Response Example:**
 
-No parameters
+```json
+{
+    "ok": true
+}
+```
 
-**Notes:**
-
-- Available to: tiers with watchlist access
-- Authentication: Bearer API key or session JWT
-- This path uses the catalog item ID, not the watchlist entry UUID
-- Returns `404` if that item is not currently saved by the authenticated user
-
----
-
-## POST /account/alerts
-
-**Parameters:**
-
-No parameters
-
-**Request Body:**
-
-- `item_id` | `integer` | Normalized catalog item ID for the alert target.
-- `kind` | `Literal["price_below", "price_above", "spread_exceeds"]` | Alert kind.
-- `threshold_value` | `decimal string` | Threshold value. Must be greater than zero.
-- `threshold_currency` | `string` | Currency for price alerts. Omit for `spread_exceeds`.
-- `is_enabled` | `boolean` | Whether the alert is enabled at creation time.
-
-**Notes:**
-
-- Available to: tiers with alert access
-- Authentication: Bearer API key or session JWT
-- `price_below` and `price_above` compare against the current best ask
-- `spread_exceeds` compares percentage spread: `((best_ask - best_bid) / best_ask) * 100`
-- `threshold_currency` defaults to the account preferred currency for price alerts when omitted. Accounts that have not changed it use USD
-- Alert emails are enabled by default and can be disabled in account preferences
-- Verified email is required only for enabled alerts
-- Disabled alerts can be created first and enabled later
-- After a successful alert email delivery, the alert automatically disables itself until you re-enable it
-- Enabled-alert count is tier-capped
+- Uses the catalog `item_id`, not the watchlist entry UUID.
+- Returns `404` if the item is not currently saved by the authenticated user.
 
 ---
 
-## GET /account/alerts
+## Market Alerts
 
-**Parameters:**
+### Create Alert
+>
+> Creates a new price or spread alert for a catalog item, optionally enabling it immediately or saving it in a disabled state for later activation.
 
-- `limit` | `integer` | `default: 50` | Page size. Clamped to `1..200`.
-- `offset` | `integer` | `default: 0` | Zero-based starting position.
-- `search` | `string` | Exact numeric `item_id` match or case-insensitive item-name substring.
+- Endpoint: POST `/account/alerts`
+- Tiers: all tiers with alert access
+- Rate Limit: Standard per-tier RPM (exempt from monthly quota)
 
-**Notes:**
+**Payload:**
 
-- Available to: tiers with alert access
-- Authentication: Bearer API key or session JWT
-- Ordered by newest created first
-- Offset pagination with a real `pagination.total`
+| Field | Type | Description |
+|-------|------|-------------|
+| item_id | integer | **Required.** Normalized catalog item ID for the alert target. One item can have multiple alerts. |
+| kind | string | **Required.** One of: `price_below`, `price_above`, `spread_exceeds`. |
+| threshold_value | string | **Required.** Decimal string greater than zero. Represents a price (in `threshold_currency`) for price alerts, or a percentage for `spread_exceeds`. |
+| threshold_currency | string | Currency for price alerts. Ignored for `spread_exceeds`. Default: `USD`. |
+| is_enabled | boolean | Set to `false` to create a muted alert. Default: `true`. |
+
+```json
+{
+  "item_id": 1,
+  "kind": "price_above",
+  "threshold_value": "49.99",
+  "threshold_currency": "USD",
+  "is_enabled": true
+}
+```
+
+**Response Example:**
+
+```json
+{
+    "id": "a85c9053-8308-40af-ae9c-c4256374fd29",
+    "kind": "price_above",
+    "threshold_value": "49.9900",
+    "threshold_currency": "USD",
+    "is_enabled": true,
+    "last_triggered_at": null,
+    "created_at": "2026-03-21T05:48:47.850690Z",
+    "updated_at": "2026-03-21T05:48:47.850690Z",
+    "item": {
+        "item_id": 1,
+        "market_hash_name": "Bloody Darryl The Strapped | The Professionals",
+        "phase": null
+    }
+}
+```
+
+- `price_below` and `price_above` compare against the current best ask.
+- `spread_exceeds` compares percentage spread: `((best_ask - best_bid) / best_ask) * 100`.
+- After a successful email delivery, the alert automatically disables itself until re-enabled.
+- Verified email is required only for enabled alerts; disabled alerts can be created without one.
+- Enabled-alert count is tier-capped.
 
 ---
 
-## PATCH /account/alerts/{alert_id}
+### Get Alerts
+>
+> Returns all configured alert rules for the authenticated user, ordered newest first, with optional item name or ID filter.
+
+- Endpoint: GET `/account/alerts`
+- Tiers: all tiers with alert access
+- Rate Limit: Standard per-tier RPM (exempt from monthly quota)
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| limit | integer | Page size, clamped to `1–200`. Default: `50`. |
+| offset | integer | Zero-based starting position. Default: `0`. |
+| search | string | Exact numeric `item_id` match or case-insensitive item-name substring. |
+
+**Response Example:**
+
+```json
+{
+    "alerts": [
+        {
+            "id": "33ebd1f0-2c8a-47c3-99b7-a229154f53d5",
+            "kind": "price_above",
+            "threshold_value": "51.9900",
+            "threshold_currency": "USD",
+            "is_enabled": true,
+            "last_triggered_at": null,
+            "created_at": "2026-03-21T06:23:54.471216Z",
+            "updated_at": "2026-03-21T06:23:54.471216Z",
+            "item": {
+                "item_id": 1,
+                "market_hash_name": "Bloody Darryl The Strapped | The Professionals",
+                "phase": null
+            }
+        }
+    ],
+    "pagination": {
+        "limit": 50,
+        "offset": 0,
+        "total": 2,
+        "has_next": false,
+        "has_prev": false,
+        "next_cursor": null
+    }
+}
+```
+
+---
+
+### Update Alert
+>
+> Partially updates an existing alert's threshold value, currency, or enabled state. At least one field must be provided.
+
+- Endpoint: PATCH `/account/alerts/{alert_id}`
+- Tiers: all tiers with alert access
+- Rate Limit: Standard per-tier RPM (exempt from monthly quota)
 
 **Path Variables:**
 
-- `alert_id` | `uuid` | Alert definition ID.
+| Variable | Type | Description |
+|----------|------|-------------|
+| alert_id | uuid | Alert definition ID. Use `GET /account/alerts` to fetch IDs. |
 
-**Parameters:**
+**Payload:**
 
-No parameters
+| Field | Type | Description |
+|-------|------|-------------|
+| threshold_value | string | Updated threshold value as a decimal string. Must be greater than zero. |
+| threshold_currency | string | Updated currency for price alerts. Ignored for spread alerts. |
+| is_enabled | boolean | Updated enabled state. |
 
-**Request Body:**
+```json
+{
+  "threshold_value": "55.00",
+  "threshold_currency": "USD",
+  "is_enabled": false
+}
+```
 
-- `threshold_value` | `decimal string` | Optional updated threshold value. Must be greater than zero if supplied.
-- `threshold_currency` | `string` | Optional updated currency for price alerts. Ignored for spread alerts.
-- `is_enabled` | `boolean` | Optional enabled-state change.
+**Response Example:**
 
-**Notes:**
+```json
+{
+    "id": "a85c9053-8308-40af-ae9c-c4256374fd29",
+    "kind": "price_above",
+    "threshold_value": "55.0000",
+    "threshold_currency": "USD",
+    "is_enabled": false,
+    "last_triggered_at": null,
+    "created_at": "2026-03-21T05:48:47.850690Z",
+    "updated_at": "2026-03-21T05:51:03.727950Z",
+    "item": {
+        "item_id": 1,
+        "market_hash_name": "Bloody Darryl The Strapped | The Professionals",
+        "phase": null
+    }
+}
+```
 
-- Available to: tiers with alert access
-- Authentication: Bearer API key or session JWT
-- Provide at least one request-body field
-- Enabling an alert re-runs the same checks as creation
-- Returns `404` if the alert does not belong to the authenticated user
+- Enabling an alert re-runs the same checks as creation (verified email required).
+- Returns `404` if the alert does not belong to the authenticated user.
 
 ---
 
-## DELETE /account/alerts/{alert_id}
+### Delete Alert
+>
+> Permanently deletes an alert rule for the authenticated user.
+
+- Endpoint: DELETE `/account/alerts/{alert_id}`
+- Tiers: all tiers with alert access
+- Rate Limit: Standard per-tier RPM (exempt from monthly quota)
 
 **Path Variables:**
 
-- `alert_id` | `uuid` | Alert definition ID.
+| Variable | Type | Description |
+|----------|------|-------------|
+| alert_id | uuid | Alert definition ID. Use `GET /account/alerts` to fetch IDs. |
 
-**Parameters:**
+**Response Example:**
 
-No parameters
+```json
+{
+    "ok": true
+}
+```
 
-**Notes:**
-
-- Available to: tiers with alert access
-- Authentication: Bearer API key or session JWT
-- Returns `404` if the alert does not exist for the authenticated user
+- Returns `404` if the alert does not exist for the authenticated user.
 
 ---
 
-## GET /account/alerts/events
+### List Alert Events
+>
+> Returns recent alert trigger events and their email delivery attempts for the authenticated user, ordered newest first.
+
+- Endpoint: GET `/account/alerts/events`
+- Tiers: all tiers with alert access
+- Rate Limit: Standard per-tier RPM (exempt from monthly quota)
 
 **Parameters:**
 
-- `limit` | `integer` | `default: 50` | Cursor page size. Clamped to `1..100`.
-- `cursor` | `string` | Opaque next-page cursor from a previous response.
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| limit | integer | Page size, clamped to `1–100`. Default: `50`. |
+| offset | integer | Zero-based starting position. Default: `0`. |
 
-**Notes:**
+**Response Example:**
 
-- Available to: tiers with alert access
-- Authentication: Bearer API key or session JWT
-- Ordered by newest first
-- Cursor endpoint with `pagination.total = -1`
-- Delivery rows currently reflect email delivery attempts only
+```json
+{
+    "events": [
+        {
+            "id": "b3c1a2e4-5d6f-7890-abcd-ef1234567890",
+            "alert_id": "a85c9053-8308-40af-ae9c-c4256374fd29",
+            "kind": "price_above",
+            "item": {
+                "item_id": 1,
+                "market_hash_name": "Bloody Darryl The Strapped | The Professionals",
+                "phase": null
+            },
+            "triggered_value": "51.22",
+            "triggered_currency": "USD",
+            "reason": "Price rose above threshold of $49.99",
+            "created_at": "2026-03-21T08:15:30.123456Z",
+            "deliveries": [
+                {
+                    "channel": "email",
+                    "status": "delivered",
+                    "error": null,
+                    "created_at": "2026-03-21T08:15:31.456789Z"
+                }
+            ]
+        }
+    ],
+    "pagination": {
+        "limit": 50,
+        "offset": 0,
+        "total": 2,
+        "has_next": false,
+        "has_prev": false,
+        "next_cursor": null
+    }
+}
+```
+
+- `triggered_currency` is `null` for `spread_exceeds` alerts.
+- `deliveries` currently reflects email delivery attempts only.
+
+---

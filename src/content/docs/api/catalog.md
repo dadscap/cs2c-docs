@@ -4,75 +4,224 @@ description: Item search, provider-native IDs, provider metadata, and FX rates.
 order: 14
 ---
 
-## GET /items
+## Items
+
+### List Items
+>
+> Searches the CS2 item catalog using one or more attribute filters, returning full item metadata for all matches.
+
+- Endpoint: GET `/items`
+- Tiers: `free` · `pro` · `quant`
+- Rate Limit: <ol>**Free**: 20/min</ol><ol>**Pro**: 100/min</ol><ol>**Quant**: 300/min</ol>
 
 **Parameters:**
 
-- `q` | `string` | Search by name substring (case-insensitive).
-- `item_id` | `integer` | Exact item ID match.
-- `market_hash_name` | `string` | Exact market hash name match (case-insensitive).
-- `item_type` | `string` | Exact item type match (case-insensitive).
-- `item_subtype` | `string` | Exact item subtype match (case-insensitive).
-- `weapon_type` | `string` | Exact weapon type match (case-insensitive).
-- `base_name` | `string` | Exact base name match (case-insensitive).
-- `skin_name` | `string` | Exact skin name match (case-insensitive).
-- `wear_name` | `string` | Exact wear name match (case-insensitive).
-- `phase` | `string` | Exact phase match (case-insensitive).
-- `collection` | `string` | Exact collection match (case-insensitive).
-- `crates` | `string` | Filter by crate names. Repeat the parameter or pass multiple values as supported by your client.
-- `rarity_name` | `string` | Exact rarity name match (case-insensitive).
-- `rarity_color` | `string` | Exact rarity color hex or alias match (case-insensitive).
-- `style_name` | `string` | Exact style name match (case-insensitive).
-- `is_stattrak` | `boolean` | Filter by StatTrak items.
-- `is_souvenir` | `boolean` | Filter by Souvenir items.
-- `limit` | `integer` | `1-1000` | Maximum number of returned items when provided. Omit to return the full matched payload.
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| q | string | Search by name substring (case-insensitive). |
+| item_id | integer | Exact item ID match. |
+| market_hash_name | string | Exact market hash name match (case-insensitive). |
+| item_type | string | One of: `Weapon`, `Sticker`, `Sticker Slab`, `Graffiti`, `Charm`, `Crate`, `Music Kit`, `Patch`, `Collectible`, `Agent`, `Key`, `Tool`. |
+| item_subtype | string | One of: `Gloves`, `Rifles`, `Other`, `Gift`, `Knives`, `SMGs`, `Pistols`, `Heavy`, `Tournament`, `Team Logo`, `Equipment`, `Normal`, `StatTrak`, `Pin`, `Case Key`, `Operation Pass`, `Weapon Case`, `Souvenir Package`, `Sticker Capsule`, `Autograph Capsule`, `Pins Capsule`, `Graffiti Box`, `Music Kit Box`, `Patch Capsule`, `Collection Package`, `Counter-Terrorist`, `Terrorist`, `Highlight Reel`, `Player Autograph`. |
+| weapon_type | string | One of: `Wearable`, `Assault Rifle`, `Knife`, `Sniper Rifle`, `SMG`, `Pistol`, `Machinegun`, `Shotgun`. |
+| base_name | string | Exact base name match (case-insensitive). |
+| skin_name | string | Exact skin name match (case-insensitive). |
+| wear_name | string | One of: `Factory New`, `Minimal Wear`, `Field-Tested`, `Well-Worn`, `Battle-Scarred`, `Not Painted`. |
+| phase | string | One of: `Phase 1`, `Phase 2`, `Phase 3`, `Phase 4`, `Ruby`, `Sapphire`, `Black Pearl`, `Emerald`. |
+| collection | string | Exact collection match (case-insensitive). |
+| crates | string | Filter by crate name. Repeat to pass multiple values. |
+| rarity_name | string | One of: `Consumer Grade`, `Industrial Grade`, `Mil-Spec Grade`, `Restricted`, `Classified`, `Covert`, `Extraordinary`, `Contraband`, `Base Grade`, `High Grade`, `Remarkable`, `Exotic`, `Distinguished`, `Exceptional`, `Superior`, `Master`, `Default`. |
+| rarity_color | string | Rarity color hex. <br>`b0c3d9`/`white`,<br>`5e98d9`/`light blue`,<br>`4b69ff`/`blue`,<br>`8847ff`/`purple`,<br>`d32ce6`/`pink`,<br>`eb4b4b`/`red`,<br>`e4ae39`/`orange` |
+| style_name | string | One of: `None`, `Gunsmith`, `Patina`, `Custom Paint Job`, `Hydrographic`, `Spray-Paint`, `Anodized Multicolored`, `Anodized Airbrushed`, `Solid Color`, `Anodized`, `Case Hardening`. |
+| is_stattrak | boolean | Filter by StatTrak items. |
+| is_souvenir | boolean | Filter by Souvenir items. |
+| limit | integer | Max items to return (`1–1000`). Omit to return the full matched payload. |
 
-**Notes:**
+**Response Example:**
 
-- Available to: `free` / `pro` / `quant`
-- Authentication: Bearer API key
-- If `limit` is omitted, `/items` returns all matched items in a single response
-- Item payloads can include optional `supply`
+```json
+{
+    "items": [
+        {
+            "item_id": 9062,
+            "market_hash_name": "★ Specialist Gloves | Crimson Kimono (Factory New)",
+            "phase": null,
+            "item_type": "Weapon",
+            "item_subtype": "Gloves",
+            "weapon_type": "Wearable",
+            "base_name": "Specialist Gloves",
+            "skin_name": "Crimson Kimono",
+            "wear_name": "Factory New",
+            "def_index": "5034",
+            "paint_index": 10033,
+            "collection": null,
+            "crates": ["Glove Case", "Operation Hydra Case"],
+            "rarity_name": "Extraordinary",
+            "rarity_color": "eb4b4b",
+            "style_name": "None",
+            "is_stattrak": false,
+            "is_souvenir": false,
+            "min_float": 0.06,
+            "max_float": 0.8,
+            "image_url": "https://cdn.cs2c.app/images/econ/default_generated/specialist_gloves_specialist_kimono_diamonds_red_light_png.png",
+            "supply": 48
+        }
+    ]
+}
+```
+
+- If `limit` is omitted, all matched items are returned in a single response.
+- `supply` is an optional approximate circulating supply count, present when available.
 
 ---
 
-## GET /items/market-ids
+### Get Market IDs
+>
+> Returns a mapping of every `market_hash_name` to provider-native item identifiers across all supported marketplaces.
 
-**Parameters:**
+- Endpoint: GET `/items/market-ids`
+- Tiers: `free` · `pro` · `quant`
+- Rate Limit: <ol>**Free**: 20/min</ol><ol>**Pro**: 100/min</ol><ol>**Quant**: 300/min</ol>
 
-No parameters
+**Response Example:**
 
-**Notes:**
-
-- Available to: `free` / `pro` / `quant`
-- Authentication: Bearer API key
-- Returns a mapping of every `market_hash_name` to provider-native item identifiers
+```json
+{
+    "items": {
+        "★ Bayonet | Gamma Doppler (Factory New)": {
+            "buff163_goods_id": 42402,
+            "buff163_phase_ids": {
+                "Emerald": 447129,
+                "Phase 1": 447106,
+                "Phase 2": 446755,
+                "Phase 3": 447107,
+                "Phase 4": 447118
+            },
+            "haloskins_id": 50942852,
+            "c5game_id": 50942852,
+            "youpin_id": 46874,
+            "steam_nameid": 156612099,
+            "csfloat_id": {
+                "Emerald": {"def_index": 500, "paint_index": 568},
+                "Phase 1": {"def_index": 500, "paint_index": 569}
+            },
+            "marketcsgo_id": 117569,
+            "bitskins_id": 23167,
+            "buffmarket_goods_id": 9616,
+            "ecosteam_classid": 1815373339,
+            "shadowpay_item_id": 72221
+        }
+    }
+}
+```
 
 ---
 
-## GET /providers
+## Utilities
+
+### List Providers
+>
+> Returns metadata, fee structure, and live health metrics for all enabled marketplace providers, optionally filtered to a single provider.
+
+- Endpoint: GET `/providers`
+- Tiers: `free` · `pro` · `quant`
+- Rate Limit: <ol>**Free**: 20/min</ol><ol>**Pro**: 100/min</ol><ol>**Quant**: 300/min</ol>
 
 **Parameters:**
 
-- `provider` | `Enum[provider key]` | Optional single provider-key filter. Omit to return all providers.
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| provider | string | Optional provider key filter. Omit to return all providers. One of: `avanmarket`, `bitskins`, `buff163`, `buffmarket`, `c5`, `csdeals`, `csfloat`, `csgo500`, `csgoempire`, `csmoney_m`, `csmoney_t`, `cstrade`, `dmarket`, `ecosteam`, `gamerpay`, `haloskins`, `itradegg`, `lisskins`, `lootfarm`, `mannco`, `marketcsgo`, `pirateswap`, `rapidskins`, `shadowpay`, `skinbaron`, `skinflow`, `skinout`, `skinplace`, `skinport`, `skinscom`, `skinsmonkey`, `skinswap`, `skinvault`, `steam`, `swapgg`, `tradeit`, `waxpeer`, `whitemarket`, `youpin`. |
 
-**Notes:**
+**Response Example:**
 
-- Available to: `free` / `pro` / `quant`
-- Authentication: Bearer API key
-- `health.total_value` is in the provider's native `default_currency`
-- `health.total_value_usd` is the same value normalized to USD
+```json
+{
+    "Avan Market": {
+        "key": "avanmarket",
+        "code": "AVAN",
+        "market_type": "STORE",
+        "default_currency": "USD",
+        "fees": {
+            "sell_fee": null,
+            "insta_sell_fee": 0.14,
+            "trading_spread_fee": null
+        },
+        "features": {
+            "has_buy_orders": false,
+            "has_recent_sales": false
+        },
+        "health": {
+            "status": "up",
+            "last_checked_at": "2026-03-21T05:47:49.308777+00:00",
+            "total_offers": 221316,
+            "unique_items": 14792,
+            "market_coverage": 37.93,
+            "total_value": 696770885,
+            "total_value_usd": 696770885
+        }
+    },
+    "BUFF163": {
+        "key": "buff163",
+        "code": "B163",
+        "market_type": "P2P",
+        "default_currency": "CNY",
+        "fees": {
+            "sell_fee": 0.025,
+            "insta_sell_fee": null,
+            "trading_spread_fee": null
+        },
+        "features": {
+            "has_buy_orders": true,
+            "has_recent_sales": true
+        },
+        "health": {
+            "status": "up",
+            "last_checked_at": "2026-03-21T05:45:55.403317+00:00",
+            "total_offers": 4239178,
+            "unique_items": 32235,
+            "market_coverage": 82.66,
+            "total_value": 101161038598,
+            "total_value_usd": 14661379184
+        }
+    }
+}
+```
+
+- `health.total_value` is in the provider's native `default_currency`.
+- `health.total_value_usd` is the same value normalized to USD.
+- `fees` values are decimal fractions (e.g. `0.025` = 2.5% sell fee). `null` means the provider does not charge that fee type.
 
 ---
 
-## GET /fx
+### Get FX Rates
+>
+> Returns the current FX rate table with USD as the base currency, used to convert minor-unit price values to other currencies.
 
-**Parameters:**
+- Endpoint: GET `/fx`
+- Tiers: `free` · `pro` · `quant`
+- Rate Limit: <ol>**Free**: 20/min</ol><ol>**Pro**: 100/min</ol><ol>**Quant**: 300/min</ol>
 
-No parameters
+**Response Example:**
 
-**Notes:**
+```json
+{
+    "timestamp": "2026-03-20T22:00:48.904741+00:00",
+    "rates": {
+        "USD": 1,
+        "BRL": 5.257551,
+        "CAD": 1.372665,
+        "CHF": 0.790629,
+        "CNY": 6.899831,
+        "EUR": 0.866447,
+        "GBP": 0.747866,
+        "PLN": 3.70293,
+        "SGD": 1.279595
+    }
+}
+```
 
-- Available to: `free` / `pro` / `quant`
-- Authentication: Bearer API key
-- Returns the current FX table with base currency `USD`
+- 160+ ISO 4217 currency codes are supported. The response shown above is truncated.
+- Use the `currency` query parameter on market-data endpoints to get prices pre-converted.
+
+---

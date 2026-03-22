@@ -16,6 +16,7 @@
 }
 
 html {
+  font-size: 17px;
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -113,8 +114,8 @@ table {
                      0 8px 24px rgba(0, 0, 0, 0.2);
   --panel-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15),
                      0 24px 56px rgba(0, 0, 0, 0.3);
-  --code-bg:         #1a1e2e;
-  --code-border:     rgba(255, 255, 255, 0.14);
+  --code-bg:         #06070a;
+  --code-border:     rgba(255, 255, 255, 0.08);
   --header-bg:       rgba(10, 11, 15, 0.78);
   --overlay:         rgba(0, 0, 0, 0.6);
   --scrollbar-thumb: rgba(255, 255, 255, 0.12);
@@ -232,8 +233,10 @@ code {
   color: var(--heading);
 }
 
+/* ── Code Blocks ────────────────────────────────────────────── */
+
+/* Fallback for bare <pre> not wrapped by JS (e.g. during SSR) */
 pre {
-  position: relative;
   margin: 1.25rem 0;
   padding: 1.1rem 1.3rem;
   border-radius: 10px;
@@ -241,47 +244,124 @@ pre {
   border: 1px solid var(--code-border);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  font-size: 0.8rem;
+  line-height: 1.65;
 }
 
 pre code {
   padding: 0;
   border: none;
   background: none;
-  font-size: 0.8rem;
-  line-height: 1.65;
+  font-size: inherit;
+  line-height: inherit;
   color: var(--copy);
 }
 
-/* Copy button (positioned inside pre blocks) */
+/* Wrapper added by JS around each <pre> */
+.code-block {
+  margin: 1.25rem 0;
+  border-radius: 10px;
+  border: 1px solid var(--code-border);
+  background: var(--code-bg);
+}
+
+/* Header bar: language label on left, copy button on right */
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0.75rem 0.45rem 1rem;
+  background: var(--code-bg);
+  border-bottom: 1px solid var(--code-border);
+  border-radius: 10px 10px 0 0;
+  gap: 0.5rem;
+}
+
+.code-block-lang {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  user-select: none;
+}
+
+/* Strip wrapper-duplicated box model from the <pre> inside .code-block */
+.code-block pre {
+  margin: 0;
+  border: none;
+  border-radius: 0 0 10px 10px;
+  background: transparent;
+}
+
+/* Copy button in header */
 .copy-btn {
-  position: absolute;
-  top: 0.6rem;
-  right: 0.6rem;
-  width: 32px;
-  height: 32px;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: var(--bg-panel);
+  background: transparent;
   color: var(--muted);
   cursor: pointer;
-  opacity: 0;
+  opacity: 0.6;
   transition: opacity 160ms ease, background 160ms ease, color 160ms ease;
 }
 
-pre:hover .copy-btn {
-  opacity: 1;
-}
-
 .copy-btn:hover {
+  opacity: 1;
   background: var(--bg-panel-hover);
   color: var(--heading);
 }
 
 .copy-btn.copied {
+  opacity: 1;
   color: var(--method-get);
+}
+
+/* Inline endpoint path — click to copy */
+.endpoint-copyable {
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.endpoint-copyable:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.endpoint-copyable.endpoint-copied {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: var(--method-get);
+  color: var(--method-get);
+}
+
+/* Toast shown after copying an endpoint URL */
+.endpoint-copy-toast {
+  position: fixed;
+  bottom: 1.75rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-strong);
+  color: var(--method-get);
+  font-family: "IBM Plex Mono", "Fira Code", ui-monospace, monospace;
+  font-size: 0.775rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  box-shadow: var(--panel-shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 9999;
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+.endpoint-copy-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* ── Lists ─────────────────────────────────────────────────── */
@@ -1492,21 +1572,23 @@ a.api-sidebar-group-title.active {
 
 .astro-code {
   padding: 1.1rem 1.3rem;
-  border-radius: 10px;
-  border: 1px solid var(--code-border);
+  border-radius: 0;
+  border: none;
   font-size: 0.8rem;
   line-height: 1.65;
   tab-size: 2;
+  white-space: pre;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 [data-theme="light"] .astro-code {
   background: var(--code-bg) !important;
 }
 
-[data-theme="dark"] .astro-code,
 [data-theme="dark"] .astro-code span {
   color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
+  background-color: transparent !important;
   font-style: var(--shiki-dark-font-style) !important;
   font-weight: var(--shiki-dark-font-weight) !important;
 }

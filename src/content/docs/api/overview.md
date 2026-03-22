@@ -6,7 +6,7 @@ order: 10
 
 ## Base URL
 
-```text
+```url
 https://api.cs2c.app/v1
 ```
 
@@ -15,11 +15,8 @@ https://api.cs2c.app/v1
 Market-data endpoints require an API key in the `Authorization` header:
 
 ```http
-Authorization: Bearer your_api_key_here
+Authorization: Bearer <your_api_key_here>
 ```
-
-Account watchlist and alert endpoints accept Bearer authentication with either an API key or a
-session JWT. `POST /account/key/reset-ip` requires an API key.
 
 ### Getting an API Key
 
@@ -46,6 +43,11 @@ Rate limits are enforced per API key based on the user's tier:
 
 \* Unlimited streaming applies only to `POST /prices` and `POST /bids`. Most endpoints still use
 per-route caps.
+
+**Per-endpoint special limits:**
+
+- `POST /prices` and `POST /bids` have an additional per-key cooldown of **1 request per 5 minutes**, regardless of tier RPM.
+- `POST /account/key/reset-ip` is limited to **1 request per 24 hours** per account.
 
 `429` responses can include:
 

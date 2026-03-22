@@ -9285,7 +9285,7 @@
               }
             ],
             "title": "Url",
-            "description": "Raw direct marketplace listing URL (no API-domain redirect). Returned only for paid tiers (`pro`, `quant`); free-tier responses omit this field outright."
+            "description": "Raw direct marketplace listing URL (no API-domain redirect). Returned only for paid tiers (`pro` · `quant`); free-tier responses omit this field outright."
           },
           "timestamp": {
             "anyOf": [

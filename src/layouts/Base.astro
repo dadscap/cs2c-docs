@@ -61,25 +61,82 @@ const fullTitle = title === "CS2C-API Docs" ? title : `${title} — CS2C-API`;
       document.getElementById("mobile-menu-close").addEventListener("click", closeMenu);
       document.getElementById("mobile-menu-backdrop").addEventListener("click", closeMenu);
 
-      // Copy buttons on code blocks
+      // Code block header bars with language label + copy button
+      var langLabels = {
+        json: "JSON", ndjson: "NDJSON", text: "Text",
+        bash: "Shell", sh: "Shell", http: "HTTP",
+        javascript: "JavaScript", js: "JavaScript",
+        typescript: "TypeScript", ts: "TypeScript",
+        python: "Python", py: "Python",
+      };
+      var copyIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+      var checkIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+      // Endpoint path inline copy
+      var endpointBase = "https://api.cs2c.app/v1";
+
+      var copyToast = document.createElement("div");
+      copyToast.className = "endpoint-copy-toast";
+      document.body.appendChild(copyToast);
+      var toastTimer;
+
+      document.querySelectorAll("li").forEach(function(li) {
+        if (!(li.textContent || "").trim().startsWith("Endpoint:")) return;
+        var code = li.querySelector("code");
+        if (!code || code.closest("pre")) return;
+        code.classList.add("endpoint-copyable");
+        code.addEventListener("click", function() {
+          var fullUrl = endpointBase + code.textContent.trim();
+          navigator.clipboard.writeText(fullUrl).then(function() {
+            code.classList.add("endpoint-copied");
+            setTimeout(function() { code.classList.remove("endpoint-copied"); }, 800);
+
+            copyToast.textContent = "Copied " + fullUrl + " to clipboard";
+            copyToast.classList.add("visible");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(function() { copyToast.classList.remove("visible"); }, 2200);
+          });
+        });
+      });
+
       document.querySelectorAll("pre").forEach(function(pre) {
+        var lang = (pre.getAttribute("data-language") || "").toLowerCase();
+        var label = langLabels[lang] || (lang ? lang.toUpperCase() : "Code");
+
+        // Wrap pre in .code-block
+        var wrapper = document.createElement("div");
+        wrapper.className = "code-block";
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        // Build header: label on left, copy button on right
+        var header = document.createElement("div");
+        header.className = "code-block-header";
+
+        var langSpan = document.createElement("span");
+        langSpan.className = "code-block-lang";
+        langSpan.textContent = label;
+        header.appendChild(langSpan);
+
         var btn = document.createElement("button");
         btn.className = "copy-btn";
         btn.setAttribute("aria-label", "Copy code");
-        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+        btn.innerHTML = copyIcon;
         btn.addEventListener("click", function() {
           var code = pre.querySelector("code");
           var text = (code || pre).textContent;
           navigator.clipboard.writeText(text).then(function() {
             btn.classList.add("copied");
-            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+            btn.innerHTML = checkIcon;
             setTimeout(function() {
               btn.classList.remove("copied");
-              btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+              btn.innerHTML = copyIcon;
             }, 2000);
           });
         });
-        pre.appendChild(btn);
+        header.appendChild(btn);
+
+        wrapper.insertBefore(header, pre);
       });
     </script>
   </body>
