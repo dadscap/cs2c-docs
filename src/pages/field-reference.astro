@@ -1,0 +1,54 @@
+---
+import Base from "../layouts/Base.astro";
+import { render } from "astro:content";
+import { getEntry } from "astro:content";
+
+const entry = await getEntry("docs", "field-reference");
+const { Content } = await render(entry);
+---
+
+<Base title="Field Reference" description={entry.data.description} currentPage="field-reference">
+  <div class="layout-docs">
+    <article class="content-col prose">
+      <h1>{entry.data.title}</h1>
+      <p class="text-muted">{entry.data.description}</p>
+      <Content />
+    </article>
+    <aside class="toc-sidebar" id="toc-sidebar">
+      <div class="toc-sidebar-title">On this page</div>
+      <nav id="toc-nav"></nav>
+    </aside>
+  </div>
+
+  <script is:inline>
+    (function() {
+      var article = document.querySelector(".content-col");
+      var tocNav = document.getElementById("toc-nav");
+      if (!article || !tocNav) return;
+
+      var headings = article.querySelectorAll("h2, h3");
+      headings.forEach(function(h) {
+        if (!h.id) {
+          h.id = h.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+        }
+        var a = document.createElement("a");
+        a.href = "#" + h.id;
+        a.textContent = h.textContent;
+        if (h.tagName === "H3") a.classList.add("toc-h3");
+        tocNav.appendChild(a);
+      });
+
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            tocNav.querySelectorAll("a").forEach(function(a) { a.classList.remove("active"); });
+            var active = tocNav.querySelector('a[href="#' + entry.target.id + '"]');
+            if (active) active.classList.add("active");
+          }
+        });
+      }, { rootMargin: "-80px 0px -70% 0px" });
+
+      headings.forEach(function(h) { observer.observe(h); });
+    })();
+  </script>
+</Base>

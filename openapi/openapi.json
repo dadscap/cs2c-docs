@@ -253,7 +253,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -335,7 +335,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -419,12 +419,12 @@
             }
           },
           "403": {
-            "description": "Bulk snapshot access requires quant tier.",
+            "description": "Bulk snapshot access requires a tier with bulk snapshot capability.",
             "content": {
               "application/json": {
                 "example": {
                   "code": "FORBIDDEN",
-                  "detail": "Bulk snapshot access for /v1/prices requires quant tier."
+                  "detail": "Bulk snapshot access for /v1/prices is not enabled for this tier."
                 },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
@@ -509,7 +509,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -819,7 +819,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -901,7 +901,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -1263,7 +1263,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -1345,7 +1345,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -1517,7 +1517,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -1572,7 +1572,7 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -1893,7 +1893,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -1975,7 +1975,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -2072,12 +2072,12 @@
             }
           },
           "403": {
-            "description": "Bulk snapshot access requires quant tier.",
+            "description": "Bulk snapshot access requires a tier with bulk snapshot capability.",
             "content": {
               "application/json": {
                 "example": {
                   "code": "FORBIDDEN",
-                  "detail": "Bulk snapshot access for /v1/bids requires quant tier."
+                  "detail": "Bulk snapshot access for /v1/bids is not enabled for this tier."
                 },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
@@ -2162,7 +2162,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -2282,7 +2282,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -2337,7 +2337,7 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -2606,7 +2606,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -2688,7 +2688,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -2795,7 +2795,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -2850,7 +2850,7 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -3597,7 +3597,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -3679,7 +3679,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -3747,7 +3747,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -3802,7 +3802,7 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -3977,7 +3977,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -4059,7 +4059,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -4140,7 +4140,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -4195,7 +4195,7 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -4390,7 +4390,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -4472,7 +4472,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -4592,7 +4592,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -4674,7 +4674,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -4781,7 +4781,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -4863,7 +4863,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -5003,7 +5003,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -5085,7 +5085,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -5189,7 +5189,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -5271,7 +5271,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -5389,7 +5389,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -5471,7 +5471,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -5577,7 +5577,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -5659,7 +5659,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -5782,7 +5782,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -5864,7 +5864,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -6080,7 +6080,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -6162,7 +6162,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -6348,7 +6348,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -6430,7 +6430,7 @@
             },
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }
@@ -6693,7 +6693,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -6845,7 +6845,7 @@
                 }
               },
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant).",
+                "description": "Authenticated caller tier code.",
                 "schema": {
                   "type": "string"
                 }
@@ -6900,7 +6900,7 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "headers": {
               "X-RateLimit-Tier": {
-                "description": "Authenticated caller tier (free, pro, quant) when available.",
+                "description": "Authenticated caller tier code when available.",
                 "schema": {
                   "type": "string"
                 }

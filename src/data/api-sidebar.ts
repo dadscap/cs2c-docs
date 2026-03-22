@@ -28,6 +28,7 @@ export const sidebarGroups: SidebarGroup[] = [
     items: [
       { method: "GET", label: "/prices", href: "/api-reference/prices#get-prices" },
       { method: "POST", label: "/prices", href: "/api-reference/prices#post-prices" },
+      { method: "POST", label: "/prices/batch", href: "/api-reference/prices#post-pricesbatch" },
       { method: "GET", label: "/prices/history", href: "/api-reference/prices#get-priceshistory" },
       { method: "GET", label: "/prices/candles", href: "/api-reference/prices#get-pricescandles" },
     ],
@@ -38,6 +39,14 @@ export const sidebarGroups: SidebarGroup[] = [
     items: [
       { method: "GET", label: "/bids", href: "/api-reference/bids#get-bids" },
       { method: "POST", label: "/bids", href: "/api-reference/bids#post-bids" },
+      { method: "POST", label: "/bids/batch", href: "/api-reference/bids#post-bidsbatch" },
+    ],
+  },
+  {
+    title: "Portfolio",
+    href: "/api-reference/portfolio",
+    items: [
+      { method: "POST", label: "/portfolio/value", href: "/api-reference/portfolio#post-portfoliovalue" },
     ],
   },
   {
