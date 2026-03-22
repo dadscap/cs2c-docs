@@ -5223,7 +5223,7 @@
           "Account"
         ],
         "summary": "List Alert Events",
-        "description": "List recent alert trigger events and delivery attempts for the authenticated user.\n\nBehavior:\n- accepts either a real API key or a session JWT bearer token\n- cursor pagination ordered by newest event first\n- `pagination.total` is intentionally `-1`\n- delivery rows currently reflect email delivery attempts",
+        "description": "List recent alert trigger events and delivery attempts for the authenticated user.\n\nBehavior:\n- accepts either a real API key or a session JWT bearer token\n- offset pagination ordered by newest event first\n- delivery rows currently reflect email delivery attempts",
         "operationId": "get_alert_event_history_v1_account_alerts_events_get",
         "security": [
           {
@@ -5237,29 +5237,24 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "description": "Requested cursor page size. Values are clamped to the range 1..100.",
+              "description": "Requested page size. Values are clamped to the range 1..100.",
               "default": 50,
               "title": "Limit"
             },
-            "description": "Requested cursor page size. Values are clamped to the range 1..100."
+            "description": "Requested page size. Values are clamped to the range 1..100."
           },
           {
-            "name": "cursor",
+            "name": "offset",
             "in": "query",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Opaque next-page cursor returned by a previous alert-events response.",
-              "title": "Cursor"
+              "type": "integer",
+              "minimum": 0,
+              "description": "Requested offset into the event history.",
+              "default": 0,
+              "title": "Offset"
             },
-            "description": "Opaque next-page cursor returned by a previous alert-events response."
+            "description": "Requested offset into the event history."
           }
         ],
         "responses": {
@@ -5433,7 +5428,7 @@
           "Market Intelligence"
         ],
         "summary": "Get Arbitrage Opportunities",
-        "description": "Scan providers for cross-market arbitrage opportunities.\n\nFilters:\n- `min_spread_pct`\n- `providers_buy` and `providers_sell` (sell-side limited to buy-order providers)\n- cursor pagination via `cursor`\n\nResponse:\n- opportunities ranked by estimated net profit in USD with buy-side and sell-side provider context\n\nTier: Quant-only.",
+        "description": "Scan providers for cross-market arbitrage opportunities.\n\nFilters:\n- `min_spread_pct`\n- `providers_buy` and `providers_sell` (sell-side limited to buy-order providers)\n- offset pagination via `offset`\n\nResponse:\n- opportunities ranked by estimated net profit in USD with buy-side and sell-side provider context\n\nTier: Quant-only.",
         "operationId": "get_arbitrage_opportunities_v1_market_arbitrage_get",
         "security": [
           {
@@ -5461,22 +5456,17 @@
             "description": "Maximum number of results to return. Defaults to the effective tier cap."
           },
           {
-            "name": "cursor",
+            "name": "offset",
             "in": "query",
             "required": false,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Opaque pagination cursor from a previous response.",
-              "title": "Cursor"
+              "type": "integer",
+              "minimum": 0,
+              "description": "Requested offset into the ranked opportunity list.",
+              "default": 0,
+              "title": "Offset"
             },
-            "description": "Opaque pagination cursor from a previous response."
+            "description": "Requested offset into the ranked opportunity list."
           },
           {
             "name": "min_spread_pct",
@@ -5568,7 +5558,7 @@
                   "pagination": {
                     "limit": 100,
                     "offset": 0,
-                    "total": -1,
+                    "total": 1,
                     "has_next": false,
                     "has_prev": false
                   }
@@ -5728,7 +5718,7 @@
             }
           },
           "400": {
-            "description": "Invalid cursor",
+            "description": "Invalid cursor or unsupported cursor parameter.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6580,7 +6570,7 @@
           },
           "pagination": {
             "$ref": "#/components/schemas/PaginationMeta",
-            "description": "Cursor pagination metadata."
+            "description": "Pagination metadata."
           }
         },
         "type": "object",

@@ -1,6 +1,8 @@
-# Core Concepts
-
-Canonical public terminology used across CS2C-API endpoints.
+---
+title: Core Concepts
+description: Canonical public terminology used across CS2C-API endpoints.
+order: 3
+---
 
 ## Terminology
 
@@ -73,13 +75,13 @@ Null often means the field is not relevant to that item.
 
 ## Common Pitfalls
 
-- treating price integers as major units
-- using provider display names instead of provider keys
-- assuming all items support phase metadata
-- confusing tracked redirect links with direct marketplace URLs
-- assuming prices and bids fall back to a non-indexed runtime path
+- Treating price integers as major units
+- Using provider display names instead of provider keys
+- Assuming all items support phase metadata
+- Confusing tracked redirect links with direct marketplace URLs
+- Assuming prices and bids fall back to a non-indexed runtime path
 
 ## Related Guides
 
-- [Getting Started](getting-started.md)
-- [API Reference](api-reference.md)
+- [Getting Started](/quickstart)
+- [API Reference](/api-reference)

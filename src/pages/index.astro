@@ -1,0 +1,127 @@
+---
+import Base from "../layouts/Base.astro";
+
+const curlExample = `curl -sS \\
+  -H "Authorization: Bearer $CS2C_API_KEY" \\
+  "https://api.cs2c.app/v1/prices?market_hash_name=AK-47+%7C+Redline+(Field-Tested)&providers=steam&currency=USD&limit=1"`;
+
+const jsonResponse = `{
+  "items": [
+    {
+      "provider": "steam",
+      "lowest_ask": 2550,
+      "quantity": 1247,
+      "currency": "USD"
+    }
+  ],
+  "pagination": {
+    "total": 1,
+    "limit": 1,
+    "offset": 0
+  }
+}`;
+---
+
+<Base title="CS2C-API Docs" currentPage="home">
+  <section class="hero fade-in-up">
+    <div class="hero-kicker">CS2 Market Data API</div>
+    <h1>CS2C-API Docs</h1>
+    <p class="hero-description">
+      Normalized CS2 prices, bids, sales, and market analytics through a single integration surface.
+    </p>
+    <div class="hero-actions">
+      <a href="/quickstart" class="btn btn-primary">Get Started</a>
+      <a href="/api-reference" class="btn btn-secondary">API Reference</a>
+    </div>
+  </section>
+
+  <section class="fade-in-up fade-in-up-1">
+    <h2 class="no-border-bottom">Start Here</h2>
+    <div class="card-grid">
+      <a href="/quickstart" class="card card-link">
+        <h4>Quickstart</h4>
+        <p>Zero to a successful request in minutes.</p>
+      </a>
+      <a href="/api-reference#authentication" class="card card-link">
+        <h4>Authentication</h4>
+        <p>Bearer tokens, API key setup, and OAuth flow.</p>
+      </a>
+      <a href="/api-reference#rate-limits" class="card card-link">
+        <h4>Rate Limits</h4>
+        <p>Tier quotas, burst limits, and retry headers.</p>
+      </a>
+      <a href="/core-concepts" class="card card-link">
+        <h4>Core Concepts</h4>
+        <p>Minor units, provider keys, and indexed-only paths.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="fade-in-up fade-in-up-2">
+    <div class="callout info">
+      <div class="callout-title">Response Conventions</div>
+      <p>
+        Prices and bids use minor units: <code>2550 USD</code> means <code>$25.50</code>.
+        <code>providers</code> is repeatable; <code>provider</code> is a single string.
+        List endpoints use both offset and cursor pagination depending on the route.
+      </p>
+    </div>
+  </section>
+
+  <section class="fade-in-up fade-in-up-3">
+    <h2 class="no-border-bottom">Core Endpoints</h2>
+    <div class="card-grid cols-3">
+      <div class="card">
+        <div class="endpoint-header">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/prices</span>
+        </div>
+        <p>Best ask snapshots across providers.</p>
+      </div>
+      <div class="card">
+        <div class="endpoint-header">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/prices/history</span>
+        </div>
+        <p>Historical price records and candles.</p>
+      </div>
+      <div class="card">
+        <div class="endpoint-header">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/bids</span>
+        </div>
+        <p>Current buy orders for supported providers.</p>
+      </div>
+      <div class="card">
+        <div class="endpoint-header">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/sales</span>
+        </div>
+        <p>Recent transaction history with live fetch on cache miss.</p>
+      </div>
+      <div class="card">
+        <div class="endpoint-header">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/market/arbitrage</span>
+        </div>
+        <p>Arbitrage and item-level market indicators.</p>
+      </div>
+      <div class="card">
+        <div class="endpoint-header">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/fx</span>
+        </div>
+        <p>Conversion rates across 160+ currencies.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="fade-in-up fade-in-up-4">
+    <h2 class="no-border-bottom">First Request</h2>
+    <pre><code class="language-bash" set:text={curlExample} /></pre>
+    <pre><code class="language-json" set:text={jsonResponse} /></pre>
+    <p class="text-muted text-sm mt-2">
+      Need tiers, quotas, and account flows? See the <a href="/api-reference">API Reference</a>.
+    </p>
+  </section>
+</Base>

@@ -1,31 +1,22 @@
-# CS2C-API Public Docs
+# CS2C-API Public Documentation
 
-Public documentation source for CS2C-API.
+Public-facing documentation site for CS2C-API.
 
-## Contents
+## Content
 
-- `docs/` contains the public markdown guides.
-- `openapi/openapi.json` contains the filtered public OpenAPI spec.
-- `mkdocs.yml` defines the published docs navigation.
+- **Markdown source**: `src/content/docs/` — the source of truth for all documentation content
+- **OpenAPI spec**: `openapi/openapi.json` — OpenAPI specification
+- **Astro pages**: `src/pages/` — page templates that render the markdown content
+- **Layouts**: `src/layouts/` — shared page layouts (Base shell, etc.)
+- **Components**: `src/components/` — reusable UI components (Header, Footer, etc.)
+- **Styles**: `src/styles/global.css` — design system (tokens, typography, components)
 
-## Local Workflow
+## Pages
 
-Install docs dependencies:
-
-```bash
-poetry install --with docs
-```
-
-Preview locally:
-
-```bash
-poetry run mkdocs serve -f docs/public-docs/mkdocs.yml
-```
-
-Build locally:
-
-```bash
-poetry run mkdocs build -f docs/public-docs/mkdocs.yml
-```
-
-The private repo remains the source of truth. Public docs and SDK repos should be synced from this bundle.
+| File | Page |
+| ---- | ---- |
+| `src/content/docs/index.md` | Home |
+| `src/content/docs/getting-started.md` | Quickstart |
+| `src/content/docs/api-reference.md` | API Reference |
+| `src/content/docs/core-concepts.md` | Core Concepts |
+| `src/content/docs/changelog.md` | Changelog |
