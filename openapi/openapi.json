@@ -4498,15 +4498,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/WatchlistCreateSingleRequest"
-                  },
-                  {
-                    "$ref": "#/components/schemas/WatchlistCreateBatchRequest"
-                  }
-                ],
-                "title": "Body"
+                "$ref": "#/components/schemas/WatchlistCreateRequest"
               }
             }
           }
@@ -4517,15 +4509,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/WatchlistItem"
-                    },
-                    {
-                      "$ref": "#/components/schemas/WatchlistBatchCreateResponse"
-                    }
-                  ],
-                  "title": "Response Create Watchlist Entry V1 Account Watchlist Post"
+                  "$ref": "#/components/schemas/WatchlistCreateResponse"
                 }
               }
             }
@@ -8822,15 +8806,8 @@
             "description": "Alert kind: price_below, price_above, or spread_exceeds."
           },
           "threshold_value": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string",
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
-              }
-            ],
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Threshold Value",
             "description": "Threshold value in alert units."
           },
@@ -9141,9 +9118,6 @@
         "properties": {
           "threshold_value": {
             "anyOf": [
-              {
-                "type": "number"
-              },
               {
                 "type": "string",
                 "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
@@ -13491,6 +13465,30 @@
           "item_ids"
         ],
         "title": "WatchlistCreateBatchRequest"
+      },
+      "WatchlistCreateRequest": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/WatchlistCreateSingleRequest"
+          },
+          {
+            "$ref": "#/components/schemas/WatchlistCreateBatchRequest"
+          }
+        ],
+        "title": "WatchlistCreateRequest",
+        "description": "Request body for POST /v1/account/watchlist."
+      },
+      "WatchlistCreateResponse": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/WatchlistItem"
+          },
+          {
+            "$ref": "#/components/schemas/WatchlistBatchCreateResponse"
+          }
+        ],
+        "title": "WatchlistCreateResponse",
+        "description": "Response body for POST /v1/account/watchlist."
       },
       "WatchlistCreateSingleRequest": {
         "properties": {

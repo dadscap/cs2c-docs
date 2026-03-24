@@ -66,6 +66,7 @@ advertised monthly quota.
 ## Response Conventions
 
 - Most list endpoints return `items` plus `meta` and `pagination` when relevant.
+- **Catalog query**: `GET /v1/items` returns all matched items in a single response if `limit` is omitted.
 - Cursor endpoints intentionally use `pagination.total = -1`.
 - Price fields such as `lowest_ask`, `highest_bid`, and `price` are returned in minor units of the response currency.
 - `providers`, `providers_buy`, and `providers_sell` are repeatable query parameters.
@@ -106,4 +107,7 @@ Common codes:
 - `RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED`
 - `PRICES_INDEX_UNAVAILABLE`
 - `BIDS_INDEX_UNAVAILABLE`
+- `PORTFOLIO_NOT_FOUND`
+- `PORTFOLIO_LIMIT_REACHED`
+- `PORTFOLIO_ITEM_LIMIT_REACHED`
 - `VALIDATION_ERROR`

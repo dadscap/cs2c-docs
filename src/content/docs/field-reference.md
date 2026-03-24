@@ -8,23 +8,47 @@ order: 4
 
 Fields marked "Yes" are returned by the endpoint. Fields marked "–" are not part of that response.
 
-| Field | /prices | /bids | /sales | /items |
-| ----- | ------- | ----- | ------ | ------ |
-| item_id | Yes | Yes | Yes | Yes |
-| market_hash_name | Yes | Yes | Yes | Yes |
-| phase | Yes | Yes | Yes | Yes |
-| provider | Yes | Yes | Yes | – |
-| lowest_ask | Yes | – | – | – |
-| highest_bid | – | Yes | – | – |
-| price | – | – | Yes | – |
-| quantity | Yes | – | Yes | – |
-| num_bids | – | Yes | – | – |
-| link | Yes | – | – | – |
-| url | Yes (paid) | – | – | – |
-| timestamp | Yes | Yes | – | – |
-| last_updated | Yes | Yes | – | – |
-| sold_at | – | – | Yes | – |
-| recorded_at | – | – | Yes | – |
+| Field | /prices | /bids | /sales | /items | /portfolio/items | /portfolio/transactions |
+| ----- | ------- | ----- | ------ | ------ | ---------------- | ----------------------- |
+| item_id | Yes | Yes | Yes | Yes | Yes | Yes |
+| market_hash_name | Yes | Yes | Yes | Yes | Yes | Yes |
+| phase | Yes | Yes | Yes | Yes | Yes | – |
+| provider | Yes | Yes | Yes | – | – | – |
+| marketplace | – | – | – | – | – | Yes |
+| lowest_ask | Yes | – | – | – | – | – |
+| highest_bid | – | Yes | – | – | – | – |
+| price | – | – | Yes | – | – | Yes |
+| quantity | Yes | – | Yes | – | Yes | Yes |
+| num_bids | – | Yes | – | – | – | – |
+| type | – | – | – | – | – | Yes |
+| source | – | – | – | – | Yes | – |
+| steam_assetid | – | – | – | – | Yes | – |
+| link | Yes | – | – | – | – | – |
+| url | Yes (paid) | – | – | – | – | – |
+| timestamp | Yes | Yes | – | – | – | – |
+| last_updated | Yes | Yes | – | – | – | Yes |
+| sold_at | – | – | Yes | – | – | – |
+| recorded_at | – | – | Yes | – | – | – |
+| created_at | – | – | – | – | Yes | Yes |
+
+---
+
+## Portfolio & Transaction Fields
+
+These fields are specific to the stateful Portfolio Management system.
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| portfolio_id | uuid | Unique identifier for the named portfolio. |
+| source | string | Source of the portfolio entry. One of: `manual`, `steam`, `csv`. |
+| steam_assetid | string | Original Steam asset ID for items imported from an inventory. |
+| type | string | Transaction type: `buy` or `sell`. |
+| marketplace | string | Provider or marketplace key where the transaction occurred (e.g. `skinport`). |
+| price | integer | Transaction unit price in minor units. |
+| fee_amount | integer | Total fee amount paid for the transaction in minor units. |
+| fee_percentage | float | Decimal fee percentage (e.g. `0.05` for 5%). |
+| date | date | ISO 8601 date (`YYYY-MM-DD`) for the transaction. |
+| note | string | Optional user-provided note for the transaction. |
 
 ---
 

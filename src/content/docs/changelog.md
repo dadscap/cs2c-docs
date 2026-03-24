@@ -6,6 +6,32 @@ order: 4
 
 Internal refactors and ops-only maintenance are intentionally omitted unless they change the public integration experience.
 
+## March 24, 2026
+
+### Portfolio transactions and CSV import
+
+- Added a full buy/sell transaction ledger for stateful portfolios.
+- Added CSV import/export for both portfolio items (snapshots) and transaction ledgers.
+- Added auto-detection of CSV formats to simplify bulk onboarding.
+
+## March 23, 2026
+
+### Stateful portfolio management
+
+- Launched named portfolios for persistent item tracking.
+- Added Steam inventory import to automatically sync inventories with portfolios.
+- Added asset metadata support for portfolio items (floats, pattern seeds, stickers).
+- Consolidated provider ID data into the `cs2c-provider-ids` submodule for more stable catalog mapping.
+
+## March 22, 2026
+
+### Batch lookups and tier flexibility
+
+- Added `POST /v1/prices/batch` and `POST /v1/bids/batch` for efficient multi-item lookups (up to 100 items).
+- Added `/v1/portfolio/value` as a standalone valuation service for ad-hoc item lists.
+- Implemented internal tier visibility and more flexible capability gating for user accounts.
+- Refined the price/bid candles with provider-specific meta data handling.
+
 ## March 21, 2026
 
 ### Watchlists, alerts, and indicators
