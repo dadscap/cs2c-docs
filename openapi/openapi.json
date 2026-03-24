@@ -11855,6 +11855,84 @@
             "title": "Steam Assetid",
             "description": "Steam asset ID if imported."
           },
+          "float_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Float Value",
+            "description": "Wear float value."
+          },
+          "paint_seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paint Seed",
+            "description": "Paint seed / pattern template."
+          },
+          "inspect_link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inspect Link",
+            "description": "Full Steam inspect link."
+          },
+          "name_tag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name Tag",
+            "description": "Custom name tag applied to item."
+          },
+          "stickers": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/StickerInfo"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stickers",
+            "description": "Applied stickers with wear."
+          },
+          "charms": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/CharmInfo"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Charms",
+            "description": "Attached charms/keychains."
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -13137,6 +13215,84 @@
             "type": "integer",
             "title": "Quantity",
             "description": "Stack size (almost always 1 for CS2 items)."
+          },
+          "float_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Float Value",
+            "description": "Wear float value."
+          },
+          "paint_seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paint Seed",
+            "description": "Paint seed / pattern template."
+          },
+          "inspect_link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inspect Link",
+            "description": "Full Steam inspect link."
+          },
+          "name_tag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name Tag",
+            "description": "Custom name tag applied to item."
+          },
+          "stickers": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/StickerInfo"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stickers",
+            "description": "Applied stickers with wear."
+          },
+          "charms": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/CharmInfo"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Charms",
+            "description": "Attached charms/keychains."
           }
         },
         "type": "object",
