@@ -44,6 +44,9 @@ Rate limits are enforced per API key based on the user's tier:
 \* Unlimited streaming applies only to `POST /prices` and `POST /bids`. Most endpoints still use
 per-route caps.
 
+The standard limiter tracks the full 60-second tier window, so burst handling matches the
+published per-minute rate instead of compressing it into a 1-second bucket.
+
 **Per-endpoint special limits:**
 
 - `POST /prices` and `POST /bids` have an additional per-key cooldown of **1 request per 5 minutes**, regardless of tier RPM.
