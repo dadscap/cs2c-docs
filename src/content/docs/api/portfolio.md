@@ -6,6 +6,10 @@ order: 13
 
 The Portfolio API supports both stateless valuation of ad-hoc item lists and stateful management of named portfolios. Users can import items from Steam, record buy/sell transactions, and export data as CSV.
 
+Portfolio item capacity is tier-based: free users can store up to 1,000 items per portfolio,
+Pro users up to 5,000, and Quant users up to 10,000. Manual item adds, Steam imports, and CSV
+imports all enforce the same per-portfolio cap.
+
 ## Stateless Valuation
 
 ### Value Ad-hoc List
