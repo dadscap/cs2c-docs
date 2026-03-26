@@ -61,7 +61,6 @@ export const sidebarGroups: SidebarGroup[] = [
     href: "/api-reference/catalog",
     items: [
       { method: "GET", label: "/items", href: "/api-reference/catalog#get-items" },
-      { method: "GET", label: "/items/market-ids", href: "/api-reference/catalog#get-itemsmarket-ids" },
       { method: "GET", label: "/providers", href: "/api-reference/catalog#get-providers" },
       { method: "GET", label: "/fx", href: "/api-reference/catalog#get-fx" },
     ],

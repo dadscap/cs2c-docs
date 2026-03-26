@@ -1,6 +1,6 @@
 ---
 title: Catalog
-description: Item search, provider-native IDs, provider metadata, and FX rates.
+description: Item search, provider metadata, and FX rates.
 order: 14
 ---
 
@@ -72,50 +72,6 @@ order: 14
 
 - If `limit` is omitted, all matched items are returned in a single response.
 - `supply` is an optional approximate circulating supply count, present when available.
-
----
-
-### Get Market IDs
->
-> Returns a mapping of every `market_hash_name` to provider-native item identifiers across all supported marketplaces.
-
-- Endpoint: GET `/items/market-ids`
-- Tiers: `free` · `pro` · `quant`
-- Rate Limit: <ol>**Free**: 20/min</ol><ol>**Pro**: 100/min</ol><ol>**Quant**: 300/min</ol>
-
-**Response Example:**
-
-```json
-{
-    "items": {
-        "★ Bayonet | Gamma Doppler (Factory New)": {
-            "buff163_goods_id": 42402,
-            "buff163_phase_ids": {
-                "Emerald": 447129,
-                "Phase 1": 447106,
-                "Phase 2": 446755,
-                "Phase 3": 447107,
-                "Phase 4": 447118
-            },
-            "haloskins_id": 50942852,
-            "c5game_id": 50942852,
-            "youpin_id": 46874,
-            "steam_nameid": 156612099,
-            "csfloat_id": {
-                "Emerald": {"def_index": 500, "paint_index": 568},
-                "Phase 1": {"def_index": 500, "paint_index": 569}
-            },
-            "marketcsgo_id": 117569,
-            "bitskins_id": 23167,
-            "buffmarket_goods_id": 9616,
-            "ecosteam_classid": 1815373339,
-            "shadowpay_item_id": 72221
-        }
-    }
-}
-```
-
----
 
 ## Utilities
 

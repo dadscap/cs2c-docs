@@ -125,10 +125,6 @@ List endpoints generally return:
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/items?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&limit=1"
 
-# Get all marketplace-specific IDs
-curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
-  "$CS2C_API_BASE/items/market-ids"
-
 # Get current buy orders (pro/quant)
 curl -sS -H "Authorization: Bearer $CS2C_API_KEY" \
   "$CS2C_API_BASE/bids?market_hash_name=AK-47%20%7C%20Redline%20(Field-Tested)&providers=steam&limit=5"
