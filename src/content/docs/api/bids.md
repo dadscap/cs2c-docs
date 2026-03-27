@@ -68,7 +68,8 @@ order: 12
 ```
 
 - `highest_bid` is returned in minor units of the response currency (e.g. `3923` = €39.23 with `currency=EUR`).
-- Indexed-only path — no DB fallback. Returns `503` with `BIDS_INDEX_UNAVAILABLE` on index failure.
+- If the item resolves in the catalog but none of the queried providers currently has a bid, the endpoint returns `200` with `items=[]`.
+- Indexed-only path — no DB fallback. Returns `503` with `BIDS_INDEX_UNAVAILABLE` only on true index availability or integrity failure.
 
 ---
 

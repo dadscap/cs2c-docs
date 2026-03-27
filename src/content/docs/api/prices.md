@@ -63,7 +63,8 @@ order: 11
 
 - `lowest_ask` is returned in minor units of the response currency (e.g. `531143` = $5,311.43).
 - `link` is the tracked redirect URL; `url` is the direct marketplace URL and is returned only for paid tiers.
-- Indexed-only path — no DB fallback. Returns `503` with `PRICES_INDEX_UNAVAILABLE` on index failure.
+- If the item resolves in the catalog but none of the queried providers currently has a listing, the endpoint returns `200` with `items=[]`.
+- Indexed-only path — no DB fallback. Returns `503` with `PRICES_INDEX_UNAVAILABLE` only on true index availability or integrity failure.
 
 ---
 
