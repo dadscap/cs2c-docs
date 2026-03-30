@@ -3,11 +3,6 @@
   "info": {
     "title": "CS2C-API",
     "description": "CS2C-API aggregates and analyzes Counter-Strike 2 marketplace data across multiple providers via a unified REST API.",
-    "termsOfService": "https://cs2cap.com/terms",
-    "contact": {
-      "name": "Dadscap for support",
-      "email": "dadscaptv@gmail.com"
-    },
     "version": "1.0.0"
   },
   "servers": [
@@ -11731,13 +11726,15 @@
         "enum": [
           "buff163",
           "buffmarket",
+          "c5",
           "csfloat",
           "dmarket",
           "ecosteam",
           "marketcsgo",
           "steam",
           "waxpeer",
-          "whitemarket"
+          "whitemarket",
+          "youpin"
         ],
         "title": "BuyOrderProvider",
         "description": "Provider keys that support buy orders."
