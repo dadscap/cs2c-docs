@@ -104,7 +104,8 @@ order: 11
             "h": 2529,
             "l": 1529,
             "c": 1782,
-            "v": 54792,
+            "v": 24,
+            "q": 54792,
             "providers": {
                 "h": "steam",
                 "l": "csfloat"
@@ -116,7 +117,8 @@ order: 11
             "h": 2517,
             "l": 1434,
             "c": 1747,
-            "v": 91342
+            "v": 18,
+            "q": 91342
         }
     ],
     "pagination": {...}
@@ -125,7 +127,8 @@ order: 11
 
 - `t` is a Unix epoch timestamp in seconds.
 - `o`, `h`, `l`, `c` are in minor units of the response currency. `o` and `c` are unweighted averages across providers; `l` is the minimum; `h` is capped at `median(highs) * 1.5`.
-- `v` is the summed close-side listing count across providers.
+- `v` is the non-negative depletion flow across providers for the bucket.
+- `q` is the summed close-side listing count across providers at bucket end when available. Older `1d` windows may return `null`.
 - `pagination.total = -1` is intentional on cursor endpoints.
 
 ---
