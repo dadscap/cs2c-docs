@@ -10,7 +10,7 @@ order: 3
 | ---- | ------- | ------------- | ----------------- |
 | **Quote** | Current listing snapshot for one item on one provider. | `provider`, `item_id`, `lowest_ask`, `quantity`, `timestamp` | `/v1/prices` |
 | **BuyOrderRecord** | Current highest bid snapshot for one item on one provider. | `provider`, `item_id`, `highest_bid`, `num_bids`, `timestamp` | `/v1/bids` |
-| **SaleRecord** | Completed sale event. | `provider`, `item_id`, `price`, `sold_at` | `/v1/sales` |
+| **SaleRecord** | Completed sale event. | `provider`, `item_id`, `price`, `date` | `/v1/sales` |
 | **Provider** | Marketplace source such as `steam`, `skinport`, or `buff163`. | provider key, fee data, health metadata | `/v1/providers` |
 | **Phase** | Doppler or Gamma Doppler variant marker. | `phase` | `/v1/items`, `/v1/prices`, `/v1/bids`, `/v1/sales`, `/v1/market/*` |
 | **Wear** | Condition bucket from Factory New to Battle-Scarred. | item naming and float context | `/v1/items`, `/v1/sales` |

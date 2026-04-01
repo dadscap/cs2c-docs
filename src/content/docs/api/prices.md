@@ -131,6 +131,10 @@ order: 11
 - `q` is the summed close-side listing count across providers at bucket end when available. Older `1d` windows may return `null`.
 - `pagination.total = -1` is intentional on cursor endpoints.
 
+**Data retention windows:** `5m` — 7 days · `1h` — 30 days · `1d` — 365 days.
+
+**Free tier restrictions:** only `interval=1d` is permitted; `fill=true` and `start`/`end` params are not allowed — use `lookback` instead.
+
 ---
 
 ### Stream Full Prices Snapshot
@@ -151,7 +155,8 @@ order: 11
 ```
 
 - Requires a real `sk_*` API key — session JWTs are not accepted.
-- Fixed USD output. No filters, request body, pagination, or alternate currencies.
+- Fixed USD output. No request body, pagination, or alternate currencies.
+- Optional `providers` query parameter (repeatable) to restrict the stream to specific provider keys.
 - Snapshot is captured at request start and streamed in full.
 
 ---

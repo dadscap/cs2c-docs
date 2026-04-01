@@ -22,15 +22,15 @@ order: 14
 | item_id | integer | Exact item ID match. |
 | market_hash_name | string | Exact market hash name match (case-insensitive). |
 | item_type | string | One of: `Weapon`, `Sticker`, `Sticker Slab`, `Graffiti`, `Charm`, `Crate`, `Music Kit`, `Patch`, `Collectible`, `Agent`, `Key`, `Tool`. |
-| item_subtype | string | One of: `Gloves`, `Rifles`, `Other`, `Gift`, `Knives`, `SMGs`, `Pistols`, `Heavy`, `Tournament`, `Team Logo`, `Equipment`, `Normal`, `StatTrak`, `Pin`, `Case Key`, `Operation Pass`, `Weapon Case`, `Souvenir Package`, `Sticker Capsule`, `Autograph Capsule`, `Pins Capsule`, `Graffiti Box`, `Music Kit Box`, `Patch Capsule`, `Collection Package`, `Counter-Terrorist`, `Terrorist`, `Highlight Reel`, `Player Autograph`. |
+| item_subtype | string | One of: `Autograph`, `Autograph Capsule`, `Capsule Key`, `Case Key`, `Collection Package`, `Counter-Terrorist`, `Equipment`, `Event`, `Gift`, `Gloves`, `Graffiti Box`, `Heavy`, `Highlight Reel`, `Knives`, `Music Kit Box`, `Normal`, `Operation Pass`, `Other`, `Patch Capsule`, `Pin`, `Pins Capsule`, `Pistols`, `Rifles`, `SMGs`, `Souvenir Highlight`, `Souvenir Package`, `StatTrak`, `Sticker Capsule`, `Team`, `Terrorist`, `Tournament Pass`, `Weapon Case`. |
 | weapon_type | string | One of: `Wearable`, `Assault Rifle`, `Knife`, `Sniper Rifle`, `SMG`, `Pistol`, `Machinegun`, `Shotgun`. |
 | base_name | string | Exact base name match (case-insensitive). |
 | skin_name | string | Exact skin name match (case-insensitive). |
-| wear_name | string | One of: `Factory New`, `Minimal Wear`, `Field-Tested`, `Well-Worn`, `Battle-Scarred`, `Not Painted`. |
+| wear_name | string | One of: `Factory New`, `Minimal Wear`, `Field-Tested`, `Well-Worn`, `Battle-Scarred`. |
 | phase | string | One of: `Phase 1`, `Phase 2`, `Phase 3`, `Phase 4`, `Ruby`, `Sapphire`, `Black Pearl`, `Emerald`. |
 | collection | string | Exact collection match (case-insensitive). |
 | crates | string | Filter by crate name. Repeat to pass multiple values. |
-| rarity_name | string | One of: `Consumer Grade`, `Industrial Grade`, `Mil-Spec Grade`, `Restricted`, `Classified`, `Covert`, `Extraordinary`, `Contraband`, `Base Grade`, `High Grade`, `Remarkable`, `Exotic`, `Distinguished`, `Exceptional`, `Superior`, `Master`, `Default`. |
+| rarity_name | string | One of: `Base Grade`, `Consumer Grade`, `Industrial Grade`, `Mil-Spec Grade`, `High Grade`, `Distinguished`, `Restricted`, `Remarkable`, `Exceptional`, `Classified`, `Exotic`, `Superior`, `Covert`, `Extraordinary`, `Master`, `Contraband`. |
 | rarity_color | string | Rarity color hex. <br>`b0c3d9`/`white`,<br>`5e98d9`/`light blue`,<br>`4b69ff`/`blue`,<br>`8847ff`/`purple`,<br>`d32ce6`/`pink`,<br>`eb4b4b`/`red`,<br>`e4ae39`/`orange` |
 | style_name | string | One of: `None`, `Gunsmith`, `Patina`, `Custom Paint Job`, `Hydrographic`, `Spray-Paint`, `Anodized Multicolored`, `Anodized Airbrushed`, `Solid Color`, `Anodized`, `Case Hardening`. |
 | is_stattrak | boolean | Filter by StatTrak items. |

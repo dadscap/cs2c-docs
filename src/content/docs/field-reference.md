@@ -12,7 +12,7 @@ Fields marked "Yes" are returned by the endpoint. Fields marked "–" are not pa
 | ----- | ------- | ----- | ------ | ------ | ---------------- | ----------------------- |
 | item_id | Yes | Yes | Yes | Yes | Yes | Yes |
 | market_hash_name | Yes | Yes | Yes | Yes | Yes | Yes |
-| phase | Yes | Yes | Yes | Yes | Yes | – |
+| phase | Yes | Yes | Yes | Yes | Yes | Yes |
 | provider | Yes | Yes | Yes | – | – | – |
 | marketplace | – | – | – | – | – | Yes |
 | lowest_ask | Yes | – | – | – | – | – |
@@ -26,8 +26,8 @@ Fields marked "Yes" are returned by the endpoint. Fields marked "–" are not pa
 | link | Yes | – | – | – | – | – |
 | url | Yes (paid) | – | – | – | – | – |
 | timestamp | Yes | Yes | – | – | – | – |
-| last_updated | Yes | Yes | – | – | – | Yes |
-| date | – | – | Yes | – | – | – |
+| last_updated | Yes | Yes | – | – | – | – |
+| date | – | – | Yes | – | – | Yes |
 | created_at | – | – | – | – | Yes | Yes |
 
 ---

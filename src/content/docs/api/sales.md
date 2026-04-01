@@ -18,12 +18,12 @@ order: 13
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| item_id | integer | Filter by specific item ID. Takes precedence over `market_hash_name` and `phase` if provided. |
-| market_hash_name | string | Exact item name as it appears in inventory. Ignored when `item_id` is provided. |
+| item_id | integer | **Required if `market_hash_name` is not provided.** Filter by specific item ID. Takes precedence over `market_hash_name` and `phase` if provided. |
+| market_hash_name | string | **Required if `item_id` is not provided.** Exact item name as it appears in inventory. Ignored when `item_id` is provided. |
 | phase | string | Doppler/Gamma phase filter. One of: `Phase 1`, `Phase 2`, `Phase 3`, `Phase 4`, `Ruby`, `Sapphire`, `Black Pearl`, `Emerald`. Ignored when `item_id` is provided. |
 | providers | string[] | Provider keys to include. Repeat to pass multiple, e.g. `providers=buff163&providers=csfloat`. One of: `bitskins`, `buff163`, `buffmarket`, `c5`, `csfloat`, `csgo500`, `csgoempire`, `dmarket`, `skinbaron`, `youpin`. |
 | currency | string | Target currency. 160+ ISO 4217 codes supported (see `/fx` for the full list). Default: `USD`. |
-| limit | integer | Results per page. Maximum 50 per page. |
+| limit | integer | Maximum results to return. Capped at 50. Single-page only — no cursor or offset pagination. |
 
 **Response Example:**
 

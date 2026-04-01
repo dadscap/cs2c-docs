@@ -90,7 +90,8 @@ order: 12
 ```
 
 - Requires a real `sk_*` API key — session JWTs are not accepted.
-- Fixed USD output. No filters, request body, pagination, or alternate currencies.
+- Fixed USD output. No request body, pagination, or alternate currencies.
+- Optional `providers` query parameter (repeatable) to restrict the stream to specific buy-order provider keys.
 - Snapshot is captured at request start and streamed in full.
 
 ---
