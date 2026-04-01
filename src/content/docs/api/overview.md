@@ -49,7 +49,7 @@ published per-minute rate instead of compressing it into a 1-second bucket.
 
 **Per-endpoint special limits:**
 
-- `POST /prices` and `POST /bids` have an additional per-key cooldown of **1 request per 5 minutes**, regardless of tier RPM.
+- `POST /prices` and `POST /bids` have an additional per-key cooldown of **1 request per 30 seconds**, regardless of tier RPM.
 - `POST /account/key/reset-ip` is limited to **1 request per 24 hours** per account.
 
 `429` responses can include:

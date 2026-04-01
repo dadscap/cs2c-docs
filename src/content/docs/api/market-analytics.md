@@ -20,7 +20,7 @@ order: 15
 |-----------|------|-------------|
 | min_spread_pct | number | Minimum gross spread percentage to include. Default: `1.0`. |
 | providers_buy | string[] | Buy-side provider key filters. Repeat to pass multiple. One of: `avanmarket`, `bitskins`, `buff163`, `buffmarket`, `c5`, `csdeals`, `csfloat`, `csgo500`, `csgoempire`, `csmoney_m`, `csmoney_t`, `cstrade`, `dmarket`, `ecosteam`, `gamerpay`, `haloskins`, `itradegg`, `lisskins`, `lootfarm`, `mannco`, `marketcsgo`, `pirateswap`, `rapidskins`, `shadowpay`, `skinbaron`, `skinflow`, `skinout`, `skinplace`, `skinport`, `skinscom`, `skinsmonkey`, `skinswap`, `skinvault`, `steam`, `swapgg`, `tradeit`, `waxpeer`, `whitemarket`, `youpin`. |
-| providers_sell | string[] | Sell-side provider key filters (buy-order providers only). Repeat to pass multiple. One of: `buff163`, `buffmarket`, `csfloat`, `dmarket`, `ecosteam`, `marketcsgo`, `steam`, `waxpeer`, `whitemarket`. |
+| providers_sell | string[] | Sell-side provider key filters (buy-order providers only). Repeat to pass multiple. One of: `buff163`, `buffmarket`, `c5`, `csfloat`, `dmarket`, `ecosteam`, `marketcsgo`, `steam`, `waxpeer`, `whitemarket`, `youpin`. |
 | limit | integer | Results per page. |
 | offset | integer | Pagination offset. Default: `0`. |
 

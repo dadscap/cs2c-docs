@@ -18,7 +18,7 @@ Fields marked "Yes" are returned by the endpoint. Fields marked "–" are not pa
 | lowest_ask | Yes | – | – | – | – | – |
 | highest_bid | – | Yes | – | – | – | – |
 | price | – | – | Yes | – | – | Yes |
-| quantity | Yes | – | Yes | – | Yes | Yes |
+| quantity | Yes | – | – | – | Yes | Yes |
 | num_bids | – | Yes | – | – | – | – |
 | type | – | – | – | – | – | Yes |
 | source | – | – | – | – | Yes | – |
@@ -27,8 +27,7 @@ Fields marked "Yes" are returned by the endpoint. Fields marked "–" are not pa
 | url | Yes (paid) | – | – | – | – | – |
 | timestamp | Yes | Yes | – | – | – | – |
 | last_updated | Yes | Yes | – | – | – | Yes |
-| sold_at | – | – | Yes | – | – | – |
-| recorded_at | – | – | Yes | – | – | – |
+| date | – | – | Yes | – | – | – |
 | created_at | – | – | – | – | Yes | Yes |
 
 ---
@@ -86,10 +85,9 @@ For example, `lowest_ask = 2550` with `currency = USD` = **us$25.50**
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| quantity | integer | Number of units in the listing (`/prices`) or units sold in the transaction (`/sales`). |
+| quantity | integer | Number of units in the listing (`/prices`). |
 | num_bids | integer | Count of active buy orders at the reported `highest_bid` price level. |
-| sold_at | datetime | ISO 8601 UTC timestamp for when the sale occurred on the provider's marketplace. |
-| recorded_at | datetime | ISO 8601 UTC timestamp for when this system ingested or recorded the sale event. |
+| date | datetime | ISO 8601 UTC timestamp for when the sale occurred on the provider's marketplace. Returned by `/sales`. |
 | currency | string | ISO 4217 currency code for the values in this record, for example `USD`. |
 
 ---
@@ -100,8 +98,7 @@ For example, `lowest_ask = 2550` with `currency = USD` = **us$25.50**
 | ----- | ---- | ----------- |
 | timestamp | datetime | Timestamp for when the current `price` + `quantity` combination was tracked for a provider. |
 | last_updated | datetime | ISO 8601 UTC timestamp for when this system last ingested or processed the record. Distinct from `timestamp`, which reflects the provider's own observation time. |
-| sold_at | datetime | ISO 8601 UTC timestamp for the sale event time as reported by the provider. |
-| recorded_at | datetime | ISO 8601 UTC timestamp for when this system stored the sale record. |
+| date | datetime | ISO 8601 UTC timestamp for the sale event time as reported by the provider. Returned by `/sales`. |
 
 ---
 

@@ -138,8 +138,8 @@ order: 11
 > Streams the complete live prices catalog as NDJSON, one MarketItem JSON object per line, with a stable snapshot captured at request start.
 
 - Endpoint: POST `/prices`
-- Tiers: `quant`
-- Rate Limit: 1 per 5 minutes
+- Tiers: `pro` · `quant`
+- Rate Limit: 1 per 30 seconds per API key
 
 **Response Example:**
 
@@ -161,8 +161,8 @@ order: 11
 > Returns current best-ask prices for up to 100 items in a single request, grouped by item ID across all queried providers.
 
 - Endpoint: POST `/prices/batch`
-- Tiers: `quant`
-- Rate Limit: <ol>**Quant**: 300/min</ol>
+- Tiers: `pro` · `quant`
+- Rate Limit: <ol>**Pro**: 100/min</ol><ol>**Quant**: 300/min</ol>
 
 **Payload:**
 
