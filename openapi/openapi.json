@@ -357,7 +357,7 @@
           "Prices"
         ],
         "summary": "Stream Full Prices Snapshot",
-        "description": "Return the full live prices snapshot as an NDJSON stream.\n\nBehavior:\n- pro and quant tiers only\n- requires a real `sk_*` API key; session JWTs are not accepted\n- optional `providers` filter; omit to stream all providers\n- fixed USD output\n- `lowest_ask` values are returned in USD minor units\n- one JSON object per line using the `MarketItem` field set\n- the live index is copied into temporary Redis keys so the export is stable for the duration of the stream\n- per-API-key cooldown of 5 minutes for this POST operation",
+        "description": "Return the full live prices snapshot as an NDJSON stream.\n\nBehavior:\n- pro and quant tiers only\n- requires a real `sk_*` API key; session JWTs are not accepted\n- optional `providers` filter; omit to stream all providers\n- fixed USD output\n- `lowest_ask` values are returned in USD minor units\n- one JSON object per line using the `MarketItem` field set\n- the live index is copied into temporary Redis keys so the export is stable for the duration of the stream\n- per-API-key cooldown of 30 seconds for this POST operation",
         "operationId": "stream_prices_snapshot_v1_prices_post",
         "security": [
           {
@@ -455,7 +455,7 @@
                 "description": "Seconds until this API key may request another prices snapshot.",
                 "schema": {
                   "type": "string",
-                  "example": "300"
+                  "example": "30"
                 }
               }
             },
@@ -463,7 +463,7 @@
               "application/json": {
                 "example": {
                   "code": "RATE_LIMIT_EXCEEDED",
-                  "detail": "Bulk snapshot cooldown active for /v1/prices. Retry after 300 seconds."
+                  "detail": "Bulk snapshot cooldown active for /v1/prices. Retry after 30 seconds."
                 },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
@@ -2041,7 +2041,7 @@
           "Bids"
         ],
         "summary": "Stream Full Bids Snapshot",
-        "description": "Return the full live bids snapshot as an NDJSON stream.\n\nBehavior:\n- pro and quant tiers only\n- requires a real `sk_*` API key; session JWTs are not accepted\n- optional `providers` filter; omit to stream all providers\n- fixed USD output\n- `highest_bid` values are returned in USD minor units\n- one JSON object per line using the `BuyOrderItem` field set\n- the live index is copied into temporary Redis keys so the export is stable for the duration of the stream\n- per-API-key cooldown of 5 minutes for this POST operation",
+        "description": "Return the full live bids snapshot as an NDJSON stream.\n\nBehavior:\n- pro and quant tiers only\n- requires a real `sk_*` API key; session JWTs are not accepted\n- optional `providers` filter; omit to stream all providers\n- fixed USD output\n- `highest_bid` values are returned in USD minor units\n- one JSON object per line using the `BuyOrderItem` field set\n- the live index is copied into temporary Redis keys so the export is stable for the duration of the stream\n- per-API-key cooldown of 30 seconds for this POST operation",
         "operationId": "stream_bids_snapshot_v1_bids_post",
         "security": [
           {
@@ -2139,7 +2139,7 @@
                 "description": "Seconds until this API key may request another bids snapshot.",
                 "schema": {
                   "type": "string",
-                  "example": "300"
+                  "example": "30"
                 }
               }
             },
@@ -2147,7 +2147,7 @@
               "application/json": {
                 "example": {
                   "code": "RATE_LIMIT_EXCEEDED",
-                  "detail": "Bulk snapshot cooldown active for /v1/bids. Retry after 300 seconds."
+                  "detail": "Bulk snapshot cooldown active for /v1/bids. Retry after 30 seconds."
                 },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
