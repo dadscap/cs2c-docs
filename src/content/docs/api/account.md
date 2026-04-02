@@ -1,10 +1,75 @@
 ---
 title: Account
-description: API key IP reset, watchlists, and alerts for authenticated accounts.
+description: API key management, Quant sub-keys, watchlists, and alerts for authenticated accounts.
 order: 16
 ---
 
 ## API Key Management
+
+### Get Active Key
+>
+> Returns metadata for the authenticated key. When called with a session JWT, this resolves to the account's active root key instead.
+
+- Endpoint: GET `/account/key`
+- Tiers: `free` · `pro` · `quant`
+- Auth: session JWT or API key
+- Rate Limit: Standard per-tier RPM
+
+**Response Example:**
+
+```json
+{
+  "key": {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "key_prefix": "sk_live_root",
+    "name": null,
+    "root_key_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "is_root_key": true,
+    "is_active": true,
+    "created_at": "2026-03-02T10:30:00Z",
+    "last_used_at": "2026-03-02T11:15:00Z",
+    "expires_at": null,
+    "bound_ip": "203.0.113.10",
+    "bound_ip_set_at": "2026-03-02T10:31:00Z",
+    "quota_requests_per_month_override": null,
+    "rate_requests_per_minute_override": null,
+    "effective_quota_requests_per_month": 500000,
+    "effective_rate_requests_per_minute": 300
+  }
+}
+```
+
+- Child keys can authenticate normal data requests, and this route will return that child key's metadata when called with the child token.
+- Quant child keys inherit the parent account tier and can only narrow monthly quota or RPM limits.
+
+---
+
+### Reissue Active Key
+>
+> Rotates the active root key and revokes the entire child-key tree under it as part of the same security event.
+
+- Endpoint: POST `/account/key/reissue`
+- Tiers: `free` · `pro` · `quant`
+- Auth: session JWT or root API key
+- Rate Limit: Standard per-tier RPM
+
+**Response Example:**
+
+```json
+{
+  "key": "sk_live_<xxxx>",
+  "key_prefix": "sk_live_root",
+  "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+  "created_at": "2026-03-02T11:20:00Z",
+  "message": "Store this key securely. It will not be shown again."
+}
+```
+
+- Email verification is required before key issuance or reissuance.
+- Child keys cannot call this route.
+- Free tier still uses this as the self-service path to replace an IP-bound root key.
+
+---
 
 ### Reset IP Binding
 >
@@ -27,6 +92,178 @@ order: 16
 - Free tier: rebinds the key to the caller's current IP. Required when calling from a new IP.
 - Pro/Quant: succeeds but does not change account state.
 - Monthly quota: exempt.
+
+---
+
+## Sub-Key Management
+
+Quant v1 supports child API keys under a single active root key.
+
+- Availability: `quant` only
+- Auth: session JWT or root API key for all management routes
+- Child keys can use data endpoints but cannot create, update, revoke, or rotate keys
+- Per-child quota/RPM overrides are optional and can only be lower than the parent tier limits
+
+### List Sub-Keys
+>
+> Returns active child API keys with per-key current-month request counts.
+
+- Endpoint: GET `/account/sub-keys`
+- Tiers: `quant`
+- Rate Limit: Standard per-tier RPM
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| limit | integer | Page size, clamped to `1–100`. Default: `25`. |
+| offset | integer | Zero-based starting position. Default: `0`. |
+
+**Response Example:**
+
+```json
+{
+  "keys": [
+    {
+      "key": {
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "key_prefix": "sk_live_child",
+        "name": "research-bot",
+        "root_key_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "is_root_key": false,
+        "is_active": true,
+        "created_at": "2026-03-02T12:00:00Z",
+        "last_used_at": "2026-03-03T08:10:00Z",
+        "expires_at": null,
+        "bound_ip": null,
+        "bound_ip_set_at": null,
+        "quota_requests_per_month_override": 50000,
+        "rate_requests_per_minute_override": 120,
+        "effective_quota_requests_per_month": 50000,
+        "effective_rate_requests_per_minute": 120
+      },
+      "requests_this_month": 812
+    }
+  ],
+  "pagination": {
+    "limit": 25,
+    "offset": 0,
+    "total": 1
+  }
+}
+```
+
+---
+
+### Create Sub-Key
+>
+> Creates a new child API key and returns the plaintext key once.
+
+- Endpoint: POST `/account/sub-keys`
+- Tiers: `quant`
+- Rate Limit: Standard per-tier RPM
+
+**Payload:**
+
+```json
+{
+  "name": "research-bot",
+  "quota_requests_per_month_override": 50000,
+  "rate_requests_per_minute_override": 120
+}
+```
+
+- Omitting override fields means the child key inherits the parent tier ceiling with no extra child-specific cap.
+- Requests exceeding the tier child-key count cap return `409`.
+- Overrides above the parent tier limit return a validation error.
+
+---
+
+### Get Sub-Key
+>
+> Returns one active child API key plus its current-month request count.
+
+- Endpoint: GET `/account/sub-keys/{key_id}`
+- Tiers: `quant`
+- Rate Limit: Standard per-tier RPM
+
+---
+
+### Update Sub-Key
+>
+> Updates a child key's user-visible name and optional quota/RPM overrides.
+
+- Endpoint: PATCH `/account/sub-keys/{key_id}`
+- Tiers: `quant`
+- Rate Limit: Standard per-tier RPM
+
+**Payload:**
+
+```json
+{
+  "name": "research-bot-v2",
+  "quota_requests_per_month_override": 25000,
+  "rate_requests_per_minute_override": 60
+}
+```
+
+- Set an override field to `null` to remove that child-specific cap.
+
+---
+
+### Delete Sub-Key
+>
+> Revokes one active child API key.
+
+- Endpoint: DELETE `/account/sub-keys/{key_id}`
+- Tiers: `quant`
+- Rate Limit: Standard per-tier RPM
+
+**Response Example:**
+
+```json
+{
+  "ok": true,
+  "key_id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+  "revoked_at": "2026-03-03T08:12:00+00:00"
+}
+```
+
+---
+
+### Reissue Sub-Key
+>
+> Rotates one active child API key and returns the replacement plaintext key once.
+
+- Endpoint: POST `/account/sub-keys/{key_id}/reissue`
+- Tiers: `quant`
+- Rate Limit: Standard per-tier RPM
+
+**Response Example:**
+
+```json
+{
+  "key": "sk_live_<xxxx>",
+  "key_info": {
+    "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+    "key_prefix": "sk_live_child",
+    "name": "research-bot",
+    "root_key_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "is_root_key": false,
+    "is_active": true,
+    "created_at": "2026-03-03T08:15:00Z",
+    "last_used_at": null,
+    "expires_at": null,
+    "bound_ip": null,
+    "bound_ip_set_at": null,
+    "quota_requests_per_month_override": 50000,
+    "rate_requests_per_minute_override": 120,
+    "effective_quota_requests_per_month": 50000,
+    "effective_rate_requests_per_minute": 120
+  },
+  "message": "Store this key securely. It will not be shown again."
+}
+```
 
 ---
 
