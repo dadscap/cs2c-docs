@@ -19,7 +19,7 @@
         ],
         "summary": "List Prices",
         "description": "Return current lowest ask listings.\n\nParameters:\n- `item_id`: Exact item ID (recommended when known).\n- `market_hash_name`: Exact market name.\n- `phase`: Optional Doppler phase filter.\n- `providers`: Optional provider-key enum list (repeat `providers` to pass multiple values).\n- `currency`: Quote currency for prices (default `USD`).\n- `limit`, `offset`: Offset pagination controls.\n\nBehavior:\n- If no filters are provided, returns a broad paginated listing.\n- If `market_hash_name` is Doppler and `phase` is omitted, results aggregate across phases per provider.\n- If `market_hash_name` and `phase` are both provided, only that exact phase is returned.\n- If the item resolves in the catalog but none of the queried providers currently has a\n  listing, returns `200` with an empty `items` array.\n\nResponse:\n- `meta`: Applied filters, requested providers, returned providers, currency.\n- `items`: Per-provider lowest ask entries.\n- `pagination`: `limit`, `offset`, `total`, `has_next`, `has_prev`.\n\nRequirements:\n- Valid API key with access to `/v1/prices`.\n- `limit` is capped by your tier.",
-        "operationId": "list_prices_v1_prices_get",
+        "operationId": "listPrices",
         "security": [
           {
             "BearerAuth": []
@@ -280,9 +280,12 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
                 "examples": {
                   "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
+                    "summary": "Unsupported provider key",
                     "value": {
                       "code": "VALIDATION_ERROR",
                       "detail": [
@@ -294,7 +297,7 @@
                             0
                           ],
                           "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
+                          "input": "not-a-provider",
                           "ctx": {
                             "expected": "'steam', 'skinport', 'buff163', ..."
                           }
@@ -322,9 +325,6 @@
                       ]
                     }
                   }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
               }
             },
@@ -358,7 +358,7 @@
         ],
         "summary": "Stream Full Prices Snapshot",
         "description": "Return the full live prices snapshot as an NDJSON stream.\n\nBehavior:\n- pro and quant tiers only\n- requires a real `sk_*` API key; session JWTs are not accepted\n- optional `providers` filter; omit to stream all providers\n- fixed USD output\n- `lowest_ask` values are returned in USD minor units\n- one JSON object per line using the `MarketItem` field set\n- the live index is copied into temporary Redis keys so the export is stable for the duration of the stream\n- per-API-key cooldown of 30 seconds for this POST operation",
-        "operationId": "stream_prices_snapshot_v1_prices_post",
+        "operationId": "streamFullPricesSnapshot",
         "security": [
           {
             "BearerAuth": []
@@ -454,8 +454,8 @@
               "Retry-After": {
                 "description": "Seconds until this API key may request another prices snapshot.",
                 "schema": {
-                  "type": "string",
-                  "example": "30"
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             },
@@ -475,9 +475,12 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
                 "examples": {
                   "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
+                    "summary": "Unsupported provider key",
                     "value": {
                       "code": "VALIDATION_ERROR",
                       "detail": [
@@ -489,37 +492,14 @@
                             0
                           ],
                           "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
+                          "input": "not-a-provider",
                           "ctx": {
                             "expected": "'steam', 'skinport', 'buff163', ..."
                           }
                         }
                       ]
                     }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
                   }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
               }
             },
@@ -556,7 +536,7 @@
         ],
         "summary": "Price History",
         "description": "Return historical price snapshots.\n\nParameters:\n- Filters: `item_id`, `market_hash_name`, `phase`, `provider` (singular string key).\n- Time window: `start`, `end` (ISO 8601).\n- `currency`: Quote currency (default `USD`).\n- `limit`: Items per page.\n- `cursor`: Opaque cursor from `next_cursor` for the next page.\n\nResponse:\n- `items`: Historical snapshots ordered newest first.\n- `meta`: Applied filters and time window.\n- `pagination`: Standardized pagination footer with cursor state.\n\nRequirements:\n- Valid API key with access to `/v1/prices/history`.\n- `start`/`end` must be valid ISO 8601 timestamps.\n- Requested time range must be within the endpoint retention window.\n- `limit` is capped by your tier.",
-        "operationId": "price_history_v1_prices_history_get",
+        "operationId": "priceHistory",
         "security": [
           {
             "BearerAuth": []
@@ -624,16 +604,16 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "$ref": "#/components/schemas/AllProviders"
                 },
                 {
                   "type": "null"
                 }
               ],
-              "description": "Single provider key string (singular parameter, e.g. provider=steam).",
+              "description": "Single provider key for provider-scoped historical snapshots. Use repeated `providers` on `/v1/prices` for live snapshot filtering; `/v1/prices/candles` is composite and intentionally has no provider filter.",
               "title": "Provider"
             },
-            "description": "Single provider key string (singular parameter, e.g. provider=steam)."
+            "description": "Single provider key for provider-scoped historical snapshots. Use repeated `providers` on `/v1/prices` for live snapshot filtering; `/v1/prices/candles` is composite and intentionally has no provider filter."
           },
           {
             "name": "start",
@@ -642,7 +622,8 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "type": "string",
+                  "format": "date-time"
                 },
                 {
                   "type": "null"
@@ -660,7 +641,8 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "type": "string",
+                  "format": "date-time"
                 },
                 {
                   "type": "null"
@@ -763,8 +745,6 @@
                   ],
                   "pagination": {
                     "limit": 100,
-                    "offset": 0,
-                    "total": -1,
                     "has_next": true,
                     "has_prev": false,
                     "next_cursor": "MjAyNi0wMS0yMFQxMTo1NTowMFo%3D"
@@ -867,49 +847,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -976,7 +913,7 @@
         ],
         "summary": "Price Candles",
         "description": "Return composite OHLCV candle data for a single item across all providers.\n\nParameters:\n- Item filter: `item_id` or `market_hash_name` (one is required).\n- Optional filter: `phase`.\n- Time window: `start`/`end` (ISO 8601) or `lookback` (for example `7d`, `30d`).\n- `interval`: `5m`, `1h`, or `1d`.\n- `fill`: Include empty buckets with carry-forward prices when `true`.\n- `currency`: Quote currency (default `USD`).\n- `limit`, `cursor`: Cursor-based pagination controls.\n\nNotes:\n- If both `start` and `lookback` are sent, `lookback` takes precedence.\n- Maximum lookback depends on `interval`:\n  `5m` up to 7 days, `1h` up to 30 days, `1d` up to 365 days.\n\nResponse:\n- `meta`: Item, provider scope, interval, phase, currency, start/end timestamps.\n- `data`: Candle buckets in oldest-to-newest order\n  (`t`, `o`, `h`, `l`, `c`, `v`, `q`, `providers`).\n  `o`/`c` are unweighted averages across provider snapshots, `l` is the minimum provider\n  low, `h` is capped at `median(provider_highs) * 1.5`, `v` is the non-negative depletion\n  flow between buckets, and `q` is the summed close-side inventory at bucket end when\n  available. `providers.l` and `providers.h` identify the provider keys contributing the\n  returned low/high values. For `1d` requests starting more than 30 days back, `v` falls\n  back to legacy depletion-derived `volume_qty` and `q` is `null`.\n- `pagination`: Standardized pagination footer with cursor state.\n\nRequirements:\n- Valid API key with access to `/v1/prices/candles`.\n- `item_id` or `market_hash_name` is required.\n- `start`/`end` must be valid ISO 8601 timestamps.\n- `limit` is capped by your tier.",
-        "operationId": "price_candles_v1_prices_candles_get",
+        "operationId": "priceCandles",
         "security": [
           {
             "BearerAuth": []
@@ -1044,7 +981,8 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "type": "string",
+                  "format": "date-time"
                 },
                 {
                   "type": "null"
@@ -1062,7 +1000,8 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "type": "string",
+                  "format": "date-time"
                 },
                 {
                   "type": "null"
@@ -1218,8 +1157,6 @@
                   ],
                   "pagination": {
                     "limit": 100,
-                    "offset": 0,
-                    "total": -1,
                     "has_next": false,
                     "has_prev": false
                   }
@@ -1321,49 +1258,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -1454,7 +1348,7 @@
         ],
         "summary": "Batch Price Lookup",
         "description": "Retrieve current prices for multiple items in a single request.\n\nMaximum 100 items per request. Returns per-item price quotes from each queried provider.\n\nPrices are in minor units of the requested currency (e.g. USD cents when `currency=USD`). Divide by 100 for display.",
-        "operationId": "batch_prices_v1_prices_batch_post",
+        "operationId": "batchPriceLookup",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1539,7 +1433,7 @@
                 "description": "Seconds to wait before retrying when present.",
                 "schema": {
                   "type": "integer",
-                  "minimum": 1.0
+                  "minimum": 1
                 }
               },
               "X-RateLimit-Tier": {
@@ -1608,49 +1502,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
-                },
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
                 }
               }
             }
@@ -1680,7 +1531,7 @@
         ],
         "summary": "List Bids",
         "description": "Return current highest bids from providers that support buy orders.\n\nFilters:\n- `item_id` or `market_hash_name`\n- optional `phase`\n- `providers` limited to buy-order-capable provider keys\n- `currency`, `limit`, and `offset`\n\nBehavior:\n- broad listings use the indexed pagination path\n- item-specific requests use direct indexed lookup\n- unsupported providers return `400`\n\nResponse:\n- `meta` with filters and providers queried\n- flattened per-provider bid rows\n- offset pagination metadata",
-        "operationId": "list_bids_v1_bids_get",
+        "operationId": "listBids",
         "security": [
           {
             "BearerAuth": []
@@ -1951,9 +1802,12 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
                 "examples": {
                   "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
+                    "summary": "Unsupported provider key",
                     "value": {
                       "code": "VALIDATION_ERROR",
                       "detail": [
@@ -1965,7 +1819,7 @@
                             0
                           ],
                           "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
+                          "input": "not-a-provider",
                           "ctx": {
                             "expected": "'steam', 'skinport', 'buff163', ..."
                           }
@@ -1993,9 +1847,6 @@
                       ]
                     }
                   }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
               }
             },
@@ -2042,7 +1893,7 @@
         ],
         "summary": "Stream Full Bids Snapshot",
         "description": "Return the full live bids snapshot as an NDJSON stream.\n\nBehavior:\n- pro and quant tiers only\n- requires a real `sk_*` API key; session JWTs are not accepted\n- optional `providers` filter; omit to stream all providers\n- fixed USD output\n- `highest_bid` values are returned in USD minor units\n- one JSON object per line using the `BuyOrderItem` field set\n- the live index is copied into temporary Redis keys so the export is stable for the duration of the stream\n- per-API-key cooldown of 30 seconds for this POST operation",
-        "operationId": "stream_bids_snapshot_v1_bids_post",
+        "operationId": "streamFullBidsSnapshot",
         "security": [
           {
             "BearerAuth": []
@@ -2138,8 +1989,8 @@
               "Retry-After": {
                 "description": "Seconds until this API key may request another bids snapshot.",
                 "schema": {
-                  "type": "string",
-                  "example": "30"
+                  "type": "integer",
+                  "minimum": 1
                 }
               }
             },
@@ -2159,9 +2010,12 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
                 "examples": {
                   "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
+                    "summary": "Unsupported provider key",
                     "value": {
                       "code": "VALIDATION_ERROR",
                       "detail": [
@@ -2173,37 +2027,14 @@
                             0
                           ],
                           "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
+                          "input": "not-a-provider",
                           "ctx": {
                             "expected": "'steam', 'skinport', 'buff163', ..."
                           }
                         }
                       ]
                     }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
                   }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
               }
             },
@@ -2240,7 +2071,7 @@
         ],
         "summary": "Batch Bid Lookup",
         "description": "Retrieve current bids (buy orders) for multiple items in a single request.\n\nMaximum 100 items per request. Returns per-item bid quotes from each queried provider.\n\nPrices are in minor units of the requested currency (e.g. USD cents when `currency=USD`). Divide by 100 for display.",
-        "operationId": "batch_bids_v1_bids_batch_post",
+        "operationId": "batchBidLookup",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2325,7 +2156,7 @@
                 "description": "Seconds to wait before retrying when present.",
                 "schema": {
                   "type": "integer",
-                  "minimum": 1.0
+                  "minimum": 1
                 }
               },
               "X-RateLimit-Tier": {
@@ -2394,49 +2225,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
-                },
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
                 }
               }
             }
@@ -2466,7 +2254,7 @@
         ],
         "summary": "List Recent Sales",
         "description": "Return recent sales history from providers with recent-sales support.\n\nFilters:\n- `item_id` or `market_hash_name` is required\n- optional `phase`\n- `providers` limited to sales-capable provider keys\n- `currency` and `limit`\n\nBehavior:\n- cache misses trigger live provider fetches during the request\n- results are cached per item and provider for 1 hour\n- response is single-page only with a maximum of 50 rows\n\nResponse:\n- request metadata and providers queried\n- sales records with sticker, charm, and inspect metadata when available\n- per-provider cache status for hit, miss, error, or unavailable",
-        "operationId": "list_sales_v1_sales_get",
+        "operationId": "listRecentSales",
         "security": [
           {
             "BearerAuth": []
@@ -2685,9 +2473,12 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                },
                 "examples": {
                   "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
+                    "summary": "Unsupported provider key",
                     "value": {
                       "code": "VALIDATION_ERROR",
                       "detail": [
@@ -2699,7 +2490,7 @@
                             0
                           ],
                           "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
+                          "input": "not-a-provider",
                           "ctx": {
                             "expected": "'steam', 'skinport', 'buff163', ..."
                           }
@@ -2718,18 +2509,15 @@
                             "query",
                             "limit"
                           ],
-                          "msg": "Input should be less than or equal to 1000",
+                          "msg": "Input should be less than or equal to 50",
                           "input": 5000,
                           "ctx": {
-                            "le": 1000
+                            "le": 50
                           }
                         }
                       ]
                     }
                   }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
               }
             },
@@ -2791,7 +2579,7 @@
         ],
         "summary": "Get Fx Rates",
         "description": "Return latest foreign exchange rates.\n\nParameters:\n- None.\n\nResponse:\n- `timestamp`: ISO timestamp for the rates snapshot.\n- `rates`: Map of currency code to value relative to 1 USD (USD -> X).\n\nRequirements:\n- Valid API key with access to `/v1/fx`.",
-        "operationId": "get_fx_rates_v1_fx_get",
+        "operationId": "getFxRates",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -2838,7 +2626,7 @@
                 "description": "Seconds to wait before retrying when present.",
                 "schema": {
                   "type": "integer",
-                  "minimum": 1.0
+                  "minimum": 1
                 }
               },
               "X-RateLimit-Tier": {
@@ -2907,49 +2695,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
-                },
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
                 }
               }
             }
@@ -2969,7 +2714,7 @@
         ],
         "summary": "List Items",
         "description": "Search the normalized CS2 item catalog with exact-match metadata filters and simple result limiting.\n\nFilters:\n- exact catalog fields such as `item_type`, `collection`, `rarity_name`, and `phase`\n- `q` for case-insensitive substring search on `market_hash_name`\n- `item_id` for direct lookup\n\nResult limiting:\n- provide `limit` to cap the number of returned items (still tier-capped, endpoint max 1000)\n- omit `limit` to return all matched items in one response, for any tier\n\nResponse:\n- item records with canonical identifiers and item metadata\n- optional `supply` values when available\n\nUse this endpoint to resolve canonical `item_id` values before calling prices, bids, sales, or market analytics.",
-        "operationId": "list_items_v1_items_get",
+        "operationId": "listItems",
         "security": [
           {
             "BearerAuth": []
@@ -3569,6 +3314,25 @@
               "title": "Limit"
             },
             "description": "Maximum number of items to return. Omit to return all matched items in one response."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Number of items to skip before returning results.",
+              "title": "Offset"
+            },
+            "description": "Number of items to skip before returning results."
           }
         ],
         "responses": {
@@ -3577,7 +3341,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ItemsResponse_ItemOut_"
+                  "$ref": "#/components/schemas/ItemsPaginatedResponse_ItemOut_"
                 }
               }
             }
@@ -3676,49 +3440,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -3743,7 +3464,7 @@
         ],
         "summary": "List Providers",
         "description": "List supported marketplace providers with capability, fee, currency, and health metadata.\n\nUse the optional `provider` query parameter to fetch a single provider by key.",
-        "operationId": "list_providers_v1_providers_get",
+        "operationId": "listProviders",
         "security": [
           {
             "BearerAuth": []
@@ -3779,7 +3500,7 @@
                   "additionalProperties": {
                     "$ref": "#/components/schemas/ProviderInfo"
                   },
-                  "title": "Response List Providers V1 Providers Get"
+                  "title": "ListProvidersResponse"
                 }
               }
             }
@@ -3878,49 +3599,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -3958,7 +3636,7 @@
         ],
         "summary": "Reset Free Tier Ip Binding",
         "description": "Rebind the active key to the caller IP for free tier with cooldown protection.",
-        "operationId": "reset_free_tier_ip_binding_v1_account_key_reset_ip_post",
+        "operationId": "resetFreeTierIpBinding",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -4005,7 +3683,7 @@
                 "description": "Seconds to wait before retrying when present.",
                 "schema": {
                   "type": "integer",
-                  "minimum": 1.0
+                  "minimum": 1
                 }
               },
               "X-RateLimit-Tier": {
@@ -4074,49 +3752,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
-                },
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
                 }
               }
             }
@@ -4136,7 +3771,7 @@
         ],
         "summary": "List Watchlist",
         "description": "List saved watchlist items for the authenticated user.\n\nBehavior:\n- accepts either a real API key or a session JWT bearer token\n- offset pagination ordered by newest saved first\n- `search` matches exact numeric `item_id` or case-insensitive item-name substring\n- response pagination includes a real `total` count",
-        "operationId": "get_watchlist_v1_account_watchlist_get",
+        "operationId": "listWatchlist",
         "security": [
           {
             "BearerAuth": []
@@ -4291,49 +3926,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -4356,7 +3948,7 @@
         ],
         "summary": "Create Watchlist Entries",
         "description": "Save one or more normalized catalog items to the authenticated user's default watchlist.\n\nRules:\n- accepts either a real API key or a session JWT bearer token\n- send either `item_id` for a single add or `item_ids` for a batch add\n- every item ID must exist in the API item catalog\n- watchlist access and max saved items depend on the user's tier\n- batch creates are all-or-nothing\n- duplicate saves return `409`",
-        "operationId": "create_watchlist_entry_v1_account_watchlist_post",
+        "operationId": "createWatchlistEntries",
         "security": [
           {
             "BearerAuth": []
@@ -4477,49 +4069,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -4544,7 +4093,7 @@
         ],
         "summary": "Delete Watchlist Entry",
         "description": "Remove one saved watchlist entry by normalized `item_id`.\n\nThis path uses the catalog item ID, not the watchlist entry UUID.",
-        "operationId": "delete_watchlist_entry_v1_account_watchlist__item_id__delete",
+        "operationId": "deleteWatchlistEntry",
         "security": [
           {
             "BearerAuth": []
@@ -4666,49 +4215,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -4733,7 +4239,7 @@
         ],
         "summary": "List Alerts",
         "description": "List configured item alerts for the authenticated user.\n\nBehavior:\n- accepts either a real API key or a session JWT bearer token\n- offset pagination ordered by newest created first\n- `search` matches exact numeric `item_id` or case-insensitive item-name substring\n- response pagination includes a real `total` count",
-        "operationId": "get_alerts_v1_account_alerts_get",
+        "operationId": "listAlerts",
         "security": [
           {
             "BearerAuth": []
@@ -4888,49 +4394,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -4953,7 +4416,7 @@
         ],
         "summary": "Create Alert",
         "description": "Create a new item-scoped account alert.\n\nSupported kinds:\n- `price_below`: trigger when the current best ask is at or below the threshold\n- `price_above`: trigger when the current best ask is at or above the threshold\n- `spread_exceeds`: trigger when `((best_ask - best_bid) / best_ask) * 100` meets or exceeds the threshold\n\nRules:\n- accepts either a real API key or a session JWT bearer token\n- `spread_exceeds` ignores `threshold_currency`\n- price alerts default `threshold_currency` to the account preferred currency when omitted; accounts that have not set a preference use USD\n- enabled alerts require at least one configured delivery channel (verified email delivery or an active webhook destination)\n- the active enabled-alert cap is tier-controlled",
-        "operationId": "create_alert_route_v1_account_alerts_post",
+        "operationId": "createAlert",
         "security": [
           {
             "BearerAuth": []
@@ -5074,49 +4537,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -5141,7 +4561,7 @@
         ],
         "summary": "Create Alerts Batch",
         "description": "Create multiple item-scoped account alerts in one request.\n\nRules:\n- accepts either a real API key or a session JWT bearer token\n- maximum 100 alerts per request\n- gated by the `batch_alert_creation_access` feature flag\n- enabled alerts are preflight-checked against the tier active-alert cap before inserts\n- exact duplicate alert payloads in the same request are rejected inline\n- the response preserves request order and reports per-item created/error status\n- the request consumes one API call regardless of batch size",
-        "operationId": "create_alerts_batch_route_v1_account_alerts_batch_post",
+        "operationId": "createAlertsBatch",
         "requestBody": {
           "content": {
             "application/json": {
@@ -5216,7 +4636,7 @@
                 "description": "Seconds to wait before retrying when present.",
                 "schema": {
                   "type": "integer",
-                  "minimum": 1.0
+                  "minimum": 1
                 }
               },
               "X-RateLimit-Tier": {
@@ -5285,49 +4705,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
-                },
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
                 }
               }
             }
@@ -5367,7 +4744,7 @@
         ],
         "summary": "Update Alert",
         "description": "Update threshold fields or enabled state for an existing alert.\n\nAt least one of `threshold_value`, `threshold_currency`, or `is_enabled` must be provided. Enabling an alert re-applies tier, configured-delivery-channel, and enabled-alert-limit checks.",
-        "operationId": "patch_alert_v1_account_alerts__alert_id__patch",
+        "operationId": "updateAlert",
         "security": [
           {
             "BearerAuth": []
@@ -5500,49 +4877,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -5565,7 +4899,7 @@
         ],
         "summary": "Delete Alert",
         "description": "Delete one alert definition owned by the authenticated user.",
-        "operationId": "delete_alert_route_v1_account_alerts__alert_id__delete",
+        "operationId": "deleteAlert",
         "security": [
           {
             "BearerAuth": []
@@ -5688,49 +5022,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -5755,7 +5046,7 @@
         ],
         "summary": "List Alert Events",
         "description": "List recent alert trigger events and delivery attempts for the authenticated user.\n\nBehavior:\n- accepts either a real API key or a session JWT bearer token\n- offset pagination ordered by newest event first\n- delivery rows currently reflect email delivery attempts",
-        "operationId": "get_alert_event_history_v1_account_alerts_events_get",
+        "operationId": "listAlertEvents",
         "security": [
           {
             "BearerAuth": []
@@ -5893,49 +5184,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -5960,7 +5208,7 @@
         ],
         "summary": "List Webhooks",
         "description": "List outbound webhook destinations configured for the authenticated account.",
-        "operationId": "get_account_webhooks_v1_account_webhooks_get",
+        "operationId": "listWebhooks",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -6007,7 +5255,7 @@
                 "description": "Seconds to wait before retrying when present.",
                 "schema": {
                   "type": "integer",
-                  "minimum": 1.0
+                  "minimum": 1
                 }
               },
               "X-RateLimit-Tier": {
@@ -6076,49 +5324,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
-                },
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
                 }
               }
             }
@@ -6136,7 +5341,7 @@
         ],
         "summary": "Create Webhook",
         "description": "Create one outbound webhook destination and return its signing secret once.",
-        "operationId": "create_account_webhook_v1_account_webhooks_post",
+        "operationId": "createWebhook",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6193,7 +5398,7 @@
                 "description": "Seconds to wait before retrying when present.",
                 "schema": {
                   "type": "integer",
-                  "minimum": 1.0
+                  "minimum": 1
                 }
               },
               "X-RateLimit-Tier": {
@@ -6262,49 +5467,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
-                },
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
                 }
               }
             }
@@ -6324,7 +5486,7 @@
         ],
         "summary": "List Webhook Deliveries",
         "description": "List outbound webhook delivery jobs for the authenticated account.",
-        "operationId": "get_account_webhook_deliveries_v1_account_webhooks_deliveries_get",
+        "operationId": "listWebhookDeliveries",
         "security": [
           {
             "BearerAuth": []
@@ -6462,49 +5624,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -6529,7 +5648,7 @@
         ],
         "summary": "Get Webhook Delivery",
         "description": "Fetch one outbound webhook delivery job with its attempt history.",
-        "operationId": "get_account_webhook_delivery_v1_account_webhooks_deliveries__delivery_id__get",
+        "operationId": "getWebhookDelivery",
         "security": [
           {
             "BearerAuth": []
@@ -6652,49 +5771,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -6719,7 +5795,7 @@
         ],
         "summary": "Update Webhook",
         "description": "Update mutable outbound webhook destination fields.",
-        "operationId": "patch_account_webhook_v1_account_webhooks__webhook_id__patch",
+        "operationId": "updateWebhook",
         "security": [
           {
             "BearerAuth": []
@@ -6852,49 +5928,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -6917,7 +5950,7 @@
         ],
         "summary": "Delete Webhook",
         "description": "Delete one outbound webhook destination owned by the authenticated account.",
-        "operationId": "delete_account_webhook_v1_account_webhooks__webhook_id__delete",
+        "operationId": "deleteWebhook",
         "security": [
           {
             "BearerAuth": []
@@ -7040,49 +6073,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -7107,7 +6097,7 @@
         ],
         "summary": "Rotate Webhook Secret",
         "description": "Rotate one webhook destination signing secret and return the new secret once.",
-        "operationId": "rotate_account_webhook_secret_v1_account_webhooks__webhook_id__rotate_secret_post",
+        "operationId": "rotateWebhookSecret",
         "security": [
           {
             "BearerAuth": []
@@ -7230,49 +6220,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -7297,7 +6244,7 @@
         ],
         "summary": "Get Arbitrage Opportunities",
         "description": "Scan providers for cross-market arbitrage opportunities.\n\nFilters:\n- `min_spread_pct`\n- `providers_buy` and `providers_sell` (sell-side limited to buy-order providers)\n- offset pagination via `offset`\n\nResponse:\n- opportunities ranked by estimated net profit in USD with buy-side and sell-side provider context\n\nTier: Quant-only.",
-        "operationId": "get_arbitrage_opportunities_v1_market_arbitrage_get",
+        "operationId": "getArbitrageOpportunities",
         "security": [
           {
             "BearerAuth": []
@@ -7528,49 +6475,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -7605,7 +6509,7 @@
         ],
         "summary": "Get Item Analytics",
         "description": "Return per-item market analytics across providers for a requested time window.\n\nIncludes:\n- best ask, best bid, and spread summary\n- item-level liquidity summary and provider-level price/depth/volume metrics\n- coverage diagnostics showing which providers contributed data\n\nWindow selection uses preset `timeframe` only.\nThe selected timeframe affects the item-level liquidity summary only.\nProvider volume fields remain literal trailing 24h/7d depletion metrics.\n\nTier: Pro and Quant.",
-        "operationId": "get_item_analytics_v1_market_items__item_id__get",
+        "operationId": "getItemAnalytics",
         "security": [
           {
             "BearerAuth": []
@@ -7796,49 +6700,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -7876,7 +6737,7 @@
         ],
         "summary": "Get Indicators",
         "description": "Compute technical analysis indicators for one item from OHLCV candle data.\n\n**Indicators:**\n\n- **Momentum**: RSI(14), MACD(12/26/9), SMA(20/50/200), EMA(12/26), Bollinger Bands(20,2σ)\n- **Volatility**: ATR(14), Historical Volatility(20), Keltner Channels(20/10/2)\n- **Volume**: VWAP, OBV, Volume SMA(20)\n\n**Tier**: Quant-only.",
-        "operationId": "get_indicators_v1_market_indicators_get",
+        "operationId": "getIndicators",
         "security": [
           {
             "BearerAuth": []
@@ -8167,7 +7028,7 @@
         ],
         "summary": "Fetch Steam Inventory",
         "description": "Fetch the authenticated user's live CS2 inventory from Steam. Requires a linked Steam account. No data is persisted — use the portfolio import endpoint to add items to a portfolio.",
-        "operationId": "fetch_steam_inventory_endpoint_v1_inventory_steam_get",
+        "operationId": "fetchSteamInventory",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -8210,7 +7071,7 @@
                 "description": "Seconds to wait before retrying when present.",
                 "schema": {
                   "type": "integer",
-                  "minimum": 1.0
+                  "minimum": 1
                 }
               },
               "X-RateLimit-Tier": {
@@ -8279,49 +7140,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
-                },
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
                 }
               }
             }
@@ -8351,7 +7169,7 @@
         ],
         "summary": "Portfolio Valuation",
         "description": "Value an inventory of CS2 items at live market prices.\n\nSend a list of `{item_id, quantity}` pairs and receive per-item valuation based on the best ask price across queried providers, plus a rolled-up total.\n\nMaximum 100 distinct items per request.\n\nAll money values are in minor units of the requested currency (e.g. USD cents when `currency=USD`). Divide by 100 for display.",
-        "operationId": "portfolio_value_v1_portfolio_value_post",
+        "operationId": "portfolioValuation",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8441,7 +7259,7 @@
                 "description": "Seconds to wait before retrying when present.",
                 "schema": {
                   "type": "integer",
-                  "minimum": 1.0
+                  "minimum": 1
                 }
               },
               "X-RateLimit-Tier": {
@@ -8510,49 +7328,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
-                },
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
                 }
               }
             }
@@ -8582,7 +7357,7 @@
         ],
         "summary": "List Portfolios",
         "description": "List all named portfolios belonging to the authenticated user.",
-        "operationId": "list_portfolios_endpoint_v1_portfolio_get",
+        "operationId": "listPortfolios",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -8625,7 +7400,7 @@
                 "description": "Seconds to wait before retrying when present.",
                 "schema": {
                   "type": "integer",
-                  "minimum": 1.0
+                  "minimum": 1
                 }
               },
               "X-RateLimit-Tier": {
@@ -8694,49 +7469,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
-                },
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
                 }
               }
             }
@@ -8754,7 +7486,7 @@
         ],
         "summary": "Create Portfolio",
         "description": "Create a new named portfolio. The maximum number of portfolios depends on your tier. Portfolios store items persistently and can be valued at any time.",
-        "operationId": "create_portfolio_endpoint_v1_portfolio_post",
+        "operationId": "createPortfolio",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8807,7 +7539,7 @@
                 "description": "Seconds to wait before retrying when present.",
                 "schema": {
                   "type": "integer",
-                  "minimum": 1.0
+                  "minimum": 1
                 }
               },
               "X-RateLimit-Tier": {
@@ -8876,49 +7608,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
-                },
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
                 }
               }
             }
@@ -8948,7 +7637,7 @@
         ],
         "summary": "Delete Portfolio",
         "description": "Delete a portfolio and all its items.",
-        "operationId": "delete_portfolio_endpoint_v1_portfolio__portfolio_id__delete",
+        "operationId": "deletePortfolio",
         "security": [
           {
             "BearerAuth": []
@@ -9064,49 +7753,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -9141,7 +7787,7 @@
         ],
         "summary": "Import Steam Inventory",
         "description": "Import items from the user's Steam inventory into a portfolio. Optionally supply `asset_ids` to import only specific items. Items already present (by Steam asset ID) are skipped. Items not matched in the CS2C catalog are returned in `unresolved` and are not stored.",
-        "operationId": "import_inventory_endpoint_v1_portfolio__portfolio_id__import_post",
+        "operationId": "importSteamInventory",
         "security": [
           {
             "BearerAuth": []
@@ -9270,49 +7916,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -9357,7 +7960,7 @@
         ],
         "summary": "List Portfolio Items",
         "description": "List all items in a saved portfolio.",
-        "operationId": "list_portfolio_items_endpoint_v1_portfolio__portfolio_id__items_get",
+        "operationId": "listPortfolioItems",
         "security": [
           {
             "BearerAuth": []
@@ -9385,7 +7988,7 @@
                   "items": {
                     "$ref": "#/components/schemas/PortfolioItemOut"
                   },
-                  "title": "Response List Portfolio Items Endpoint V1 Portfolio  Portfolio Id  Items Get"
+                  "title": "ListPortfolioItemsResponse"
                 }
               }
             }
@@ -9484,49 +8087,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -9559,7 +8119,7 @@
         ],
         "summary": "Add Item to Portfolio",
         "description": "Add a single item to a portfolio by `item_id` or `market_hash_name`. Use this for manual entry without a Steam inventory import.",
-        "operationId": "add_portfolio_item_endpoint_v1_portfolio__portfolio_id__items_post",
+        "operationId": "addItemToPortfolio",
         "security": [
           {
             "BearerAuth": []
@@ -9692,49 +8252,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -9779,7 +8296,7 @@
         ],
         "summary": "Remove Item from Portfolio",
         "description": "Remove a specific item entry from a portfolio.",
-        "operationId": "remove_portfolio_item_endpoint_v1_portfolio__portfolio_id__items__entry_id__delete",
+        "operationId": "removeItemFromPortfolio",
         "security": [
           {
             "BearerAuth": []
@@ -9905,49 +8422,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -9982,7 +8456,7 @@
         ],
         "summary": "Value Saved Portfolio",
         "description": "Value all items in a saved portfolio at live market prices. Items without price data appear in `items_not_found`. All money values are in minor units (e.g. USD cents). Divide by 100 for display.",
-        "operationId": "saved_portfolio_value_endpoint_v1_portfolio__portfolio_id__value_get",
+        "operationId": "valueSavedPortfolio",
         "security": [
           {
             "BearerAuth": []
@@ -10138,49 +8612,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -10215,7 +8646,7 @@
         ],
         "summary": "Historical Saved Portfolio Valuation",
         "description": "Replay saved-portfolio holdings from the transaction ledger and return daily historical valuation points priced from stored daily market closes. This endpoint is daily-only because portfolio transactions are date-granular.",
-        "operationId": "saved_portfolio_history_endpoint_v1_portfolio__portfolio_id__history_get",
+        "operationId": "historicalSavedPortfolioValuation",
         "security": [
           {
             "BearerAuth": []
@@ -10464,49 +8895,6 @@
             "description": "Request validation failed. The detail list contains field-specific validation errors.",
             "content": {
               "application/json": {
-                "examples": {
-                  "invalidProviderEnum": {
-                    "summary": "Empty providers query value",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "enum",
-                          "loc": [
-                            "query",
-                            "providers",
-                            0
-                          ],
-                          "msg": "Input should be one of the allowed provider keys",
-                          "input": "",
-                          "ctx": {
-                            "expected": "'steam', 'skinport', 'buff163', ..."
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "limitTooHigh": {
-                    "summary": "Limit exceeds maximum",
-                    "value": {
-                      "code": "VALIDATION_ERROR",
-                      "detail": [
-                        {
-                          "type": "less_than_equal",
-                          "loc": [
-                            "query",
-                            "limit"
-                          ],
-                          "msg": "Input should be less than or equal to 1000",
-                          "input": 5000,
-                          "ctx": {
-                            "le": 1000
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorResponse"
                 }
@@ -11836,7 +10224,8 @@
           "timestamp": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               {
                 "type": "null"
@@ -12597,7 +10986,7 @@
         "title": "ItemOut",
         "description": "Catalog item metadata returned by `/v1/items`."
       },
-      "ItemsResponse_ItemOut_": {
+      "ItemsPaginatedResponse_ItemOut_": {
         "properties": {
           "items": {
             "items": {
@@ -12605,14 +10994,73 @@
             },
             "type": "array",
             "title": "Items",
-            "description": "Matched catalog items returned by this request."
+            "description": "List of returned items."
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/ItemsPaginationMeta",
+            "description": "Pagination metadata for this `/v1/items` response."
           }
         },
         "type": "object",
         "required": [
-          "items"
+          "items",
+          "pagination"
         ],
-        "title": "ItemsResponse[ItemOut]"
+        "title": "ItemsPaginatedResponse[ItemOut]"
+      },
+      "ItemsPaginationMeta": {
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Limit",
+            "description": "Items included in this response window. When `/v1/items` is called without a `limit`, this equals the number of returned items and may exceed 1000."
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Offset",
+            "description": "Starting position"
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total",
+            "description": "Total matching catalog items available."
+          },
+          "has_next": {
+            "type": "boolean",
+            "title": "Has Next",
+            "description": "More items available after current page"
+          },
+          "has_prev": {
+            "type": "boolean",
+            "title": "Has Prev",
+            "description": "Items available before current page"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor",
+            "description": "Always null for `/v1/items`, which uses offset pagination only."
+          }
+        },
+        "type": "object",
+        "required": [
+          "limit",
+          "offset",
+          "total",
+          "has_next",
+          "has_prev"
+        ],
+        "title": "ItemsPaginationMeta",
+        "description": "Pagination metadata for `/v1/items` full-catalog responses."
       },
       "MarketArbitrageData": {
         "properties": {
@@ -13736,7 +12184,11 @@
             "description": "Ordered daily valuation points."
           },
           "pagination": {
-            "$ref": "#/components/schemas/PaginationMeta",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorPaginationMeta"
+              }
+            ],
             "description": "Cursor pagination metadata."
           }
         },
@@ -14387,7 +12839,11 @@
             "description": "Primary data payload for this response."
           },
           "pagination": {
-            "$ref": "#/components/schemas/PaginationMeta",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorPaginationMeta"
+              }
+            ],
             "description": "Pagination metadata for this response."
           }
         },
@@ -14441,7 +12897,7 @@
           "provider": {
             "anyOf": [
               {
-                "type": "string"
+                "$ref": "#/components/schemas/AllProviders"
               },
               {
                 "type": "null"
@@ -14587,7 +13043,11 @@
             "description": "List of returned items."
           },
           "pagination": {
-            "$ref": "#/components/schemas/PaginationMeta",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorPaginationMeta"
+              }
+            ],
             "description": "Pagination metadata for this response."
           }
         },
@@ -14784,7 +13244,8 @@
           "last_checked_at": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               {
                 "type": "null"
@@ -14865,7 +13326,7 @@
           "key": {
             "type": "string",
             "title": "Key",
-            "description": "API key value. This is typically shown only once."
+            "description": "Stable provider key used in request and response payloads."
           },
           "code": {
             "anyOf": [
@@ -14968,7 +13429,8 @@
           "date": {
             "type": "string",
             "title": "Date",
-            "description": "ISO 8601 UTC timestamp for this event."
+            "description": "ISO 8601 UTC timestamp for this event.",
+            "format": "date-time"
           },
           "provider": {
             "type": "string",
@@ -16205,6 +14667,44 @@
         "type": "object",
         "title": "WebhookUpdateRequest",
         "description": "Update mutable outbound webhook destination fields."
+      },
+      "CursorPaginationMeta": {
+        "title": "CursorPaginationMeta",
+        "type": "object",
+        "description": "Cursor pagination metadata for keyset-based endpoints.",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "description": "Items returned per page."
+          },
+          "has_next": {
+            "type": "boolean",
+            "description": "Whether another page can be requested with `next_cursor`."
+          },
+          "has_prev": {
+            "type": "boolean",
+            "description": "Whether this response was derived from a cursor-aware follow-up request."
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Opaque cursor for the next page, or `null` when exhausted."
+          }
+        },
+        "required": [
+          "limit",
+          "has_next",
+          "has_prev",
+          "next_cursor"
+        ]
       }
     },
     "securitySchemes": {
