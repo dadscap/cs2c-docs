@@ -230,7 +230,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -797,7 +797,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -1208,7 +1208,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -1481,7 +1481,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 }
@@ -1752,7 +1752,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -2204,7 +2204,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 }
@@ -2423,7 +2423,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -2674,7 +2674,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 }
@@ -3390,7 +3390,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -3549,7 +3549,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -3731,7 +3731,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 }
@@ -3876,7 +3876,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -4019,7 +4019,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -4165,7 +4165,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -4344,7 +4344,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -4487,7 +4487,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -4684,7 +4684,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 }
@@ -4827,7 +4827,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -4972,7 +4972,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -5134,7 +5134,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -5303,7 +5303,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 }
@@ -5446,7 +5446,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 }
@@ -5574,7 +5574,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -5721,7 +5721,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -5878,7 +5878,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -6023,7 +6023,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -6170,7 +6170,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -6425,7 +6425,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -6650,7 +6650,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -6952,7 +6952,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -7119,7 +7119,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 }
@@ -7307,7 +7307,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 }
@@ -7448,7 +7448,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 }
@@ -7587,7 +7587,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 }
@@ -7703,7 +7703,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -7866,7 +7866,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -8037,7 +8037,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -8202,7 +8202,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -8372,7 +8372,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -8562,7 +8562,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -8845,7 +8845,7 @@
                     "summary": "Monthly quota exhausted",
                     "value": {
                       "code": "RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED",
-                      "detail": "Monthly quota exceeded (50000/50000 requests)."
+                      "detail": "Monthly quota exceeded (500000/500000 requests)."
                     }
                   }
                 },
@@ -13328,6 +13328,11 @@
             "title": "Key",
             "description": "Stable provider key used in request and response payloads."
           },
+          "logo": {
+            "type": "string",
+            "title": "Logo",
+            "description": "CDN URL for the provider logo asset."
+          },
           "code": {
             "anyOf": [
               {
@@ -13380,6 +13385,7 @@
         "type": "object",
         "required": [
           "key",
+          "logo",
           "fees",
           "features",
           "health"

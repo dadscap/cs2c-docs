@@ -38,8 +38,8 @@ Rate limits are enforced per API key based on the user's tier:
 | Tier | Requests/Minute | Requests/Month | Max `limit` Param |
 | ---- | --------------- | -------------- | ----------------- |
 | `free` | 20 | 1,000 | 100 |
-| `pro` | 100 | 50,000 | 1,000 |
-| `quant` | 300 | 200,000 | None* |
+| `pro` | 100 | 500,000 | 1,000 |
+| `quant` | 300 | Unlimited** | None* |
 
 \* Unlimited streaming applies only to `POST /prices` and `POST /bids`. Most endpoints still use
 per-route caps.
@@ -56,7 +56,7 @@ published per-minute rate instead of compressing it into a 1-second bucket.
 
 ```http
 Retry-After: 12345
-X-RateLimit-Limit: 50000
+X-RateLimit-Limit: 500000
 X-RateLimit-Remaining: 0
 X-RateLimit-Reset: 12345
 X-RateLimit-Tier: pro
