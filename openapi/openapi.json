@@ -6571,14 +6571,14 @@
                       "best_ask_usd": "24.90",
                       "best_bid_usd": "24.90",
                       "avg_spread_pct": 2.78,
+                      "total_volume_24h": 107,
                       "liquidity": 78,
-                      "count": 9060,
+                      "supply": 9060,
                       "rank": 1292,
                       "marketcap": "225594.00",
-                      "trades_1d": 107,
-                      "total_volume_24h": 107,
-                      "trades_7d": 687,
-                      "trades_30d": 2096,
+                      "sales_1d": 107,
+                      "sales_7d": 687,
+                      "sales_30d": 2096,
                       "steam_last_7d": 34,
                       "steam_last_30d": 587,
                       "listing_score": 25,
@@ -11944,6 +11944,11 @@
             "title": "Avg Spread Pct",
             "description": "Percentage value for avg spread."
           },
+          "total_volume_24h": {
+            "type": "integer",
+            "title": "Total Volume 24H",
+            "description": "Alias of sales_1d for backward compatibility."
+          },
           "liquidity": {
             "anyOf": [
               {
@@ -11956,7 +11961,7 @@
             "title": "Liquidity",
             "description": "Item-level liquidity score."
           },
-          "count": {
+          "supply": {
             "anyOf": [
               {
                 "type": "integer"
@@ -11965,8 +11970,8 @@
                 "type": "null"
               }
             ],
-            "title": "Count",
-            "description": "Effective item count used for market cap/rank: supply first, otherwise live listings."
+            "title": "Supply",
+            "description": "Effective item supply used for market cap/rank: catalog supply first, otherwise live listings."
           },
           "rank": {
             "anyOf": [
@@ -11978,7 +11983,7 @@
               }
             ],
             "title": "Rank",
-            "description": "Descending rank of the effective count across items (highest count = 1)."
+            "description": "Descending rank of the effective supply across items (highest supply = 1)."
           },
           "marketcap": {
             "anyOf": [
@@ -11991,26 +11996,21 @@
               }
             ],
             "title": "Marketcap",
-            "description": "Best ask in USD multiplied by the effective count, in USD major units."
+            "description": "Best ask in USD multiplied by the effective supply, in USD major units."
           },
-          "trades_1d": {
+          "sales_1d": {
             "type": "integer",
-            "title": "Trades 1D",
+            "title": "Sales 1D",
             "description": "Total depletion activity volume observed over the last 24 hours."
           },
-          "total_volume_24h": {
+          "sales_7d": {
             "type": "integer",
-            "title": "Total Volume 24H",
-            "description": "Alias of trades_1d for backward compatibility."
-          },
-          "trades_7d": {
-            "type": "integer",
-            "title": "Trades 7D",
+            "title": "Sales 7D",
             "description": "Total depletion activity volume observed over the last 7 days."
           },
-          "trades_30d": {
+          "sales_30d": {
             "type": "integer",
-            "title": "Trades 30D",
+            "title": "Sales 30D",
             "description": "Total depletion activity volume observed over the last 30 days."
           },
           "steam_last_7d": {
@@ -12090,10 +12090,10 @@
         "type": "object",
         "required": [
           "provider_count",
-          "trades_1d",
           "total_volume_24h",
-          "trades_7d",
-          "trades_30d"
+          "sales_1d",
+          "sales_7d",
+          "sales_30d"
         ],
         "title": "MarketItemAnalyticsSummary",
         "description": "Quick summary for single-item analytics."
