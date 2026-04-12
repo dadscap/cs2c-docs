@@ -152,6 +152,67 @@ order: 15
 
 ---
 
+### Get Market Item Snapshot
+>
+> Returns the full market as a cached, summary-only snapshot with one row per catalog item.
+
+- Endpoint: GET `/market/items`
+- Tiers: `pro` · `quant`
+- Rate Limit: Pro: 100/min · Quant: 300/min
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| timeframe | string | Liquidity horizon. One of: `1h`, `24h`, `7d`, `30d`. Default: `24h`. Note: `1h` reuses the 24h liquidity horizon. |
+
+**Response Example:**
+
+```json
+{
+  "meta": {...},
+  "data": {
+    "items": [
+      {
+        "item_id": 156,
+        "market_hash_name": "AK-47 | Redline (Field-Tested)",
+        "phase": null,
+        "summary": {
+          "provider_count": 2,
+          "best_ask_usd": "24.90",
+          "best_bid_usd": "24.90",
+          "avg_spread_pct": 2.78,
+          "liquidity": 78,
+          "count": 9060,
+          "rank": 1292,
+          "marketcap": "225594.00",
+          "trades_1d": 107,
+          "total_volume_24h": 107,
+          "trades_7d": 687,
+          "trades_30d": 2096,
+          "steam_last_7d": 34,
+          "steam_last_30d": 587,
+          "listing_score": 25,
+          "gap_score": 25,
+          "volume_score": 28,
+          "liquidity_last_updated": "2026-03-21T06:48:43.193895Z"
+        }
+      }
+    ]
+  }
+}
+```
+
+- This endpoint is intentionally summary-only: there is no `pagination`, `providers`, or `coverage`.
+- Rows are sorted by `rank asc, item_id asc`.
+- `summary.count` prefers extended-catalog `supply`; when supply is unavailable it falls back to the current summed listing count across marketplaces.
+- `summary.marketcap` is `best_ask_usd * count` in USD major units.
+- `summary.trades_*` and `summary.total_volume_24h` are depletion-based trade proxies, not guaranteed exact sale counts.
+- `summary.steam_last_*` comes from the Steam bulk feed when available.
+- When the cached snapshot is stale, the API attempts a rebuild and falls back to the last good snapshot if refresh fails.
+
+---
+
 ### Get Item Analytics
 >
 > Returns per-item market analytics across providers for a specified time window, including best ask/bid summary, liquidity scoring, and per-provider depth and volume metrics.
@@ -183,17 +244,22 @@ order: 15
     "phase": null,
     "summary": {
       "provider_count": 5,
-      "total_volume_24h": 3,
       "best_ask_usd": "58.41",
       "best_bid_usd": "61.74",
       "avg_spread_pct": 41.59,
-      "liquidity_score": 46,
+      "liquidity": 46,
+      "count": 9060,
+      "rank": 1292,
+      "marketcap": "529194.60",
+      "trades_1d": 3,
+      "total_volume_24h": 3,
+      "trades_7d": 18,
+      "trades_30d": 71,
+      "steam_last_7d": 34,
+      "steam_last_30d": 587,
       "listing_score": 8,
       "gap_score": 18,
       "volume_score": 20,
-      "doppler_bonus": false,
-      "price_anomaly": false,
-      "high_tier_override": false,
       "liquidity_last_updated": "2026-03-21T06:48:43.193895Z"
     },
     "providers": [
@@ -234,6 +300,10 @@ order: 15
 ```
 
 - `best_ask_usd`, `ask_usd`, `bid_usd`, `spread_usd`, and `total_value_24h_usd` are decimal strings in USD (not minor units).
+- `summary.marketcap` is `best_ask_usd * count` in USD major units.
+- `summary.count` prefers extended-catalog `supply`; when supply is unavailable it falls back to the current summed listing count across marketplaces.
+- `summary.trades_*` and `summary.total_volume_24h` are depletion-based trade proxies, not guaranteed exact sale counts.
+- `summary.steam_last_*` comes from the Steam bulk feed when available.
 - Negative `spread_pct` means the best bid is higher than the best ask — flagged as `bid_anomaly: true`.
 - `volume_24h` and `volume_7d` are `null` when the provider does not report sale history.
 

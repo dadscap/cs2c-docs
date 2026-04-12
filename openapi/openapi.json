@@ -6568,17 +6568,22 @@
                     "market_hash_name": "AK-47 | Redline (Field-Tested)",
                     "summary": {
                       "provider_count": 2,
-                      "total_volume_24h": 668,
                       "best_ask_usd": "24.90",
                       "best_bid_usd": "24.90",
                       "avg_spread_pct": 2.78,
-                      "liquidity_score": 78,
+                      "liquidity": 78,
+                      "count": 9060,
+                      "rank": 1292,
+                      "marketcap": "225594.00",
+                      "trades_1d": 107,
+                      "total_volume_24h": 107,
+                      "trades_7d": 687,
+                      "trades_30d": 2096,
+                      "steam_last_7d": 34,
+                      "steam_last_30d": 587,
                       "listing_score": 25,
                       "gap_score": 25,
                       "volume_score": 28,
-                      "doppler_bonus": false,
-                      "price_anomaly": false,
-                      "high_tier_override": false,
                       "liquidity_last_updated": "2026-01-20T12:06:10Z"
                     },
                     "providers": [
@@ -11901,11 +11906,6 @@
             "title": "Provider Count",
             "description": "Number of providers represented in this payload."
           },
-          "total_volume_24h": {
-            "type": "integer",
-            "title": "Total Volume 24H",
-            "description": "Total depletion activity volume observed over the last 24 hours."
-          },
           "best_ask_usd": {
             "anyOf": [
               {
@@ -11944,7 +11944,7 @@
             "title": "Avg Spread Pct",
             "description": "Percentage value for avg spread."
           },
-          "liquidity_score": {
+          "liquidity": {
             "anyOf": [
               {
                 "type": "integer"
@@ -11953,8 +11953,89 @@
                 "type": "null"
               }
             ],
-            "title": "Liquidity Score",
+            "title": "Liquidity",
             "description": "Item-level liquidity score."
+          },
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count",
+            "description": "Effective item count used for market cap/rank: supply first, otherwise live listings."
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank",
+            "description": "Descending rank of the effective count across items (highest count = 1)."
+          },
+          "marketcap": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marketcap",
+            "description": "Best ask in USD multiplied by the effective count, in USD major units."
+          },
+          "trades_1d": {
+            "type": "integer",
+            "title": "Trades 1D",
+            "description": "Total depletion activity volume observed over the last 24 hours."
+          },
+          "total_volume_24h": {
+            "type": "integer",
+            "title": "Total Volume 24H",
+            "description": "Alias of trades_1d for backward compatibility."
+          },
+          "trades_7d": {
+            "type": "integer",
+            "title": "Trades 7D",
+            "description": "Total depletion activity volume observed over the last 7 days."
+          },
+          "trades_30d": {
+            "type": "integer",
+            "title": "Trades 30D",
+            "description": "Total depletion activity volume observed over the last 30 days."
+          },
+          "steam_last_7d": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Steam Last 7D",
+            "description": "Steam-reported sales count over the last 7 days when available."
+          },
+          "steam_last_30d": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Steam Last 30D",
+            "description": "Steam-reported sales count over the last 30 days when available."
           },
           "listing_score": {
             "anyOf": [
@@ -11992,24 +12073,6 @@
             "title": "Volume Score",
             "description": "Volume component score."
           },
-          "doppler_bonus": {
-            "type": "boolean",
-            "title": "Doppler Bonus",
-            "description": "Whether Doppler bonus was applied.",
-            "default": false
-          },
-          "price_anomaly": {
-            "type": "boolean",
-            "title": "Price Anomaly",
-            "description": "Whether a same-provider bid-above-ask anomaly was detected, excluding Steam.",
-            "default": false
-          },
-          "high_tier_override": {
-            "type": "boolean",
-            "title": "High Tier Override",
-            "description": "Whether the high-tier override was applied.",
-            "default": false
-          },
           "liquidity_last_updated": {
             "anyOf": [
               {
@@ -12027,7 +12090,10 @@
         "type": "object",
         "required": [
           "provider_count",
-          "total_volume_24h"
+          "trades_1d",
+          "total_volume_24h",
+          "trades_7d",
+          "trades_30d"
         ],
         "title": "MarketItemAnalyticsSummary",
         "description": "Quick summary for single-item analytics."
