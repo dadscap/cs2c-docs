@@ -183,13 +183,19 @@ order: 15
           "best_bid_usd": "24.90",
           "avg_spread_pct": 2.78,
           "liquidity": 78,
-          "count": 9060,
+          "supply": 9060,
           "rank": 1292,
           "marketcap": "225594.00",
-          "trades_1d": 107,
+          "price_rate_24h": 3.75,
+          "price_diff_24h": "0.90",
+          "price_rate_7d": 8.26,
+          "price_diff_7d": "1.90",
+          "price_rate_30d": -2.73,
+          "price_diff_30d": "-0.70",
+          "sales_1d": 107,
           "total_volume_24h": 107,
-          "trades_7d": 687,
-          "trades_30d": 2096,
+          "sales_7d": 687,
+          "sales_30d": 2096,
           "steam_last_7d": 34,
           "steam_last_30d": 587,
           "listing_score": 25,
@@ -205,9 +211,13 @@ order: 15
 
 - This endpoint is intentionally summary-only: there is no `pagination`, `providers`, or `coverage`.
 - Rows are sorted by `rank asc, item_id asc`.
-- `summary.count` prefers extended-catalog `supply`; when supply is unavailable it falls back to the current summed listing count across marketplaces.
-- `summary.marketcap` is `best_ask_usd * count` in USD major units.
-- `summary.trades_*` and `summary.total_volume_24h` are depletion-based trade proxies, not guaranteed exact sale counts.
+- `summary.provider_count` is the number of providers with at least one active listing for the item.
+- `summary.supply` prefers extended-catalog `supply`; when supply is unavailable it falls back to the current summed listing count across marketplaces.
+- `summary.marketcap` is `best_ask_usd * supply` in USD major units.
+- `summary.price_diff_24h`, `summary.price_diff_7d`, and `summary.price_diff_30d` are USD major-unit deltas versus the latest provider-scoped historical close at or before each window cutoff.
+- `summary.price_rate_24h`, `summary.price_rate_7d`, and `summary.price_rate_30d` are the corresponding percentage changes.
+- Each summary window independently picks the current cheapest provider with usable history for that specific window.
+- `summary.sales_*` and `summary.total_volume_24h` are depletion-based trade proxies, not guaranteed exact sale counts.
 - `summary.steam_last_*` comes from the Steam bulk feed when available.
 - When the cached snapshot is stale, the API attempts a rebuild and falls back to the last good snapshot if refresh fails.
 
@@ -217,7 +227,7 @@ order: 15
 >
 > Returns per-item market analytics across providers for a specified time window, including best ask/bid summary, liquidity scoring, and per-provider depth and volume metrics.
 
-- Endpoint: GET `/market/items/:item_id`
+- Endpoint: GET `/market/items/{item_id}`
 - Tiers: `pro` · `quant`
 - Rate Limit: Pro: 100/min · Quant: 300/min
 
@@ -248,13 +258,19 @@ order: 15
       "best_bid_usd": "61.74",
       "avg_spread_pct": 41.59,
       "liquidity": 46,
-      "count": 9060,
+      "supply": 9060,
       "rank": 1292,
       "marketcap": "529194.60",
-      "trades_1d": 3,
+      "price_rate_24h": -4.48,
+      "price_diff_24h": "-2.74",
+      "price_rate_7d": 6.11,
+      "price_diff_7d": "3.36",
+      "price_rate_30d": 12.37,
+      "price_diff_30d": "6.43",
+      "sales_1d": 3,
       "total_volume_24h": 3,
-      "trades_7d": 18,
-      "trades_30d": 71,
+      "sales_7d": 18,
+      "sales_30d": 71,
       "steam_last_7d": 34,
       "steam_last_30d": 587,
       "listing_score": 8,
@@ -274,6 +290,12 @@ order: 15
         "volume_24h": 2,
         "volume_7d": 8,
         "total_value_24h_usd": "133.34",
+        "price_rate_24h": -1.96,
+        "price_diff_24h": "-1.33",
+        "price_rate_7d": 4.17,
+        "price_diff_7d": "2.67",
+        "price_rate_30d": null,
+        "price_diff_30d": null,
         "bid_anomaly": false
       },
       {
@@ -287,6 +309,12 @@ order: 15
         "volume_24h": 1,
         "volume_7d": 0,
         "total_value_24h_usd": "92.41",
+        "price_rate_24h": null,
+        "price_diff_24h": null,
+        "price_rate_7d": 2.13,
+        "price_diff_7d": "1.93",
+        "price_rate_30d": 9.16,
+        "price_diff_30d": "7.76",
         "bid_anomaly": false
       }
     ],
@@ -300,9 +328,13 @@ order: 15
 ```
 
 - `best_ask_usd`, `ask_usd`, `bid_usd`, `spread_usd`, and `total_value_24h_usd` are decimal strings in USD (not minor units).
-- `summary.marketcap` is `best_ask_usd * count` in USD major units.
-- `summary.count` prefers extended-catalog `supply`; when supply is unavailable it falls back to the current summed listing count across marketplaces.
-- `summary.trades_*` and `summary.total_volume_24h` are depletion-based trade proxies, not guaranteed exact sale counts.
+- `summary.provider_count` and `coverage.provider_count` count providers with at least one active listing for the item, even when a spread is not available for all of them.
+- `summary.marketcap` is `best_ask_usd * supply` in USD major units.
+- `summary.supply` prefers extended-catalog `supply`; when supply is unavailable it falls back to the current summed listing count across marketplaces.
+- `data.providers[].price_diff_*` values are USD major-unit deltas versus the latest provider-scoped historical close at or before each cutoff.
+- `data.providers[].price_rate_*` values are the corresponding percentage changes.
+- `data.summary.price_*` fields are selected per window from the current cheapest provider with usable history for that specific window.
+- `summary.sales_*` and `summary.total_volume_24h` are depletion-based trade proxies, not guaranteed exact sale counts.
 - `summary.steam_last_*` comes from the Steam bulk feed when available.
 - Negative `spread_pct` means the best bid is higher than the best ask — flagged as `bid_anomaly: true`.
 - `volume_24h` and `volume_7d` are `null` when the provider does not report sale history.

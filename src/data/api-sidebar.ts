@@ -60,12 +60,21 @@ export const sidebarGroups: SidebarGroup[] = [
     ],
   },
   {
+    title: "Inventory",
+    href: "/api-reference/inventory",
+    items: [
+      { method: "GET", label: "/inventory/steam", href: "/api-reference/inventory#fetch-steam-inventory" },
+      { method: "GET", label: "/inventory/steam/lookup", href: "/api-reference/inventory#fetch-steam-inventory-by-steam-id" },
+    ],
+  },
+  {
     title: "Market Analytics",
     href: "/api-reference/market-analytics",
     items: [
       { method: "GET", label: "/market/arbitrage", href: "/api-reference/market-analytics#get-arbitrage-opportunities" },
       { method: "GET", label: "/market/indicators", href: "/api-reference/market-analytics#get-technical-indicators" },
-      { method: "GET", label: "/market/items/{id}", href: "/api-reference/market-analytics#get-item-analytics" },
+      { method: "GET", label: "/market/items", href: "/api-reference/market-analytics#get-market-item-snapshot" },
+      { method: "GET", label: "/market/items/{item_id}", href: "/api-reference/market-analytics#get-item-analytics" },
     ],
   },
   {
@@ -90,6 +99,13 @@ export const sidebarGroups: SidebarGroup[] = [
       { method: "PATCH", label: "/account/alerts/{id}", href: "/api-reference/account#update-alert" },
       { method: "DELETE", label: "/account/alerts/{id}", href: "/api-reference/account#delete-alert" },
       { method: "GET", label: "/account/alerts/events", href: "/api-reference/account#list-alert-events" },
+      { method: "GET", label: "/account/webhooks", href: "/api-reference/account#list-webhooks" },
+      { method: "POST", label: "/account/webhooks", href: "/api-reference/account#create-webhook" },
+      { method: "GET", label: "/account/webhooks/deliveries", href: "/api-reference/account#list-webhook-deliveries" },
+      { method: "GET", label: "/account/webhooks/deliveries/{delivery_id}", href: "/api-reference/account#get-webhook-delivery" },
+      { method: "PATCH", label: "/account/webhooks/{webhook_id}", href: "/api-reference/account#update-webhook" },
+      { method: "DELETE", label: "/account/webhooks/{webhook_id}", href: "/api-reference/account#delete-webhook" },
+      { method: "POST", label: "/account/webhooks/{webhook_id}/rotate-secret", href: "/api-reference/account#rotate-webhook-secret" },
     ],
   },
   {
