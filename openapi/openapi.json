@@ -6558,10 +6558,10 @@
                         "item_id": 156,
                         "market_hash_name": "AK-47 | Redline (Field-Tested)",
                         "summary": {
-                          "provider_count": 2,
+                          "provider_count": 3,
                           "best_ask_usd": "24.90",
                           "best_bid_usd": "24.90",
-                          "avg_spread_pct": 2.78,
+                          "avg_spread_pct": 2.35,
                           "total_volume_24h": 107,
                           "liquidity": 78,
                           "supply": 9060,
@@ -6806,10 +6806,10 @@
                     "item_id": 156,
                     "market_hash_name": "AK-47 | Redline (Field-Tested)",
                     "summary": {
-                      "provider_count": 2,
+                      "provider_count": 3,
                       "best_ask_usd": "24.90",
                       "best_bid_usd": "24.90",
-                      "avg_spread_pct": 2.78,
+                      "avg_spread_pct": 2.35,
                       "total_volume_24h": 107,
                       "liquidity": 78,
                       "supply": 9060,
@@ -6850,12 +6850,22 @@
                         "price_rate_30d": -2.73,
                         "price_diff_30d": "-0.70",
                         "bid_anomaly": false
+                      },
+                      {
+                        "provider": "skinport",
+                        "ask_usd": "24.90",
+                        "ask_depth": 96,
+                        "volume_24h": 107,
+                        "volume_7d": 687,
+                        "total_value_24h_usd": "2664.30",
+                        "price_rate_24h": 3.75,
+                        "price_diff_24h": "0.90"
                       }
                     ],
                     "coverage": {
-                      "provider_count": 2,
+                      "provider_count": 3,
                       "providers_with_volume": 2,
-                      "providers_with_bid_side": 2
+                      "providers_with_bid_side": 1
                     }
                   }
                 }

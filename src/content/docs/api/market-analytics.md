@@ -212,6 +212,8 @@ order: 15
 - This endpoint is intentionally summary-only: there is no `pagination`, `providers`, or `coverage`.
 - Rows are sorted by `rank asc, item_id asc`.
 - `summary.provider_count` is the number of providers with at least one active listing for the item.
+- `summary.best_ask_usd` and `summary.price_*` are computed from the same current ask-provider universe.
+- `summary.best_bid_usd` is still the highest bid across all providers, including providers that may not have a current ask.
 - `summary.supply` prefers extended-catalog `supply`; when supply is unavailable it falls back to the current summed listing count across marketplaces.
 - `summary.marketcap` is `best_ask_usd * supply` in USD major units.
 - `summary.price_diff_24h`, `summary.price_diff_7d`, and `summary.price_diff_30d` are USD major-unit deltas versus the latest provider-scoped historical close at or before each window cutoff.
@@ -316,23 +318,45 @@ order: 15
         "price_rate_30d": 9.16,
         "price_diff_30d": "7.76",
         "bid_anomaly": false
+      },
+      {
+        "provider": "skinport",
+        "ask_usd": "58.41",
+        "bid_usd": null,
+        "spread_usd": null,
+        "spread_pct": null,
+        "ask_depth": 3,
+        "bid_depth": null,
+        "volume_24h": null,
+        "volume_7d": null,
+        "total_value_24h_usd": null,
+        "price_rate_24h": -4.48,
+        "price_diff_24h": "-2.74",
+        "price_rate_7d": null,
+        "price_diff_7d": null,
+        "price_rate_30d": null,
+        "price_diff_30d": null,
+        "bid_anomaly": null
       }
     ],
     "coverage": {
       "provider_count": 5,
       "providers_with_volume": 3,
-      "providers_with_bid_side": 5
+      "providers_with_bid_side": 2
     }
   }
 }
 ```
 
 - `best_ask_usd`, `ask_usd`, `bid_usd`, `spread_usd`, and `total_value_24h_usd` are decimal strings in USD (not minor units).
+- `data.providers[]` is ask-driven, so providers with a live ask but no current bid stay in the response with `bid_usd`, `spread_usd`, `spread_pct`, and `bid_depth` set to `null`.
 - `summary.provider_count` and `coverage.provider_count` count providers with at least one active listing for the item, even when a spread is not available for all of them.
 - `summary.marketcap` is `best_ask_usd * supply` in USD major units.
 - `summary.supply` prefers extended-catalog `supply`; when supply is unavailable it falls back to the current summed listing count across marketplaces.
 - `data.providers[].price_diff_*` values are USD major-unit deltas versus the latest provider-scoped historical close at or before each cutoff.
 - `data.providers[].price_rate_*` values are the corresponding percentage changes.
+- `data.summary.best_ask_usd` and `data.summary.price_*` are computed from that same current ask-provider universe.
+- `data.summary.best_bid_usd` is the highest bid across all providers, even when the top bid comes from a provider that is not present in `data.providers[]`.
 - `data.summary.price_*` fields are selected per window from the current cheapest provider with usable history for that specific window.
 - `summary.sales_*` and `summary.total_volume_24h` are depletion-based trade proxies, not guaranteed exact sale counts.
 - `summary.steam_last_*` comes from the Steam bulk feed when available.
