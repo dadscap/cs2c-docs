@@ -1,0 +1,14 @@
+---
+import ApiReference from "../../layouts/ApiReference.astro";
+import { render } from "astro:content";
+import { getEntry } from "astro:content";
+
+const entry = await getEntry("docs", "api/sales");
+const { Content } = await render(entry);
+---
+
+<ApiReference title="Sales — API Reference" description={entry.data.description} currentSection="sales">
+  <h1>{entry.data.title}</h1>
+  <p class="text-muted">{entry.data.description}</p>
+  <Content />
+</ApiReference>

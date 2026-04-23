@@ -1,0 +1,88 @@
+---
+import Base from "./Base.astro";
+import { sidebarGroups } from "../data/api-sidebar";
+
+interface Props {
+  title: string;
+  description?: string;
+  currentSection: string;
+}
+
+const { title, description, currentSection } = Astro.props;
+---
+
+<Base title={title} description={description} currentPage="api-reference">
+  <div class="layout-api">
+    <!-- Left sidebar: endpoint navigation -->
+    <aside class="api-sidebar" id="api-sidebar">
+      {sidebarGroups.map((group) => (
+        <div class="api-sidebar-group">
+          <a
+            href={group.href}
+            class:list={["api-sidebar-group-title", { active: group.href === `/api-reference${currentSection === "overview" ? "" : `/${currentSection}`}` }]}
+          >
+            {group.title}
+          </a>
+          {group.items.map((item) => (
+            <a href={item.href}>
+              {item.method ? (
+                <>
+                  <span class={`method-badge ${item.method.toLowerCase()}`}>{item.method}</span>
+                  <span>{item.label}</span>
+                </>
+              ) : (
+                <span>{item.label}</span>
+              )}
+            </a>
+          ))}
+        </div>
+      ))}
+    </aside>
+
+    <!-- Main content -->
+    <article class="content-col prose">
+      <slot />
+    </article>
+
+    <!-- Right sidebar: ToC -->
+    <aside class="toc-sidebar" id="toc-sidebar">
+      <div class="toc-sidebar-title">On this page</div>
+      <nav id="toc-nav"></nav>
+    </aside>
+  </div>
+
+  <script is:inline>
+    (function() {
+      var article = document.querySelector(".content-col");
+      var tocNav = document.getElementById("toc-nav");
+      var apiSidebar = document.getElementById("api-sidebar");
+      if (!article || !tocNav) return;
+
+      // Generate ToC from headings
+      var headings = article.querySelectorAll("h2, h3");
+      headings.forEach(function(h) {
+        if (!h.id) {
+          h.id = h.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+        }
+        var a = document.createElement("a");
+        a.href = "#" + h.id;
+        a.textContent = h.textContent;
+        if (h.tagName === "H3") a.classList.add("toc-h3");
+        tocNav.appendChild(a);
+      });
+
+      // Scroll spy for right ToC
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            tocNav.querySelectorAll("a").forEach(function(a) { a.classList.remove("active"); });
+            var tocActive = tocNav.querySelector('a[href="#' + entry.target.id + '"]');
+            if (tocActive) tocActive.classList.add("active");
+          }
+        });
+      }, { rootMargin: "-80px 0px -70% 0px" });
+
+      headings.forEach(function(h) { observer.observe(h); });
+    })();
+  </script>
+</Base>
