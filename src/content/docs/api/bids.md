@@ -109,13 +109,19 @@ order: 12
 
 | Field | Type | Description |
 |-------|------|-------------|
-| item_ids | integer[] | **Required.** Array of item IDs to fetch. Must contain 1–100 items. |
+| item_ids | integer[] | Array of item IDs to fetch. Provide at least one of `item_ids` or `market_hash_names`. |
+| market_hash_names | string[] | Array of market hash names to fetch. Provide at least one of `item_ids` or `market_hash_names`. For phased items (Dopplers, Gammas), see the note below. |
 | providers | string[] | Buy-order provider keys to include. If omitted, all supported buy-order providers are queried. One of: `buff163`, `buffmarket`, `c5`, `csfloat`, `dmarket`, `ecosteam`, `marketcsgo`, `steam`, `waxpeer`, `whitemarket`, `youpin`. |
 | currency | string | Target currency. Use `/fx` for supported ISO 4217 codes. Default: `USD`. |
 
+The combined length of `item_ids` and `market_hash_names` must be between 1 and 100. You cannot pass 100 item IDs and 100 names in the same request to get 200 results — the combined cap is hard.
+
+> **⚠️ Phased items (Dopplers / Gammas):** `market_hash_name` resolves only to the phaseless catalog entry, which returns the cheapest variant regardless of phase. To target a specific phase (for example `Phase 1`, `Phase 2`, `Phase 3`, `Phase 4`, `Sapphire`, `Ruby`, `Emerald`, or `Black Pearl`), pass the corresponding `item_id` instead.
+
 ```json
 {
-  "item_ids": [12632, 2, 9999],
+  "item_ids": [12632, 2],
+  "market_hash_names": ["AK-47 | Redline (Field-Tested)"],
   "providers": ["buff163", "steam"],
   "currency": "USD"
 }
@@ -162,10 +168,13 @@ order: 12
         }
       ]
     }
-  ]
+  ],
+  "items_not_found": [],
+  "names_not_found": []
 }
 ```
 
 - `highest_bid` is returned in minor units of the response currency.
-- Items that are not found on any queried provider are listed in `items_not_found`.
-- Maximum batch size is 100 items.
+- `items_not_found` lists item IDs (including those resolved from `market_hash_names`) that returned no bids on any queried provider.
+- `names_not_found` lists any `market_hash_names` that could not be resolved to a catalog item at all.
+- Maximum batch size is 100 items, applied to the combined length of `item_ids` and `market_hash_names`.

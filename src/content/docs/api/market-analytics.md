@@ -1,6 +1,6 @@
 ---
 title: Market Analytics
-description: Arbitrage scanning, technical indicators, and item-level analytics.
+description: Arbitrage scanning, category indices, technical indicators, and item-level analytics.
 order: 15
 ---
 
@@ -67,6 +67,63 @@ order: 15
 - Sell-side providers are limited to providers that support buy orders.
 - `pagination.total = -1` is intentional because the ranking is computed live without a count pass.
 - `cursor` is not supported here. Passing it returns HTTP 400. Use `offset` pagination instead.
+
+---
+
+### Get Market Indices
+>
+> Aggregates the cached 24h market snapshot into category-level market cap indices using either `item_type` or `weapon_type`.
+
+- Endpoint: GET `/market/indices`
+- Tiers: `quant`
+- Rate Limit: Quant: 300/min
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| group_by | string | Catalog dimension to group by. One of: `item_type`, `weapon_type`. Default: `item_type`. |
+
+**Response Example:**
+
+```json
+{
+  "meta": {
+    "generated_at": "2026-01-20T12:06:10Z",
+    "data_source": "cache",
+    "freshness_sec": 18,
+    "window": {
+      "timeframe": "24h"
+    },
+    "group_by": "item_type"
+  },
+  "data": {
+    "total_marketcap_usd": "576594.00",
+    "groups": [
+      {
+        "group": "weapon",
+        "marketcap_usd": "576594.00",
+        "item_count": 2,
+        "included_count": 2,
+        "excluded_count": 0
+      },
+      {
+        "group": "wearable",
+        "marketcap_usd": "0.00",
+        "item_count": 1,
+        "included_count": 0,
+        "excluded_count": 1
+      }
+    ]
+  }
+}
+```
+
+- `meta.window.timeframe` is always `24h`.
+- `groups` are sorted by `marketcap_usd` descending.
+- Item contribution uses an internal spread threshold; it is not user-configurable.
+- Items missing the requested grouping field are omitted instead of being bucketed as `unknown`.
+- Groups remain in the response even when every item in that group was excluded from the total.
 
 ---
 

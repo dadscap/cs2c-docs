@@ -199,6 +199,52 @@ h3 {
   margin-bottom: 0.75rem;
 }
 
+.api-doc-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.api-heading-text {
+  min-width: 0;
+}
+
+.section-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  padding: 0.38rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.67rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.section-copy-btn:hover {
+  color: var(--heading);
+  background: var(--accent-soft);
+  border-color: var(--border-strong);
+}
+
+.section-copy-btn.copied {
+  color: var(--method-get);
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.10);
+}
+
+.section-copy-btn svg {
+  flex: 0 0 auto;
+}
+
 h4 {
   font-size: 0.95rem;
   margin-top: 1.5rem;
@@ -1312,14 +1358,20 @@ a.api-sidebar-group-title.active {
   line-height: 1.35;
 }
 
+.api-sidebar a.api-sidebar-item {
+  border-left: 2px solid transparent;
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
 .api-sidebar a:hover {
   color: var(--heading);
   background: var(--accent-soft);
 }
 
-.api-sidebar a.active {
-  color: var(--heading);
-  background: var(--accent-soft);
+.api-sidebar a.api-sidebar-item.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--accent-glow);
 }
 
 .api-sidebar .method-badge {

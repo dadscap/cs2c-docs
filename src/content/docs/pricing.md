@@ -37,6 +37,7 @@ order: 2
 | `GET /v1/inventory/steam` — Steam inventory import | ✅ | ✅ | ✅ |
 | `GET /v1/market/items` — enriched item metadata | — | ✅ | ✅ |
 | `GET /v1/market/arbitrage` — cross-market arbitrage | — | — | ✅ |
+| `GET /v1/market/indices` — category market cap indices | — | — | ✅ |
 | `GET /v1/market/indicators` — technical indicators | — | — | ✅ |
 
 > **Free-tier candles limitation:** Free keys can only use `/v1/prices/candles` with `interval=1d`, no forward-fill, and a lookback-only time window measured in days (for example `7d` or `7`). Pro and Quant do not have these restrictions.

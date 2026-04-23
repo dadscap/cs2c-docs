@@ -24,7 +24,7 @@ const { title, description, currentSection } = Astro.props;
             {group.title}
           </a>
           {group.items.map((item) => (
-            <a href={item.href}>
+            <a class="api-sidebar-item" href={item.href}>
               {item.method ? (
                 <>
                   <span class={`method-badge ${item.method.toLowerCase()}`}>{item.method}</span>
@@ -58,6 +58,264 @@ const { title, description, currentSection } = Astro.props;
       var apiSidebar = document.getElementById("api-sidebar");
       if (!article || !tocNav) return;
 
+      var sidebarScrollKey = "cs2c-api-sidebar-scroll-top";
+      var pendingHashKey = "cs2c-api-reference-pending-hash";
+
+      function normalizePath(path) {
+        if (!path) return "/";
+        return path.length > 1 ? path.replace(/\/+$/, "") : path;
+      }
+
+      function readStorage(key) {
+        try {
+          return window.sessionStorage.getItem(key);
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function writeStorage(key, value) {
+        try {
+          window.sessionStorage.setItem(key, value);
+        } catch (error) {
+          // Storage can be unavailable in hardened browser modes.
+        }
+      }
+
+      function removeStorage(key) {
+        try {
+          window.sessionStorage.removeItem(key);
+        } catch (error) {
+          // Storage can be unavailable in hardened browser modes.
+        }
+      }
+
+      function saveSidebarScroll() {
+        if (!apiSidebar) return;
+        writeStorage(sidebarScrollKey, String(apiSidebar.scrollTop));
+      }
+
+      function restoreSidebarScroll() {
+        if (!apiSidebar) return;
+        var raw = readStorage(sidebarScrollKey);
+        if (raw === null) return;
+        var saved = Number(raw);
+        if (!Number.isFinite(saved)) return;
+        requestAnimationFrame(function() {
+          apiSidebar.scrollTop = saved;
+        });
+      }
+
+      function linkUrl(link) {
+        try {
+          return new URL(link.getAttribute("href"), window.location.href);
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function sidebarLinkForHash(hash) {
+        if (!apiSidebar || !hash) return null;
+        var currentPath = normalizePath(window.location.pathname);
+        var links = apiSidebar.querySelectorAll("a.api-sidebar-item[href]");
+        for (var i = 0; i < links.length; i += 1) {
+          var url = linkUrl(links[i]);
+          if (url && normalizePath(url.pathname) === currentPath && url.hash === hash) {
+            return links[i];
+          }
+        }
+        return null;
+      }
+
+      function setTocActive(hash) {
+        tocNav.querySelectorAll("a").forEach(function(a) { a.classList.remove("active"); });
+        var tocActive = tocNav.querySelector('a[href="' + hash + '"]');
+        if (tocActive) tocActive.classList.add("active");
+      }
+
+      function setSidebarActive(hash) {
+        if (!apiSidebar) return false;
+        var activeLink = sidebarLinkForHash(hash);
+        apiSidebar.querySelectorAll("a.api-sidebar-item.active").forEach(function(a) {
+          a.classList.remove("active");
+          a.removeAttribute("aria-current");
+        });
+        if (!activeLink) return false;
+        activeLink.classList.add("active");
+        activeLink.setAttribute("aria-current", "location");
+        return true;
+      }
+
+      function jumpToHash(hash) {
+        var id = hash.replace(/^#/, "");
+        try {
+          id = decodeURIComponent(id);
+        } catch (error) {
+          // Keep the raw hash if it is not URI encoded cleanly.
+        }
+        var target = document.getElementById(id);
+        if (!target) return;
+
+        var html = document.documentElement;
+        var previousBehavior = html.style.scrollBehavior;
+        html.style.scrollBehavior = "auto";
+        target.scrollIntoView();
+        requestAnimationFrame(function() {
+          html.style.scrollBehavior = previousBehavior;
+        });
+      }
+
+      function headingLevel(heading) {
+        return Number(heading.tagName.slice(1));
+      }
+
+      function escapePipes(value) {
+        return value.replace(/\|/g, "\\|");
+      }
+
+      function normalizeText(value) {
+        return value
+          .replace(/\u00a0/g, " ")
+          .replace(/\n{3,}/g, "\n\n")
+          .replace(/[ \t]+\n/g, "\n")
+          .trim();
+      }
+
+      function sectionUrl(heading) {
+        return window.location.origin + window.location.pathname + "#" + heading.id;
+      }
+
+      function extractTableText(table) {
+        var rows = Array.from(table.querySelectorAll("tr")).map(function(row) {
+          return Array.from(row.querySelectorAll("th, td")).map(function(cell) {
+            return escapePipes(normalizeText(cell.innerText || ""));
+          });
+        }).filter(function(cells) {
+          return cells.length > 0;
+        });
+
+        if (!rows.length) return "";
+        var header = rows[0];
+        var separator = header.map(function() { return "---"; });
+        var lines = [
+          "| " + header.join(" | ") + " |",
+          "| " + separator.join(" | ") + " |",
+        ];
+        rows.slice(1).forEach(function(row) {
+          var padded = row.slice();
+          while (padded.length < header.length) padded.push("");
+          lines.push("| " + padded.join(" | ") + " |");
+        });
+        return lines.join("\n");
+      }
+
+      function extractListText(list) {
+        var isOrdered = list.tagName === "OL";
+        return Array.from(list.children).map(function(item, index) {
+          var marker = isOrdered ? (index + 1) + "." : "-";
+          return marker + " " + normalizeText(item.innerText || "");
+        }).join("\n");
+      }
+
+      function extractCodeText(block) {
+        var language = (block.getAttribute("data-language") || "").toLowerCase();
+        var code = block.querySelector("code");
+        var text = normalizeText((code || block).textContent || "");
+        return "```" + language + "\n" + text + "\n```";
+      }
+
+      function extractNodeText(node) {
+        if (!node) return "";
+        if (node.matches("h2, h3, h4, h5, h6")) {
+          var textEl = node.querySelector(".api-heading-text");
+          var headingText = normalizeText((textEl || node).innerText || "");
+          var level = Number(node.tagName.slice(1));
+          return Array(level + 1).join("#") + " " + headingText;
+        }
+        if (node.classList && node.classList.contains("code-block")) {
+          var wrappedPre = node.querySelector("pre");
+          return wrappedPre ? extractCodeText(wrappedPre) : "";
+        }
+        if (node.matches("pre")) return extractCodeText(node);
+        if (node.matches("table")) return extractTableText(node);
+        if (node.matches("ul, ol")) return extractListText(node);
+        if (node.matches("hr")) return "\n---\n";
+        if (node.matches("blockquote")) {
+          return Array.from(node.querySelectorAll("p")).map(function(paragraph) {
+            return "> " + normalizeText(paragraph.innerText || "");
+          }).join("\n");
+        }
+        return normalizeText(node.innerText || "");
+      }
+
+      function buildSectionPrompt(heading) {
+        var pageTitle = normalizeText((article.querySelector("h1") || heading).innerText || document.title);
+        var sectionTitleEl = heading.querySelector(".api-heading-text");
+        var sectionTitle = normalizeText((sectionTitleEl || heading).innerText || "");
+        var body = [];
+        var level = headingLevel(heading);
+        var sibling = heading.nextElementSibling;
+
+        while (sibling) {
+          if (sibling.matches("h2, h3") && headingLevel(sibling) <= level) break;
+          var chunk = extractNodeText(sibling);
+          if (chunk) body.push(chunk);
+          sibling = sibling.nextElementSibling;
+        }
+
+        return [
+          "# CS2Cap API Reference",
+          "Page: " + pageTitle,
+          "Section: " + sectionTitle,
+          "URL: " + sectionUrl(heading),
+          "",
+          "Use the following section as the source of truth for this contract:",
+          "",
+          body.join("\n\n"),
+        ].join("\n").trim();
+      }
+
+      function showCopyToast(message) {
+        var copyToast = document.querySelector(".endpoint-copy-toast");
+        if (!copyToast) return;
+        copyToast.textContent = message;
+        copyToast.classList.add("visible");
+        window.clearTimeout(showCopyToast._timer);
+        showCopyToast._timer = window.setTimeout(function() {
+          copyToast.classList.remove("visible");
+        }, 2200);
+      }
+
+      function attachSectionCopyControls(headings) {
+        var copyIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+        headings.forEach(function(heading) {
+          var label = normalizeText(heading.textContent || "");
+          var text = document.createElement("span");
+          text.className = "api-heading-text";
+          text.textContent = label;
+          heading.textContent = "";
+          heading.classList.add("api-doc-heading");
+          heading.appendChild(text);
+
+          var button = document.createElement("button");
+          button.type = "button";
+          button.className = "section-copy-btn";
+          button.setAttribute("aria-label", "Copy this section for AI agents");
+          button.innerHTML = copyIcon + "<span>Copy to LLM</span>";
+          button.addEventListener("click", function() {
+            var payload = buildSectionPrompt(heading);
+            navigator.clipboard.writeText(payload).then(function() {
+              button.classList.add("copied");
+              showCopyToast("Copied section for AI agents");
+              window.setTimeout(function() {
+                button.classList.remove("copied");
+              }, 1400);
+            });
+          });
+          heading.appendChild(button);
+        });
+      }
+
       // Generate ToC from headings
       var headings = article.querySelectorAll("h2, h3");
       headings.forEach(function(h) {
@@ -70,14 +328,70 @@ const { title, description, currentSection } = Astro.props;
         if (h.tagName === "H3") a.classList.add("toc-h3");
         tocNav.appendChild(a);
       });
+      attachSectionCopyControls(headings);
 
-      // Scroll spy for right ToC
+      restoreSidebarScroll();
+      if (apiSidebar) {
+        apiSidebar.addEventListener("scroll", saveSidebarScroll, { passive: true });
+        apiSidebar.querySelectorAll("a[href]").forEach(function(link) {
+          link.addEventListener("click", function(event) {
+            saveSidebarScroll();
+            var targetUrl = linkUrl(link);
+            if (!targetUrl || !targetUrl.hash) return;
+
+            var currentPath = normalizePath(window.location.pathname);
+            var targetPath = normalizePath(targetUrl.pathname);
+            if (currentPath === targetPath) return;
+
+            event.preventDefault();
+            writeStorage(pendingHashKey, JSON.stringify({
+              pathname: targetPath,
+              hash: targetUrl.hash,
+            }));
+            window.location.assign(targetUrl.pathname + targetUrl.search);
+          });
+        });
+      }
+
+      var pendingHash = readStorage(pendingHashKey);
+      if (pendingHash) {
+        try {
+          pendingHash = JSON.parse(pendingHash);
+        } catch (error) {
+          pendingHash = null;
+        }
+      }
+      if (
+        pendingHash &&
+        normalizePath(pendingHash.pathname) === normalizePath(window.location.pathname) &&
+        pendingHash.hash
+      ) {
+        removeStorage(pendingHashKey);
+        requestAnimationFrame(function() {
+          jumpToHash(pendingHash.hash);
+          window.history.replaceState(null, "", window.location.pathname + window.location.search + pendingHash.hash);
+          setTocActive(pendingHash.hash);
+          setSidebarActive(pendingHash.hash);
+        });
+      } else if (window.location.hash) {
+        setTocActive(window.location.hash);
+        setSidebarActive(window.location.hash);
+      }
+
+      window.addEventListener("hashchange", function() {
+        setTocActive(window.location.hash);
+        setSidebarActive(window.location.hash);
+      });
+
+      // Scroll spy for right ToC and matching endpoint links in the left sidebar
       var observer = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
           if (entry.isIntersecting) {
-            tocNav.querySelectorAll("a").forEach(function(a) { a.classList.remove("active"); });
-            var tocActive = tocNav.querySelector('a[href="#' + entry.target.id + '"]');
-            if (tocActive) tocActive.classList.add("active");
+            var hash = "#" + entry.target.id;
+            setTocActive(hash);
+            if (sidebarLinkForHash(hash)) {
+              setSidebarActive(hash);
+            }
           }
         });
       }, { rootMargin: "-80px 0px -70% 0px" });
