@@ -29,8 +29,6 @@ order: 16
     "created_at": "2026-03-02T10:30:00Z",
     "last_used_at": "2026-03-02T11:15:00Z",
     "expires_at": null,
-    "bound_ip": "203.0.113.10",
-    "bound_ip_set_at": "2026-03-02T10:31:00Z",
     "quota_requests_per_month_override": null,
     "rate_requests_per_minute_override": null,
     "effective_quota_requests_per_month": 500000,
@@ -67,28 +65,3 @@ order: 16
 
 - Email verification is required before a key can be issued or reissued.
 - Child keys cannot call this route.
-- On free tier, this is also the self-service way to replace an IP-bound root key.
-
----
-
-### Reset IP Binding
->
-> Rebinds the active API key to the caller's current IP address. On Pro and Quant this succeeds but does not change anything, because those keys are not IP-bound.
-
-- Endpoint: POST `/account/key/reset-ip`
-- Tiers: `free` · `pro` · `quant`
-- Rate Limit: 1 per 24 hours per account
-
-**Response Example:**
-
-```json
-{
-  "ok": true,
-  "key_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-  "cooldown_sec": 86400
-}
-```
-
-- Free tier: required when you start using the key from a new IP.
-- Pro/Quant: succeeds but does not change account state.
-- This route does not count against monthly quota.

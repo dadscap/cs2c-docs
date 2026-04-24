@@ -65,7 +65,6 @@ order: 2
 
 - **One active key per account** on all tiers.
 - **Quant supports child keys.** Quant accounts can create up to 25 child keys for sub-leasing, each with optional quota and rate-limit caps.
-- **Free keys are IP-bound.** The first successful request binds the key to that source IP. You can rebind it once every 24 hours with `POST /account/key/reset-ip`. Pro and Quant keys are not IP-bound.
 
 ## Included on Every Tier
 

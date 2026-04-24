@@ -29,7 +29,6 @@ export const sidebarGroups: SidebarGroup[] = [
     items: [
       { method: "GET", label: "/account/key", href: "/api-reference/account#get-active-key" },
       { method: "POST", label: "/account/key/reissue", href: "/api-reference/account#reissue-active-key" },
-      { method: "POST", label: "/account/key/reset-ip", href: "/api-reference/account#reset-ip-binding" },    
     ],
   },
   {

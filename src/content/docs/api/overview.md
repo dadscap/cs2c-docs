@@ -28,7 +28,6 @@ Authorization: Bearer <your_api_key_here>
 Rules:
 
 - Maximum 1 active API key per account
-- Free-tier keys bind to the first source IP that uses them
 - Email verification is required before initial key issuance or reissue
 
 ## Rate Limits
@@ -44,7 +43,6 @@ Rate limits are enforced per API key based on tier:
 **Special limits:**
 
 - `POST /prices` and `POST /bids` also have a cooldown of **1 request every 30 seconds** per key.
-- `POST /account/key/reset-ip` is limited to **1 request every 24 hours** per account.
 
 A `429` response can include headers like these:
 
@@ -97,7 +95,6 @@ Common codes:
 - `AUTH_INVALID_API_KEY`
 - `AUTH_API_KEY_REVOKED`
 - `AUTH_ACCOUNT_DISABLED`
-- `AUTH_FREE_TIER_IP_RESTRICTED`
 - `RATE_LIMIT_EXCEEDED`
 - `RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED`
 - `PRICES_INDEX_UNAVAILABLE`
