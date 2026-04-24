@@ -146,7 +146,14 @@ const { title, description, currentSection } = Astro.props;
         return true;
       }
 
-      function jumpToHash(hash) {
+      function scrollBehaviorForHashNavigation() {
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          return "auto";
+        }
+        return "smooth";
+      }
+
+      function scrollToHash(hash, behavior) {
         var id = hash.replace(/^#/, "");
         try {
           id = decodeURIComponent(id);
@@ -154,15 +161,36 @@ const { title, description, currentSection } = Astro.props;
           // Keep the raw hash if it is not URI encoded cleanly.
         }
         var target = document.getElementById(id);
-        if (!target) return;
+        if (!target) return false;
 
+        target.scrollIntoView({
+          behavior: behavior || "auto",
+          block: "start",
+        });
+        return true;
+      }
+
+      function jumpToHash(hash) {
         var html = document.documentElement;
         var previousBehavior = html.style.scrollBehavior;
         html.style.scrollBehavior = "auto";
-        target.scrollIntoView();
+        scrollToHash(hash, "auto");
         requestAnimationFrame(function() {
           html.style.scrollBehavior = previousBehavior;
         });
+      }
+
+      function navigateWithinPage(hash) {
+        if (!hash) return;
+        var nextUrl = window.location.pathname + window.location.search + hash;
+        if (window.location.hash === hash) {
+          window.history.replaceState(null, "", nextUrl);
+        } else {
+          window.history.pushState(null, "", nextUrl);
+        }
+        setTocActive(hash);
+        setSidebarActive(hash);
+        scrollToHash(hash, scrollBehaviorForHashNavigation());
       }
 
       function headingLevel(heading) {
@@ -341,7 +369,11 @@ const { title, description, currentSection } = Astro.props;
 
             var currentPath = normalizePath(window.location.pathname);
             var targetPath = normalizePath(targetUrl.pathname);
-            if (currentPath === targetPath) return;
+            if (currentPath === targetPath) {
+              event.preventDefault();
+              navigateWithinPage(targetUrl.hash);
+              return;
+            }
 
             event.preventDefault();
             writeStorage(pendingHashKey, JSON.stringify({
