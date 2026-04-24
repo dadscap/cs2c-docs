@@ -237,7 +237,7 @@ The combined length of `item_ids` and `market_hash_names` must be between 1 and 
 
 - `t` is a Unix timestamp in seconds.
 - `o`, `h`, `l`, and `c` are returned in minor units of the response currency.
-- `o` and `c` are unweighted averages across providers.
+- `o` and `c` are the lowest effective provider prices.
 - `l` is the minimum low.
 - `h` is capped at `median(highs) * 1.5`.
 - `v` is the non-negative depletion flow across providers for the bucket.
@@ -271,6 +271,8 @@ The combined length of `item_ids` and `market_hash_names` must be between 1 and 
 | currency | string | Target currency. 160+ ISO 4217 codes supported. Default: `USD`. |
 | limit | integer | Results per page. Range: `1–1000`. |
 | cursor | string | Cursor for keyset pagination. Use `next_cursor` from the previous response. |
+
+If `start` is omitted, the endpoint defaults to the last 14 days of raw history.
 
 **Response Example:**
 
