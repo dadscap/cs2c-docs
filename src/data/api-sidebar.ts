@@ -73,7 +73,7 @@ export const sidebarGroups: SidebarGroup[] = [
     href: "/api-reference/market-analytics",
     items: [
       { method: "GET", label: "/market/arbitrage", href: "/api-reference/market-analytics#get-arbitrage-opportunities" },
-      { method: "GET", label: "/market/indices", href: "/api-reference/market-analytics#get-market-indices" },
+      { method: "GET", label: "/market/indexes", href: "/api-reference/market-analytics#get-market-indexes" },
       { method: "GET", label: "/market/indicators", href: "/api-reference/market-analytics#get-technical-indicators" },
       { method: "GET", label: "/market/items", href: "/api-reference/market-analytics#get-market-item-snapshot" },
       { method: "GET", label: "/market/items/{item_id}", href: "/api-reference/market-analytics#get-item-analytics" },

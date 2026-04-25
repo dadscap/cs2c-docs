@@ -1,6 +1,6 @@
 ---
 title: Market Analytics
-description: Arbitrage scanning, category indices, technical indicators, and item-level analytics.
+description: Arbitrage scanning, category indexes, technical indicators, and item-level analytics.
 order: 15
 ---
 
@@ -70,11 +70,11 @@ order: 15
 
 ---
 
-### Get Market Indices
+### Get Market Indexes
 >
-> Aggregates the cached 24h market snapshot into category-level market cap indices using either `item_type` or `weapon_type`.
+> Aggregates the cached 24h market snapshot into category-level market cap indexes using either `item_type` or `weapon_type`.
 
-- Endpoint: GET `/market/indices`
+- Endpoint: GET `/market/indexes`
 - Tiers: `quant`
 - Rate Limit: Quant: 300/min
 
