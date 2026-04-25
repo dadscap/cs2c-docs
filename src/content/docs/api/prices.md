@@ -199,8 +199,6 @@ The combined length of `item_ids` and `market_hash_names` must be between 1 and 
 | interval | string | Candle interval. One of: `5m`, `1h`, `1d`. Default: `1h`. |
 | fill | boolean | Forward-fill empty buckets. Default: `false`. |
 | currency | string | Target currency. 160+ ISO 4217 codes supported. Default: `USD`. |
-| limit | integer | Results per page. Free: `1–100`, Pro/Quant: `1–1000`. |
-| cursor | string | Cursor for keyset pagination. Use `next_cursor` from the previous response. |
 
 **Response Example:**
 
@@ -230,8 +228,7 @@ The combined length of `item_ids` and `market_hash_names` must be between 1 and 
             "v": 18,
             "q": 91342
         }
-    ],
-    "pagination": {...}
+    ]
 }
 ```
 
@@ -242,7 +239,6 @@ The combined length of `item_ids` and `market_hash_names` must be between 1 and 
 - `h` is capped at `median(highs) * 1.5`.
 - `v` is the non-negative depletion flow across providers for the bucket.
 - `q` is the summed close-side listing count at the end of the bucket when available. Older `1d` windows may return `null`.
-- `pagination.total = -1` is intentional on cursor endpoints.
 
 **Retention windows:** `5m` — 7 days · `1h` — 30 days · `1d` — 365 days.
 
