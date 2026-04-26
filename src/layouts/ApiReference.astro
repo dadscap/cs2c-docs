@@ -42,8 +42,10 @@ const { title, description, currentSection } = Astro.props;
     <!-- Main content -->
     <article class="content-col prose">
       <div class="api-llms-link">
-        <span>LLM-friendly docs:</span>
+        <span>LLM docs:</span>
         <a href="/llms.txt">llms.txt</a>
+        <span aria-hidden="true">/</span>
+        <a href="/llms-full.txt">llms-full.txt</a>
       </div>
       <slot />
     </article>

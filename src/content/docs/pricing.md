@@ -40,7 +40,7 @@ order: 2
 | `GET /v1/market/indexes` — category market cap indexes | — | — | ✅ |
 | `GET /v1/market/indicators` — technical indicators | — | — | ✅ |
 
-> **Free-tier candles limitation:** Free keys can only use `/v1/prices/candles` with `interval=1d`, no forward-fill, and a lookback-only time window measured in days (for example `7d` or `7`). Pro and Quant do not have these restrictions.
+> **Free-tier candles limitation:** Free keys can only use `/v1/prices/candles` with `interval=1d` and a lookback-only time window measured in days up to 30 days (for example `30d` or `30`). Pro and Quant do not have these restrictions and can request up to 365 days.
 
 ## Features & Add-ons
 
@@ -92,7 +92,7 @@ Yes. Upgrades are immediate and prorated. Downgrades take effect at the end of t
 Further requests return `429 RATE_LIMIT_MONTHLY_QUOTA_EXCEEDED` until the next billing period begins. Per-minute limits return `429 RATE_LIMIT_EXCEEDED` with a `Retry-After` header.
 
 **Is historical data really 365 days?**  
-Yes. Pro and Quant include up to one year of per-item, per-provider history through `/v1/prices/history`.
+Yes. Pro and Quant include up to one year of per-item history in OHLCV through `/v1/prices/candles`. Per-provider history goes back up to 2 weeks through `/v1/history`.
 
 **Do I get all 39 marketplaces on Free?**  
 You can view the provider catalog on every tier, but live cross-market price, bid, and sales coverage requires Pro or Quant. Free is limited to current prices.

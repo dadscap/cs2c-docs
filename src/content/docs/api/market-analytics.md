@@ -251,9 +251,11 @@ No query parameters. Liquidity is always scored against the 24h horizon.
           "sales_30d": 2096,
           "steam_sales_7d": 34,
           "steam_sales_30d": 587,
-          "listing_score": 25,
-          "gap_score": 25,
-          "volume_score": 28,
+          "listing_score": 12,
+          "gap_score": 7,
+          "volume_score": 24,
+          "stability_score": 15,
+          "external_score": 14,
           "liquidity_last_updated": "2026-03-21T06:48:43.193895Z"
         }
       }
@@ -322,9 +324,11 @@ No query parameters. Liquidity is always scored against the 24h horizon.
       "sales_30d": 71,
       "steam_sales_7d": 34,
       "steam_sales_30d": 587,
-      "listing_score": 8,
-      "gap_score": 18,
-      "volume_score": 20,
+      "listing_score": 9,
+      "gap_score": 5,
+      "volume_score": 18,
+      "stability_score": 7,
+      "external_score": 7,
       "liquidity_last_updated": "2026-03-21T06:48:43.193895Z"
     },
     "providers": [

@@ -14,7 +14,7 @@ order: 3
 | **Provider** | A marketplace source such as `steam`, `skinport`, or `buff163`. | provider key, fee data, health metadata | `/v1/providers` |
 | **Phase** | A Doppler or Gamma Doppler variant label. | `phase` | `/v1/items`, `/v1/prices`, `/v1/bids`, `/v1/sales`, `/v1/market/*` |
 | **Wear** | The item's condition bucket, from Factory New to Battle-Scarred. | item naming and float context | `/v1/items`, `/v1/sales` |
-| **Liquidity Score** | A combined score that reflects how tradable an item is based on supply and activity. | liquidity metrics | `/v1/market/items/{item_id}` |
+| **Liquidity Score** | A 0–100 score reflecting how tradable an item is. It combines listing depth, bid/ask gap ratio, 24h consumption churn, price stability over the last 24h, and external volume signals. Items with fewer than 2 active hours of history are scored from the first three components only, rescaled to 100. | liquidity metrics | `/v1/market/items/{item_id}` |
 | **Arbitrage** | A cross-provider price edge after marketplace fees are taken into account. | buy provider, sell provider, edge metrics | `/v1/market/arbitrage` |
 | **Technical Indicators** | Trading signals calculated from composite candle data across providers. | RSI, MACD, SMA/EMA, Bollinger Bands, ATR, VWAP, OBV | `/v1/market/indicators` |
 | **FX Conversion** | Currency conversion applied to returned values. | `currency` query parameter | most market-data endpoints, `/v1/fx` |
